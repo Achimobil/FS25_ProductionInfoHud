@@ -22,7 +22,8 @@ ProductionInfoHud.metadata = {
     title = "ProductionInfoHud",
     notes = "Erweiterung des Infodisplays für Silos und Produktionen",
     author = "Achimobil",
-    info = "Das verändern und wiederöffentlichen, auch in Teilen, ist untersagt und wird abgemahnt."
+    info = "Das verändern und wiederöffentlichen, auch in Teilen, ist untersagt und wird abgemahnt.",
+    languageVersion = 1
 };
 ProductionInfoHud.modDir = g_currentModDirectory;
 
@@ -52,10 +53,45 @@ end
 function ProductionInfoHud:init()
 
     ProductionInfoHud.isInit = true;
-    ProductionInfoHud.isClient = g_currentMission:getIsClient();
+    ProductionInfoHud.currentMission = g_currentMission;
+    ProductionInfoHud.isClient = ProductionInfoHud.currentMission:getIsClient();
 
     -- ProductionChainManager
-    ProductionInfoHud.chainManager = g_currentMission.productionChainManager;
+    ProductionInfoHud.chainManager = ProductionInfoHud.currentMission.productionChainManager;
+
+    -- Anzeigesystem Initialisieren
+    ProductionInfoHud:RegisterDisplaySystem();
+end
+
+--- Register the Display System from HappyLooser
+function ProductionInfoHud:RegisterDisplaySystem()
+    if ProductionInfoHud:getDetiServer() then return;end;
+    ProductionInfoHud.currentMission.hlUtils.modLoad("FS25_ProductionInfoHud");
+    PIH_DisplaySetGet:setGlobalFunctions();
+--     PIH_Display.lastPlayerFarmId = ProductionInfoHud.currentMission.hlUtils.getPlayerFarmId();
+    if ProductionInfoHud.currentMission.hlHudSystem ~= nil and ProductionInfoHud.currentMission.hlHudSystem.hlHud ~= nil and ProductionInfoHud.currentMission.hlHudSystem.hlHud.generate ~= nil then --check is HL Hud System ready !
+        print("#Info: ".. tostring(ProductionInfoHud.metadata.title).. " generate Hud --> for HL Hud System (".. tostring(ProductionInfoHud.currentMission.hlHudSystem.metadata.version).. ")")
+        local hud = ProductionInfoHud.currentMission.hlHudSystem.hlHud.generate( {name="PIH_Display_Hud", width=40, info="Production Info Hud Mod\n(PIH Display)", hiddenMod="ProductionInfoHud", ownTable={}} ); --loadDefaultIcons=true
+        if hud ~= nil then
+            ProductionInfoHud.currentMission.hlUtils.loadLanguage( {modTitle=tostring(ProductionInfoHud.metadata.title), class="FS25_ProductionInfoHud", modDir=ProductionInfoHud.modDir.. "scripte_PIH/", xmlDir="FS25_ProductionInfoHud", xmlVersion=ProductionInfoHud.metadata.languageVersion} );
+--             PIH_DisplaySetGet:loadFillTypesIcons();
+--             PIH_DisplaySetGet:loadHudIcons(hud);
+--             PIH_Display:loadSource(2);
+--             hud.onDraw = PIH_Display_DrawHud.setHud;
+--             hud.onClick = PIH_Display_MouseKeyEventsHud.onClick;
+--             hud.onSaveXml = PIH_Display_XmlHud.onSaveXml;
+            --PIH_Display_XmlHud:onLoadXml(hud, hud:getXml()); --own hud load over Xml
+            if hud.ownTable.viewHudTyp == 1 then hud.autoZoomOutIn = "text";else hud.autoZoomOutIn = "";end; --set text zoom is ...typ 1
+            --if ProductionInfoHud.currentMission.hlHudSystem.isAlreadyExistsXml("box", "PIH_Display_Box") then PIH_Display_XmlBox:loadBox("PIH_Display_Box", true);end; --optional load
+        else
+            ProductionInfoHud.loadError = true; --optional for !
+            print("#WARNING: ".. tostring(ProductionInfoHud.metadata.title).. " CAN NOT GENERATE Hud ! Check/Search: ? Mod cause with integrated HL Hud System ? ")
+        end;
+    else
+        ProductionInfoHud.loadError = true; --optional for !
+        ProductionInfoHud.currentMission.hlUtils.modUnLoad("FS25_ProductionInfoHud");
+        print("#WARNING: ".. tostring(ProductionInfoHud.metadata.title).. " CAN NOT GENERATE Hud/Pda/Box ! MISSING --> HL Hud System ! Check/Search: ? Corrupt Mod with integrated HL Hud System ? ")
+    end;
 end
 
 ---Update
@@ -79,11 +115,11 @@ end
 
 ---refresh all the products table
 function ProductionInfoHud:refreshProductionsTable()
-    local farmId = g_currentMission:getFarmId();
+    local farmId = ProductionInfoHud.currentMission:getFarmId();
     local myProductionItems = {}
 
     -- time factor for calcualting hours left based on days per Period
-    local timeFactor = (1 / g_currentMission.environment.daysPerPeriod);
+    local timeFactor = (1 / ProductionInfoHud.currentMission.environment.daysPerPeriod);
 
     local myProductionPoints = self.chainManager:getProductionPointsForFarmId(farmId);
 
@@ -163,7 +199,9 @@ function ProductionInfoHud:refreshProductionsTable()
 
     table.sort(myProductionItems, ProductionInfoHud.compPrductionTable)
 
-    ProductionInfoHud.DebugTable("myProductionItems", myProductionItems, 1);
+    ProductionInfoHud.CurrentProductionItems = myProductionItems;
+
+--     ProductionInfoHud.DebugTable("myProductionItems", myProductionItems, 1);
 --     ProductionInfoHud.DebugTable("myProductionPoints", myProductionPoints);
 end
 
@@ -184,5 +222,10 @@ function ProductionInfoHud.compPrductionTable(a,b)
     end
     return false;
 end
+
+---Simple check if this is server and not client
+function ProductionInfoHud:getDetiServer()
+    return g_server ~= nil and g_client ~= nil and g_dedicatedServer ~= nil;
+end;
 
 addModEventListener(ProductionInfoHud);

@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<binding descVersion="94">   	
+	<actions>
+		<action name="HL_ONOFFMOUSECURSOR" ignoreComboMask="false" axisType="HALF" category="ONFOOT VEHICLE" displayCategory="PLAYER_INTERACTIVE"/>
+	</actions>
+	<inputBinding>		
+		<actionBinding action="HL_ONOFFMOUSECURSOR">
+			<binding device="KB_MOUSE_DEFAULT" input="KEY_f12" axisComponent="+" neutralInput="0" index="1"/>
+		</actionBinding>
+	</inputBinding>	
+</binding>

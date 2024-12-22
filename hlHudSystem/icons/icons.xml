@@ -1,0 +1,269 @@
+﻿<hlHudSystem>	
+	<guiBoxIcons load="12">
+		<icon name="bg" type="2" setStateInArea="true" color="blackDisabled" placeB="120"/>
+		<icon name="bgLine" type="2" setStateInArea="true" color="blackDisabled" placeB="120"/>		
+		<icon name="bgFrame" type="2" setStateInArea="true" color="blackDisabled" placeB="120"/>
+		<icon name="upDown" type="2" color="white" placeB="57"/>
+		<icon name="frame" type="2" setStateInArea="true" color="white" placeDifWH="0.3" placeB="51"/>
+		<icon name="on" type="2" color="green" placeB="11"/>
+		<icon name="lineIcon" type="2" color="white" placeB="32"/>
+		<icon name="settingExtension" type="2" color="darkGray" placeB="34"/>
+		<icon name="off" type="2" color="red" placeB="50"/>
+		<icon name="close" type="2" setStateInArea="true" color="red" placeB="50"/>
+		<icon name="sizeWidthHeight" type="2" setStateInArea="true" color="red" placeB="54"/>
+		<icon name="dragDrop" type="2" setStateInArea="true" color="red" placeB="55"/>
+	</guiBoxIcons>
+	<ownGuiBoxIcons load="2">
+		<icon name="save" type="2" color="darkGray" placeB="17"/>
+		<icon name="setInfo" type="2" color="darkGray" placeB="30"/>	
+	</ownGuiBoxIcons>
+	<ownGuiBoxOtherIcons load="2">
+		<icon name="setSound" type="2" color="darkGray" placeB="96"/>
+		<icon name="textTicker" type="2" color="darkGray" placeB="112"/>
+	</ownGuiBoxOtherIcons>
+	<background load="1">
+		<icon name="bg" type="2" color="blackDisabled" placeB="120"/>
+	</background>
+	<backgroundIcons load="7">
+		<icon name="blank" type="1" placeB="127"/>
+		<icon name="bg" type="2" color="blackDisabled" placeB="120"/>		
+		<icon name="bgRound" type="2" color="blackDisabled" placeB="119"/>
+		<icon name="bgHalfRoundUp" type="2" color="blackDisabled" placeB="118"/>
+		<icon name="bgHalfRoundDown" type="2" color="blackDisabled" placeB="117"/>
+		<icon name="bgHalfRoundRight" type="2" color="blackDisabled" placeB="116"/>
+		<icon name="bgHalfRoundLeft" type="2" color="blackDisabled" placeB="115"/>
+	</backgroundIcons>
+	<mouseIcons load="6">
+		<icon name="mouse" type="2" color="khaki" placeB="126"/>
+		<icon name="mouseClickRight" type="2" color="khaki" placeB="125"/>
+		<icon name="mouseClickMiddle" type="2" color="khaki" placeB="124"/>
+		<icon name="mouseClickLeft" type="2" color="khaki" placeB="123"/>
+		<icon name="mouseClickSideRight" type="2" color="khaki" placeB="122"/>
+		<icon name="mouseClickSideLeft" type="2" color="khaki" placeB="121"/>		
+	</mouseIcons>	
+	<loadIcons load="59">
+		<icon name="left" type="2" color="white"/>
+		<icon name="down" type="2" color="white"/>
+		<icon name="up" type="2" color="white"/>
+		<icon name="right" type="2" color="white"/>
+		<icon name="upDown" type="2" color="white"/>
+		<icon name="leftRight" type="2" color="white"/>
+		<icon name="plusRound" type="2" color="white"/>
+		<icon name="minusRound" type="2" color="white"/>
+		<icon name="plus" type="2" color="white"/>
+		<icon name="minus" type="2" color="white"/>
+		<icon name="okay" type="2" color="green"/>
+		<icon name="notOkay" type="2" color="red"/>
+		<icon name="help" type="2" color="darkGray"/>
+		<icon name="edit" type="2" color="green"/>
+		<icon name="notice" type="2" color="red"/>
+		<icon name="load" type="2" color="ls22"/>
+		<icon name="save" type="2" color="green"/>
+		<icon name="smallView" type="2" color="darkGray"/>
+		<icon name="warning" type="2" color="yellow"/>
+		<icon name="setting" type="2" color="green"/>
+		<icon name="cmd" type="2" color="white"/>
+		<icon name="textUp" type="2" color="white"/>
+		<icon name="textDown" type="2" color="white"/>
+		<icon name="lineHorizontalUpDown" type="2" color="white"/>
+		<icon name="lineHorizontalDownUp" type="2" color="white"/>
+		<icon name="textPlus" type="2" color="white"/>
+		<icon name="textMinus" type="2" color="white"/>
+		<icon name="cloneHud" type="2" color="darkGray"/>
+		<icon name="delete" type="2" color="yellow"/>
+		<icon name="info" type="2" color="yellow"/>
+		<icon name="lineVertical" type="2" color="white"/>
+		<icon name="lineHorizontal" type="2" color="white"/>
+		<icon name="switchView" type="2" color="darkGray"/>
+		<icon name="settingExtension" type="2" color="darkGray"/>
+		<icon name="view" type="2" color="darkGray"/>
+		<icon name="lineHorizontalUp" type="2" color="white"/>
+		<icon name="lineHorizontalDown" type="2" color="white"/>
+		<icon name="cmdView" type="2" color="white"/>
+		<icon name="lineVerticelLeftRight" type="2" color="white"/>
+		<icon name="lineVerticelRightLeft" type="2" color="white"/>
+		<icon name="unlock" type="2" color="darkGray"/>
+		<icon name="lock" type="2" color="darkGray"/>
+		<icon name="lockout" type="2" color="darkGray"/>
+		<icon name="hudPlus" type="2" color="darkGray"/>
+		<icon name="hudMinus" type="2" color="darkGray"/>
+		<icon name="plusWhat" type="2" color="darkGray"/>
+		<icon name="editWhat" type="2" color="darkGray"/>
+		<icon name="dragDropWhat" type="2" color="darkGray"/>
+		<icon name="waypoint" type="2" color="darkGray"/>
+		<icon name="close" type="2" color="darkGray"/>
+		<icon name="border" type="2" color="darkGray"/>
+		<icon name="flip" type="2" color="darkGray"/>
+		<icon name="markerSizeWidthHeight" type="2" color="darkGray"/>
+		<icon name="sizeWidthHeight" type="2" color="green"/>
+		<icon name="dragDrop" type="2" color="green"/>
+		<icon name="leftRightSmall" type="2" color="white"/>
+		<icon name="upDownSmall" type="2" color="white"/>
+		<icon name="settingOther" type="2" color="darkGray"/>		
+		<icon name="search" type="2" color="darkGray"/>
+		<!--icon name="priceTrendNormal" type="2" color="darkGray" placeB="81"/-->
+		<!--icon name="priceTrendGreatDemand" type="2" color="ls15" placeB="81"/>
+		<icon name="priceTrendUp" type="2" color="darkGreen" placeB="82"/>
+		<icon name="priceTrendDown" type="2" color="darkRed" placeB="83"/>
+		<icon name="priceTrend" type="2" color="darkGray" placeB="84"/>
+		<icon name="female" type="2" color="darkGray" placeB="85"/>
+		<icon name="male" type="2" color="darkGray" placeB="86"/-->
+		<!--icon name="fillAmount" type="2" color="darkGray" placeB="87"/>
+		<icon name="emptyAmount" type="2" color="darkGray" placeB="88"/-->
+		<!--icon name="bale" type="2" color="darkGray" placeB="89"/>
+		<icon name="pallete" type="2" color="darkGray" placeB="90"/-->
+		<!--icon name="clock" type="2" color="darkGray" placeB="91"/-->
+		<!--icon name="production" type="2" color="darkGray" placeB="92"/-->
+		<!--icon name="wheat" type="2" color="darkGray" placeB="93"/-->
+		<!--icon name="animal" type="2" color="darkGray" placeB="94"/-->
+		<!--icon name="animals" type="2" color="darkGray" placeB="95"/>
+		<icon name="moneyEuro" type="2" color="darkGray" placeB="96"/-->
+		<!--icon name="tree" type="2" color="darkGray" placeB="97"/-->
+		<!--icon name="productionDirectDeliver" type="2" color="green" placeB="98"/>
+		<icon name="productionDirectSell" type="2" color="green" placeB="99"/-->
+		<!--icon name="closeLines" type="2" color="green" placeB="100"/>
+		<icon name="openLines" type="2" color="green" placeB="101"/-->
+		<!--icon name="emptyCalendar" type="2" color="white" placeB="102"/>
+		<icon name="calendar" type="2" color="yellowGreen" placeB="103"/-->
+		<!--icon name="fermenting" type="2" color="orangeRed" placeB="104"/-->
+		<!--icon name="contractor" type="2" color="darkGray" placeB="105"/-->
+		<!--icon name="note" type="2" color="darkGray" placeB="106"/>
+		<icon name="noteView" type="2" color="darkGray" placeB="107"/-->
+		<!--icon name="pageLeftRight" type="2" color="darkGray" placeB="108"/-->
+		<icon name="state" type="2" color="blackDisabled" placeB="114"/>
+		<icon name="statePercent" type="2" color="blackDisabled" placeB="113"/>
+	</loadIcons>
+	<otherIcons load="0"> <!--bsp. by HudSystem 32x32px and position-->
+		<icon name="isFrontLoader" type="2" setStateInArea="true" placeB="1" />
+		<icon name="horse" type="2" setStateInArea="true" placeB="2" />
+		<icon name="harvester_sugarcane" type="2" setStateInArea="true" placeB="3" />
+		<icon name="harvester_unknown" type="2" setStateInArea="true" placeB="4" />
+		<icon name="harvester_cotton" type="2" setStateInArea="true" placeB="5" />
+		<icon name="harvester_other" type="2" setStateInArea="true" placeB="6" />
+		<icon name="teleloader" type="2" setStateInArea="true" placeB="7" />
+		<icon name="wheelloader" type="2" setStateInArea="true" placeB="8" />
+		<icon name="miscvehicles" type="2" setStateInArea="true" placeB="9" />
+		<icon name="skidsteer" type="2" setStateInArea="true" placeB="10" />
+		<icon name="selfpropelledmower" type="2" setStateInArea="true" placeB="11" />
+		<icon name="handtoolmower" type="2" setStateInArea="true" placeB="12" />
+		<icon name="selfpropelledsprayer" type="2" setStateInArea="true" placeB="13" />
+		<icon name="implement_conveyorbelt" type="2" setStateInArea="true" placeB="14" />
+		<icon name="implement_unknown" type="2" setStateInArea="true" placeB="15" />
+		<icon name="harvester_chaff" type="2" setStateInArea="true" placeB="16" />
+		<icon name="harvester1" type="2" setStateInArea="true" placeB="17" />
+		<icon name="harvester" type="2" setStateInArea="true" placeB="18" />
+		<icon name="truckamount" type="2" setStateInArea="true" placeB="19" />
+		<icon name="truck" type="2" setStateInArea="true" placeB="20" />
+		<icon name="car" type="2" setStateInArea="true" placeB="21" />
+		<icon name="stapler" type="2" setStateInArea="true" placeB="22" />
+		<icon name="train" type="2" setStateInArea="true" placeB="23" />
+		<icon name="wagongrain" type="2" setStateInArea="true" placeB="24" />
+		<icon name="wagonsugarbeet" type="2" setStateInArea="true" placeB="25" />
+		<icon name="wagontimber" type="2" setStateInArea="true" placeB="26" />
+		<icon name="wagonvehicles" type="2" setStateInArea="true" placeB="27" />
+		<icon name="tractor" type="2" setStateInArea="true" placeB="28" />
+		<icon name="tractor_frontloader" type="2" setStateInArea="true" placeB="29" />
+		<icon name="tractor_other" type="2" setStateInArea="true" placeB="30" />
+		<icon name="tractortrailer" type="2" setStateInArea="true" placeB="31" />
+		<icon name="tractorattached" type="2" setStateInArea="true" placeB="32" />
+		<icon name="trailer" type="2" setStateInArea="true" placeB="33" />
+		<icon name="trailervehicles" type="2" setStateInArea="true" placeB="34" />
+		<icon name="trailersmall" type="2" setStateInArea="true" placeB="35" />
+		<icon name="trailerwood" type="2" setStateInArea="true" placeB="36" />
+		<icon name="trailerbaler" type="2" setStateInArea="true" placeB="37" />
+		<icon name="trailersmall_unkown" type="2" setStateInArea="true" placeB="38" />
+		<icon name="mowerharvest" type="2" setStateInArea="true" placeB="39" />
+		<icon name="chaffharvest" type="2" setStateInArea="true" placeB="40" />
+		<icon name="unkownharvest" type="2" setStateInArea="true" placeB="41" />
+		<icon name="attachspray" type="2" setStateInArea="true" placeB="42" />
+		<icon name="attachsow" type="2" setStateInArea="true" placeB="43" />
+		<icon name="attachroller" type="2" setStateInArea="true" placeB="44" />
+		<icon name="attachplow" type="2" setStateInArea="true" placeB="45" />
+		<icon name="attachcultivate" type="2" setStateInArea="true" placeB="46" />
+		<icon name="attachweed" type="2" setStateInArea="true" placeB="47" />
+		<icon name="attachmowing" type="2" setStateInArea="true" placeB="48" />
+		<icon name="hammer" type="2" setStateInArea="true" placeB="49" />
+		<icon name="attached" type="2" setStateInArea="true" placeB="50" />
+		<icon name="speed" type="2" setStateInArea="true" placeB="51" />
+		<icon name="parking" type="2" setStateInArea="true" placeB="52" />
+		<icon name="pipe" type="2" setStateInArea="true" placeB="53" />
+		<icon name="fuel_diesel" type="2" setStateInArea="true" placeB="54" />
+		<icon name="fuel_charge" type="2" setStateInArea="true" placeB="55" />
+		<icon name="fuel_methan" type="2" setStateInArea="true" placeB="56" />
+		<icon name="gps" type="2" setStateInArea="true" placeB="57" />
+		<icon name="pallet_amount" type="2" setStateInArea="true" placeB="58" />
+		<icon name="field" type="2" setStateInArea="true" placeB="59" />
+		<icon name="leasing" type="2" setStateInArea="true" placeB="60" />
+		<icon name="controlled" type="2" setStateInArea="true" placeB="61" />
+		<icon name="refuel" type="2" setStateInArea="true" placeB="62" />
+		<icon name="motor" type="2" setStateInArea="true" placeB="63" />
+		<icon name="repair" type="2" setStateInArea="true" placeB="64" />
+		<icon name="repairhand" type="2" setStateInArea="true" placeB="65" />
+		<icon name="chainsaw" type="2" setStateInArea="true" placeB="66" />
+		<icon name="tacho" type="2" setStateInArea="true" placeB="67" />
+		<icon name="tachosetting" type="2" setStateInArea="true" placeB="68" />
+		<icon name="engine" type="2" setStateInArea="true" placeB="69" />
+		<icon name="weight" type="2" setStateInArea="true" placeB="70" />
+		<icon name="mass" type="2" setStateInArea="true" placeB="71" />
+		<icon name="switchA" type="2" setStateInArea="true" placeB="72" />
+		<icon name="switchH" type="2" setStateInArea="true" placeB="73" />
+		<icon name="selling" type="2" setStateInArea="true" placeB="74" />
+		<icon name="bying" type="2" setStateInArea="true" placeB="75" />
+		<icon name="playerteleport" type="2" setStateInArea="true" placeB="76" />
+		<icon name="fillempty" type="2" setStateInArea="true" placeB="77" />
+		<icon name="jobend" type="2" setStateInArea="true" placeB="78" />
+		<icon name="fuel_adblue" type="2" setStateInArea="true" placeB="79" />
+		<icon name="fuel_oil" type="2" setStateInArea="true" placeB="80" />
+		<icon name="fuel_grease" type="2" setStateInArea="true" placeB="81" />
+		<icon name="trailerunload" type="2" setStateInArea="true" placeB="82" />
+		<icon name="light" type="2" setStateInArea="true" placeB="83" />
+		<icon name="aircooling" type="2" setStateInArea="true" placeB="84" />
+		<icon name="fillamount" type="2" setStateInArea="true" placeB="85" />
+		<icon name="controlled_gps" type="2" setStateInArea="true" placeB="86" />
+		<icon name="trailerfull" type="2" setStateInArea="true" placeB="87" />
+		<icon name="joinvehicles" type="2" setStateInArea="true" placeB="88" />
+		<icon name="pricetrend" type="2" setStateInArea="true" placeB="89"/>
+		<icon name="female" type="2" setStateInArea="true" placeB="90"/>
+		<icon name="male" type="2" setStateInArea="true" placeB="91"/>
+		<icon name="wood_stack" type="2" setStateInArea="true" placeB="92"/>		
+		<icon name="production_directdeliver" type="2" setStateInArea="true" placeB="93"/>
+		<icon name="production_directsell" type="2" setStateInArea="true" placeB="94"/>
+		<icon name="fermenting" type="2" setStateInArea="true" placeB="95"/>
+		<icon name="music_note" type="2" setStateInArea="true" placeB="96"/>		
+		<icon name="bale" type="2" setStateInArea="true" placeB="97"/>
+		<icon name="pallet_empty" type="2" setStateInArea="true" placeB="98"/>
+		<icon name="clock" type="2" setStateInArea="true" placeB="99"/>
+		<icon name="production" type="2" setStateInArea="true" placeB="100"/>
+		<icon name="wheat_sw" type="2" setStateInArea="true" placeB="101"/>
+		<icon name="cow" type="2" setStateInArea="true" placeB="102"/>
+		<icon name="animals" type="2" setStateInArea="true" placeB="103"/>
+		<icon name="euro" type="2" setStateInArea="true" placeB="104"/>		
+		<icon name="music_speaker_on" type="2" setStateInArea="true" placeB="104"/>
+		<icon name="contractor" type="2" setStateInArea="true" placeB="105"/>
+		<icon name="note_written" type="2" setStateInArea="true" placeB="106"/>
+		<icon name="note_written_view" type="2" setStateInArea="true" placeB="107"/>
+		<icon name="pageleftright" type="2" setStateInArea="true" placeB="108"/>
+		<icon name="field_growthstate" type="2" setStateInArea="true" placeB="109"/>
+		<icon name="music_carradio" type="2" setStateInArea="true" placeB="110"/>
+		<icon name="chat_notice" type="2" setStateInArea="true" placeB="111"/>		
+		<icon name="camera" type="2" setStateInArea="true" placeB="112"/>
+		<icon name="pricetrend_normal" type="2" setStateInArea="true" placeB="113"/>
+		<icon name="pricetrend_up" type="2" setStateInArea="true" placeB="114"/>
+		<icon name="pricetrend_down" type="2" setStateInArea="true" placeB="115"/>
+		<icon name="farm_silo" type="2" setStateInArea="true" placeB="116"/>
+		<icon name="silo_amount" type="2" setStateInArea="true" placeB="117"/>
+		<icon name="calendar_empty" type="2" setStateInArea="true" placeB="118"/>
+		<icon name="calendar" type="2" setStateInArea="true" placeB="119"/>		
+		<icon name="truck1" type="2" setStateInArea="true" placeB="120"/>
+		<icon name="-" type="truck_supply" setStateInArea="true" placeB="121"/>
+		<icon name="-" type="truck_time" setStateInArea="true" placeB="122"/>
+		<icon name="camera1" type="2" setStateInArea="true" placeB="123"/>
+		<icon name="cow1" type="2" setStateInArea="true" placeB="124"/>
+		<icon name="silo_total_empty" type="2" setStateInArea="true" placeB="125"/> <!--optional Combi Icon-->
+		<icon name="silo_total_amount" type="2" setStateInArea="true" placeB="126"/> <!--optional Combi Icon (needs silo_total_empty)-->
+		<icon name="silo_total_full" type="2" setStateInArea="true" placeB="127"/> <!--optional Combi Icon (needs silo_total_empty)-->
+	</otherIcons>
+	<other1Icons load="0">
+	
+	</other1Icons>
+</hlHudSystem>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<l10n version="1">
+	<translationContributors>Cert</translationContributors>
+	<texts>
+		<text name="hl_notImplement" text="*Připravuje se*" />
+		<text name="hl_infoDisplay_settingHlHudSystem" text="*Nastavení Hl Hud Systému* ZAP/VYP (pravým kliknutím myši))" />
+		<text name="hl_infoDisplay_notFoundHud" text="! Nenalezeno žádné HUD nastavení !" />
+		<text name="hl_infoDisplay_viewMpOff" text="*HLAVNÍ HUD/PDA/BOX* Přehledy ZAP/VYP/n/Vypne VŠECHNY přehledy (pouze pro Multiplayer)" />
+		<text name="hl_infoDisplay_viewNotAllIcons" text="! Pozor nelze zobrazit všechny ikony !/n/Změnit %s šířku (vpravo dole)" />
+		<text name="hl_infoDisplay_displayTypSwitch" text="%s Přepnutí typu přehledu (levým kliknutím myši)" />
+		<text name="hl_infoDisplay_displayChangeSize" text="%s Přepnutí %s = %s velikosti (kolečko myši nahoru/dolu)" />		
+		<text name="hl_infoDisplay_lineDistance" text="*Velikost řádků větší/menší* %s (pravé/levé kliknutí myši)" />
+		<text name="hl_infoDisplay_textSize" text="*VELIKOST TEXTU* %s (kolečko myši nahoru/dolu)" />
+		<text name="hl_infoDisplay_firstStart" text="-Ve všech 4 rozích Hud/Pda je možno provádět standartní operace s myší/n/-Aktivování kurzoru myši (HL HUD SYSTEM: Standartně klávesa F9)/n/-Další operace s myší jsou k dispozici v Hud/Pda nebo v rámečku/n/-Mohou se lišit a jsou nastaveny autorem modu/n/-Je nutné, aby se kurzor myši (většinou) nacházel v zadané oblasti" />
+        <text name="hl_infoDisplay_separator" text="*%s ODDĚLOVAČ ZAP/VYP* (levým kliknutím myši)" />
+		<text name="hl_infoDisplay_autoSaveTypOff" text="Automatické ukládání je pro toto %s vypnuto autorem modu" />
+		<text name="hl_infoDisplay_autoSaveOn" text="*HLAVNÍ HUD/PDA/BOX* Automatické ukládání je ZAP" />
+		<text name="hl_infoDisplay_autoSaveOff" text="*HLAVNÍ HUD/PDA/BOX* Automatické ukládání je VYP" />		
+		<text name="hl_infoDisplay_autoSaveTimer" text="Interval ukládání každých ~%s sec." />	
+		<text name="hl_infoDisplay_saveAll" text="*HUD/PDA/BOX ULOŽIT* vše (levým kliknutí myši)" />
+		<text name="hl_infoDisplay_save" text="*%s ULOŽIT* (levým kliknutím myši)" />
+		<text name="hl_infoDisplay_close" text="*%s ZAVŘÍT* (levým kliknutím myši)" />
+		<text name="hl_infoDisplay_dragDropHudsWH" text="*VÝŠKA* Všech HUDů/n/*ŠÍŘKA* pouze pro tento HUD (levým kliknutím myši/posunout/vlevo)/n/-VÝŠKA má Max/Min limit./n/-ŠÍŘKA má Min limit" />
+		<text name="hl_infoDisplay_dragDrop" text="*%s DRAGDROP UMÍSTĚNÍ* (levým kliknutím myši/%s posunout/vlevo)" />
+		<text name="hl_infoDisplay_dragDropWH" text="*%s ŠÍŘKA/VÝŠKA* (levým kliknutím myši/posunout/vlevo)/n/-ŠÍŘKA/VÝŠKA má Min. limit" />
+		<text name="hl_infoDisplay_positionHud" text="*UMÍSTĚNÍ HUD* pouze pro tento HUD (levým kliknutím myši/vpravo |--H--|)" />
+		<text name="hl_infoDisplay_settingGlobal" text="*HLAVNÍ NASTAVENÍ HUDů ZAP/VYP* (levým kliknutím myši/posunout v oblasti HUDů)" />
+		<text name="hl_infoDisplay_setting" text="*%s NASTAVENÍ ZAP/VYP* (levým kliknutím myši)/n/-Nastavení je zavislé na autoru modu" />
+		<text name="hl_infoDisplay_zoomOutIn" text="*ZVĚTŠENÍ* Textu/Ikon v %s (kolečko myši nahoru/dolu)/n/-Pokud je toto %s nastavení zapnuto" />
+		<text name="hl_infoDisplay_dragDropWarningMinW" text="Min. ŠÍŘKA dosažena v %s" />
+		<text name="hl_infoDisplay_dragDropWarningMinH" text="Min. VÝŠKA dosažena v %s" />
+		<text name="hl_infoDisplay_dragDropWarningMaxH" text="Max. VÝŠKA dosažena v %s" />
+		<text name="hl_infoDisplay_dragDropWarningMinWH" text="Min. VÝŠKA/ŠÍŘKA dosažena v %s" />
+		<text name="hl_infoDisplay_help" text="*%s NÁPOVĚDA ZAP/VYP* (levým kliknutím myši)/n/-Nápověda zavisí na autoru modu" />
+		<text name="hl_infoDisplay_extraLine" text="*%s MENU ZAP/VYP* (levým kliknutím myši)/n/-MENU zavisí na autoru modu" />
+		<text name="hl_infoDisplay_search" text="*HLEDAT* Aktivovat/Použít/n/-FILTRY zavisí na autoru modu" />
+		<text name="hl_infoDisplay_autoClose" text="*Zobrazí automatické Otevření/Zavření* (levým kliknutí myši)/n/-Otevření/Zavření tohoto přehledu když je myš ZAP/VYP/n/-Přehled musí být zapnutý" />
+		<text name="hl_infoDisplay_dragDropLimitedWH" text="*OMEZENO MODEM*" />		
+						
+		<text name="hl_guiBox_global_headline" text="*Hlavní nastavení*" />
+		<text name="hl_guiBox_global_infoDisplay" text="Standartní info" />
+		<text name="hl_guiBox_global_help_infoDisplay" text="*HUD/PDA/BOX STANDARTNÍ INFO ZAP/VYP* vše/n/Může zobrazit užitečné informace, když pohybujete kurzorem v zadané oblasti./n/Nemá žádný vliv na info o modech." />
+		<text name="hl_guiBox_global_autoSave" text="Automatické ukládání" />
+		<text name="hl_guiBox_global_help_autoSave" text="Automatické ukládání všech dat v nastaveném intervalu./n/Ukládá pouze data z HUD/PDA/BOX, která byla schválena autorem modu./n/Ruční uložení je možné provést kdykoliv kliknutím na ikonu uložení pomocí myši." />
+		<text name="hl_guiBox_global_saveInfo" text="Info o ukládání" />
+		<text name="hl_guiBox_global_help_saveInfo" text="Při každém automatickém uložení se zobrazí krátký přehled dat./n/Nemá žádný vliv na ukládní PDA/BOXů" />
+		<text name="hl_guiBox_global_autoSaveTimer" text="Interval ukládání" />				
+		<text name="hl_guiBox_global_help_autoSaveTimer" text="Interval automatického ukládání každých ~%s sec (Standartně %s)./n/Při (bežném) ukončení hry, je vždy hra automaticky uložena." />
+		
+		<text name="hl_guiBox_textTicker_headline" text="*Nastavení rolujícího textu*" />
+		<text name="hl_guiBox_textTicker_textTicker" text="Rolující text" />
+		<text name="hl_guiBox_textTicker_help_textTicker" text="Pomocí rolovacího textu mohou mody zobrazovat informace touto formou./n/! Tento Hud Systím nemá žádný vliv na informace o modech !" />
+		<text name="hl_guiBox_textTicker_position" text="Umístění" />
+		<text name="hl_guiBox_textTicker_help_position" text="Určuje polohu %s/n/Jiné umístění je k dispozici pouze pokud bylo uloženo." />
+		<text name="hl_guiBox_textTicker_drawBg" text="Pozadí" />
+		<text name="hl_guiBox_textTicker_help_drawBg" text="Zobrazí pozadí, když je zobrazen rolující text." />
+		<text name="hl_guiBox_textTicker_runTimer" text="Rychlost" />
+		<text name="hl_guiBox_textTicker_help_runTimer" text="*Standartní hodnota %s* (%s-%s)/n/Určuje rychlost zobrazení textu./n/! Počítač\Výkon serveru může tuto hodnotu ovlivnit !" />
+		<text name="hl_guiBox_textTicker_dropWidth" text="Zobrazení šířky" />
+		<text name="hl_guiBox_textTicker_help_dropWidth" text="*Standartní šířka %s*/n/Určuje šířku rolujícho textu./n/Mírně ovlivňuje i rychlost posunu./n/Některé jazyky/slova mohou tuto hodnotu ovlivnit./n/Nemá žádný vliv na velikost písmen nebo délku textu." />
+		<text name="hl_guiBox_textTicker_setInfo" text="Základní info" />
+		<text name="hl_guiBox_textTicker_help_setInfo" text="Zobrazí krátké info o nadcházející zprávě na FS panelu./n/Zobrazí se pouze pokud není aktivní žadná jiná zpráva." />
+		<text name="hl_guiBox_textTicker_setSound" text="Nastavit zvuk" />
+		<text name="hl_guiBox_textTicker_help_setSound" text="Status: %s/n/Přehrání zvuku v při nové zprávě./n/Přehraje se pouze pokud není aktivní žadná jiná zpráva." />
+		<text name="hl_guiBox_textTicker_help_sample" text="Výběr zvuku (1-%s)" />
+		<text name="hl_guiBox_modHidder_headline" text="Skrytí modu(HL Hud System)" />
+		<text name="hl_guiBox_modHidder_help" text="ZAP/VYP modu spuštěných pomoci *HL Hud System*/n/! Mod musí tuto fukci podporovat !/n/Co je v modu vypnuto nastavuje autor modu" />
+		<text name="hl_guiBox_otherMods_headline" text="Další nastavení modu" />
+		<text name="hl_guiBox_otherMods_help" text="Nastavení Gui rozhraní ostatních modů vytvořených přes *Hl Hud System*/n/! Tato funkce musí být podporována modem !" />
+	</texts>
+</l10n>

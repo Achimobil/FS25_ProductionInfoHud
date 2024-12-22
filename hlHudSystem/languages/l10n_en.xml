@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<l10n version="1">
+	<translationContributors>Pakeha</translationContributors>
+	<texts>
+		<text name="hl_notImplement" text="*Not yet activated*" />
+		<text name="hl_infoDisplay_settingHlHudSystem" text="*HL Hud System Setting* ON/OFF (MouseClick Right))" />
+		<text name="hl_infoDisplay_notFoundHud" text="! Not found setting HUD !" />
+		<text name="hl_infoDisplay_viewMpOff" text="*GLOBAL HUD/PDA/BOX* Displays ON/OFF/n/Deactivates all Displays (only Activ in Multiplayer)" />
+		<text name="hl_infoDisplay_viewNotAllIcons" text="! Attention some Icons not displayed correctly !/n/Edit Width in %s (bottom right)" />
+		<text name="hl_infoDisplay_displayTypSwitch" text="%s Display Type Switch (MouseClick Left)" />
+		<text name="hl_infoDisplay_displayChangeSize" text="%s Display Type %s = %s Size (MouseScroll Up/Down)" />		
+		<text name="hl_infoDisplay_lineDistance" text="*Line Distance Up/Down* %s (MouseClick Left/Right)" />		
+		<text name="hl_infoDisplay_textSize" text="*TEXT SIZE* %s (MouseScroll Up/Down)" />
+		<text name="hl_infoDisplay_firstStart" text="-In all 4 corners of the HUD/PDA or Box you can execute standard Mouse actions/n/-Activate MouseControl (HL HUD SYSTEM: Default F9 Key)/n/-Within the HUD/PDA or Box you find more Mouse actions /n/-They can be different and will be set by the mod creator/n/-move your mouse cursor to the appropriate area"  />
+        <text name="hl_infoDisplay_separator" text="*%s Extra LINE ON/OFF* (MouseClick Left)" />		
+		<text name="hl_infoDisplay_autoSaveTypOff" text="Automatic save is for this %s Disabled by Creator Mod" />
+		<text name="hl_infoDisplay_autoSaveOn" text="Automatic save is ON" />
+		<text name="hl_infoDisplay_autoSaveOff" text="Automatic save is OFF" />		
+		<text name="hl_infoDisplay_autoSaveTimer" text="Save Interval all ~%s sec." />
+		<text name="hl_infoDisplay_saveAll" text="*HUD/PDA/BOX SAVE* all (MouseClick Left)" />		
+		<text name="hl_infoDisplay_save" text="*%s SAVE* (MouseClick Left)" />		
+		<text name="hl_infoDisplay_close" text="*%s CLOSE* (MouseClick Left)" />		
+		<text name="hl_infoDisplay_dragDropHudsWH" text="*HEIGHT* All HUDS/n/*WIDTH* only this HUD (MouseClick Left/Move/Left)/n/-The HEIGHT has a Max/Min. limit/n/-The WIDTH has a Min. limit" />		
+		<text name="hl_infoDisplay_dragDrop" text="*%s DRAGDROP POSITION* (MouseClick Left/%s move/Left)" />		
+		<text name="hl_infoDisplay_dragDropWH" text="*%s WIDTH/HEIGHT* (MouseClick Left/Move/Left)/n/-The WIDTH/HEIGHT has a Min. Limit" />		
+		<text name="hl_infoDisplay_positionHud" text="*HUD POSITION* this HUD (MouseClick Left/Right |--H--|)" />		
+		<text name="hl_infoDisplay_settingGlobal" text="*GLOBAL HUDS SETTINGS ON/OFF* (MouseClick Left/Move in HUD Area)" />		
+		<text name="hl_infoDisplay_setting" text="*%s SETTINGS ON/OFF* (MouseClick Left)/n/-Settings depend on the Creator Mod" />		
+		<text name="hl_infoDisplay_zoomOutIn" text="*ZOOM* Text/Icon in %s (MouseScroll Up/Down)/n/-If this %s Setting On" />		
+		<text name="hl_infoDisplay_dragDropWarningMinW" text="Min. WIDTH this %s reached" />		
+		<text name="hl_infoDisplay_dragDropWarningMinH" text="Min. HEIGHT this %s reached" />
+		<text name="hl_infoDisplay_dragDropWarningMaxH" text="Max HEIGHT this %s reached" />
+		<text name="hl_infoDisplay_dragDropWarningMinWH" text="Min. WIDTH/HEIGHT this %s reached" />
+		<text name="hl_infoDisplay_help" text="*%s HELP ON/OFF* (MouseClick Left)/n/-Help depend on the Creator Mod" />		
+		<text name="hl_infoDisplay_extraLine" text="*%s MENU ON/OFF* (MouseClick Left)/n/-MENU depend on the Creator Mod" />		
+		<text name="hl_infoDisplay_search" text="*SEARCHFILTER* Activate/Use/n/-FILTER depend on the Creator Mod" />
+		<text name="hl_infoDisplay_autoClose" text="*Display Automatic Open/Close* (MouseClick Left)/n/-Opens/Closes this Display is MouseCursor On/Off/n/-Display must be On" />
+		<text name="hl_infoDisplay_dragDropLimitedWH" text="*LIMITED BY MOD*" />
+								
+		<text name="hl_guiBox_global_headline" text="*Global Settings*" />
+		<text name="hl_guiBox_global_infoDisplay" text="Default Infos" />
+		<text name="hl_guiBox_global_help_infoDisplay" text="*HUD/PDA/BOX STANDARD INFOS ON/OFF* all/n/Can show useful help infos if mouse cursor is in appropriate area./n/Has no effect to MOD infos." />
+		<text name="hl_guiBox_global_autoSave" text="Auto Save" />
+		<text name="hl_guiBox_global_help_autoSave" text="Saves automatically all data in preset saving interval./n/Only Mod creator released data of HUD/PDA/BOX will be saved./n/Manually save by clicking the disk icon." />
+		<text name="hl_guiBox_global_saveInfo" text="Save Info" />
+		<text name="hl_guiBox_global_help_saveInfo" text="Shows short info when all data are saved automatically./n/Has no effect when saving within PDA´s/Boxes" />
+		<text name="hl_guiBox_global_autoSaveTimer" text="Save Interval" />
+		<text name="hl_guiBox_global_help_autoSaveTimer" text="Saving interval all ~%s sec (Standard %s)./n/Exit Game (regular) is always automatically save." />
+		
+		<text name="hl_guiBox_textTicker_headline" text="*Text Ticker Settings*" />
+		<text name="hl_guiBox_textTicker_textTicker" text="Text Ticker" />
+		<text name="hl_guiBox_textTicker_help_textTicker" text="Text Ticker can show Mod´s and Info´s in one area./n/! This HUD sytem has no effect to mod infos !" />
+		<text name="hl_guiBox_textTicker_position" text="Position" />
+		<text name="hl_guiBox_textTicker_help_position" text="Determine %s Position/n/Alternative positions are only available if they have been preset." />
+		<text name="hl_guiBox_textTicker_drawBg" text="Background" />
+		<text name="hl_guiBox_textTicker_help_drawBg" text="Shows background when a banner is displayed." />
+		<text name="hl_guiBox_textTicker_runTimer" text="Speed" />
+		<text name="hl_guiBox_textTicker_help_runTimer" text="*Standard value %s* (%s-%s)/n/Determine´s speed of displayed text./n/! PC\Server Performance can have effect to this value !" />
+		<text name="hl_guiBox_textTicker_dropWidth" text="Display part width" />
+		<text name="hl_guiBox_textTicker_help_dropWidth" text="*Standard value %s*/n/Determine´s displayed text width./n/Also slightly affects running speed./n/Some languages/words can affect this value./n/Has no effect to letters or text length." />
+		<text name="hl_guiBox_textTicker_setInfo" text="Start Info" />
+		<text name="hl_guiBox_textTicker_help_setInfo" text="Shows in the FS info bar a short information about an upcoming message./n/Displayed only if no previous messages have been activated." />
+		<text name="hl_guiBox_textTicker_setSound" text="Start Sound" />
+		<text name="hl_guiBox_textTicker_help_setSound" text="Status: %s/n/Information sound will be played by incoming messages./n/Only played if no previos messages have been activated." />
+		<text name="hl_guiBox_textTicker_help_sample" text="Choose Sound (1-%s)" />
+		<text name="hl_guiBox_modHidder_headline" text="Mod Hidder(HL Hud System)" />
+		<text name="hl_guiBox_modHidder_help" text="Mods running with *HL Hud System switch On/Off /n/! Mods must support this function!/n/ What is deactivated in a mod is set by the modder" />
+		<text name="hl_guiBox_otherMods_headline" text="Other Mods Settings" />
+		<text name="hl_guiBox_otherMods_help" text="Gui Box Settings of different Mods created by *HL Hud System* /n/! Mods must support this function!" />
+	</texts>
+</l10n>
