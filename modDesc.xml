@@ -16,5 +16,9 @@
     <multiplayer supported="true"/>
     <iconFilename>icon_prodcutionInfoHud.png</iconFilename>
 
+    <extraSourceFiles>
+        <sourceFile filename="productionInfoHud.lua"/>
+    </extraSourceFiles>
+
     <l10n filenamePrefix="translations/translation" />
 </modDesc>
