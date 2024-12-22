@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<modDesc descVersion="94">
+    <author>Achimobil</author>
+    <contributor>HappyLooser</contributor>
+    <version>0.0.0.1</version>
+
+    <title>
+        <de>Produktionen Info Hud</de>
+        <en>Production Info Hud</en>
+    </title>
+
+    <description>
+        <de><![CDATA[comming later]]></de>
+    </description>
+
+    <multiplayer supported="true"/>
+    <iconFilename>icon_prodcutionInfoHud.png</iconFilename>
+
+    <l10n filenamePrefix="translations/translation" />
+</modDesc>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+	<translationContributors>Vanquish81</translationContributors>
+	<texts>
+		<text name="input_TOGGLE_GUI" text="PIH: Alternar Vista"/>
+		<text name="Empty" text="Vacío"/>
+		<text name="Full" text="Zona de palets llena"/>
+		<text name="NearlyFull" text="Zona de palets casi llena"/>
+		<text name="AllProductsOperativ" text="Producciones Operativas."/>
+		<text name="pih_Zeilen" text="lineas"/>
+		<text name="MoreAvailable" text="más"/>
+		<text name="NothingToSell" text="Nada que vender"/>
+		<text name="pih_ingameMenuProductionInfo" text="Cantidades de producción por mes (Solo lineas de prooducción activas)"/>
+		<text name="pih_ingameMenuProductionInfoHour" text="Cantidades de producción por hora (Solo lineas de prooducción activas)"/>
+		<text name="pih_ingameMenuProductionInfoYear" text="Cantidades de producción por año (Solo lineas de prooducción activas)"/>
+		<text name="pih_header_sellPerMonth" text="Venta Directa (lts.)"/>
+		<text name="pih_header_keepPerMonth" text="Almacenado (lts.)"/>
+		<text name="pih_header_distributePerMonth" text="Distribuyendo (lts.)"/>
+		<text name="pih_header_usagePerMonth" text="Consumido (lts.)"/>
+		<text name="pih_header_neededFieldSize" text="A Cosechar (ha.)"/>
+		<text name="ui_listHeader_1" text="Materiales Producidos"/>
+		<text name="ui_listHeader_2" text="Materias Primas"/>
+		<text name="ui_listHeader_3" text="Productos Terminados"/>
+		<text name="pih_changeTimeToHour" text="Vista por hora"/>
+		<text name="pih_changeTimeToMonth" text="Vista por mes"/>
+		<text name="pih_changeTimeToYear" text="Vista por año"/>
+		<!-- In neuen Einstellungen benutzt-->
+		<text name="pih_settings_title" text="Production Info Hud - Fábricas"/>
+		<text name="pihPositionElement_title" text="Posición"/>
+		<text name="pih_tooltip_position" text="Seleccione la posición de visualización"/>
+		<text name="pih_possiblePosition_1" text="Arriba Centrado"/>
+		<text name="pih_possiblePosition_2" text="Debajo panel ayuda"/>
+		<text name="pih_possiblePosition_3" text="Debajo Vehicle Inspector"/>
+		<text name="pih_showFullAnimals_title" text="Mostrar todos los datos de animales"/>
+		<text name="pih_tooltip_showFullAnimals" text="Visualización de los puestos de animales completos en la lista"/>
+		<text name="pih_MaxLinesElement_title" text="Lineas visibles"/>
+		<text name="pih_tooltip_maxLines" text="Número máximo de lineas de fábricas a mostrar."/>
+		<text name="pih_showBooster_title" text="Mostrar Booster"/>
+		<text name="pih_showBooster_tooltip" text="Mostrar Revamp Booster"/>
+		<text name="pih_price_settings_title" text="Production Info Hud - Ver precio"/>
+		<text name="pih_MaxSellingLinesElement_title" text="Lineas visibles"/>
+		<text name="pih_tooltip_maxSellingLines" text="Máximo de líneas de salida. Si hay más, se añade una línea de información."/>
+		<text name="pih_MinSellAmountElement_title" text="Importe mínimo de venta"/>
+		<text name="pih_tooltip_minSellAmount" text="Esta cantidad debe ser el mínimo en stock para poder mostrarse."/>
+		<text name="pih_textSize_title" text="Tamaño Fuente"/>
+		<text name="pih_textSize_tooltip" text="El tamaño de la fuente."/>
+		<!-- In Produktionsmenü -->
+		<text name="pih_setFilltypeToIgnore" text="PIH: Ocultar teclas"/>
+		<text name="pih_setFilltypeToNotIgnore" text="PIH: Mostrar teclas"/>
+		<!-- MultiOverlay V4 translations -->
+		<text name="pih_moh_headline" text="Production Info Hud"/>
+		<text name="pih_moh_infoTextDaysSetting" text="Filtro Día. Haga clic con el botón izquierdo para reducir, con el botón derecho para aumentar"/>
+		<text name="pih_moh_infoTextCapacitySetting" text="Filtro Capacidad. Click izquierdo disminuye, derecho aumenta."/>
+		<text name="pih_moh_leftClickToOpenRightClickForFilterProduction" text="Click izquierdo para abrir la producción o click derecho para filtrar por producción"/>
+		<text name="pih_moh_rightClickForFilterProduction" text="Click derecho para filtrar por producción"/>
+		<text name="pih_moh_rightClickForFilterFillType" text="click derecho para filtrar por producto"/>
+		<text name="pih_moh_rightClickForSwitchTimeAndFreeSpace" text="Click derecho para cambiar entre tiempo restante y espacio libre"/>
+		<text name="pih_moh_help_title" text="Ayuda Production Info Hud"/>
+		<text name="pih_moh_help_text" text="Click izquierdo sobre el nombre de Fábrica o producto para filtrar la lista. Pulse de nuevo para eliminar el filtro\nClick derecho sobre el nombre de la fábrica para abrir el menú de producción\nClick izquierdo sobre el tiempo restante para alternar entre el tiempo restante y la capacidad libre disponible."/>
+	</texts>
+</l10n>
