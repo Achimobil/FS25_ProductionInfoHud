@@ -21,6 +21,8 @@
         <sourceFile filename="hlUtils/_hlUtils.lua"/>
         <sourceFile filename="hlHudSystem/hlHudSystem.lua"/>
         <sourceFile filename="scripte_PIH/PIH_DisplaySetGet.lua"/>
+        <sourceFile filename="scripte_PIH/xml/PIH_Display_DrawBox.lua"/>
+        <sourceFile filename="scripte_PIH/xml/PIH_Display_XmlBox.lua"/>
     </extraSourceFiles>
 
     <l10n filenamePrefix="translations/translation" />

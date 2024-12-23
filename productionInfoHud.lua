@@ -23,14 +23,15 @@ ProductionInfoHud.metadata = {
     notes = "Erweiterung des Infodisplays für Silos und Produktionen",
     author = "Achimobil",
     info = "Das verändern und wiederöffentlichen, auch in Teilen, ist untersagt und wird abgemahnt.",
-    languageVersion = 1
+    languageVersion = 1,
+    xmlVersion = 1
 };
 ProductionInfoHud.modDir = g_currentModDirectory;
 
 --- Print the given Table to the log
 -- @param string text parameter Text before the table
 -- @param table myTable The table to print
--- @param number maxDepth depth of print, default 2
+-- @param integer? maxDepth depth of print, default 2
 function ProductionInfoHud.DebugTable(text, myTable, maxDepth)
     if not ProductionInfoHud.Debug then return end
     if myTable == nil then
@@ -54,6 +55,7 @@ function ProductionInfoHud:init()
 
     ProductionInfoHud.isInit = true;
     ProductionInfoHud.currentMission = g_currentMission;
+    ProductionInfoHud.i18n = g_i18n;
     ProductionInfoHud.isClient = ProductionInfoHud.currentMission:getIsClient();
 
     -- ProductionChainManager
@@ -69,11 +71,17 @@ function ProductionInfoHud:RegisterDisplaySystem()
     ProductionInfoHud.currentMission.hlUtils.modLoad("FS25_ProductionInfoHud");
     PIH_DisplaySetGet:setGlobalFunctions();
 --     PIH_Display.lastPlayerFarmId = ProductionInfoHud.currentMission.hlUtils.getPlayerFarmId();
+--     ProductionInfoHud.DebugTable("ProductionInfoHud.currentMission.hlHudSystem", ProductionInfoHud.currentMission.hlHudSystem);
     if ProductionInfoHud.currentMission.hlHudSystem ~= nil and ProductionInfoHud.currentMission.hlHudSystem.hlHud ~= nil and ProductionInfoHud.currentMission.hlHudSystem.hlHud.generate ~= nil then --check is HL Hud System ready !
-        print("#Info: ".. tostring(ProductionInfoHud.metadata.title).. " generate Hud --> for HL Hud System (".. tostring(ProductionInfoHud.currentMission.hlHudSystem.metadata.version).. ")")
-        local hud = ProductionInfoHud.currentMission.hlHudSystem.hlHud.generate( {name="PIH_Display_Hud", width=40, info="Production Info Hud Mod\n(PIH Display)", hiddenMod="ProductionInfoHud", ownTable={}} ); --loadDefaultIcons=true
-        if hud ~= nil then
-            ProductionInfoHud.currentMission.hlUtils.loadLanguage( {modTitle=tostring(ProductionInfoHud.metadata.title), class="FS25_ProductionInfoHud", modDir=ProductionInfoHud.modDir.. "scripte_PIH/", xmlDir="FS25_ProductionInfoHud", xmlVersion=ProductionInfoHud.metadata.languageVersion} );
+
+        -- box erstellen
+        PIH_Display_XmlBox:loadBox("PIH_Display_Box", true)
+
+    -- das hier ist für das Hud mit dem Icon zum ein und ausblenden
+--        print("#Info: ".. tostring(ProductionInfoHud.metadata.title).. " generate Hud --> for HL Hud System (".. tostring(ProductionInfoHud.currentMission.hlHudSystem.metadata.version).. ")")
+--        local hud = ProductionInfoHud.currentMission.hlHudSystem.hlHud.generate( {name="PIH_Display_Hud", width=40, info="Production Info Hud Mod\n(PIH Display)", hiddenMod="ProductionInfoHud", ownTable={}} ); --loadDefaultIcons=true
+--        if hud ~= nil then
+            --ProductionInfoHud.currentMission.hlUtils.loadLanguage( {modTitle=tostring(ProductionInfoHud.metadata.title), class="FS25_ProductionInfoHud", modDir=ProductionInfoHud.modDir.. "scripte_PIH/", xmlDir="FS25_ProductionInfoHud", xmlVersion=ProductionInfoHud.metadata.languageVersion} );
 --             PIH_DisplaySetGet:loadFillTypesIcons();
 --             PIH_DisplaySetGet:loadHudIcons(hud);
 --             PIH_Display:loadSource(2);
@@ -81,12 +89,12 @@ function ProductionInfoHud:RegisterDisplaySystem()
 --             hud.onClick = PIH_Display_MouseKeyEventsHud.onClick;
 --             hud.onSaveXml = PIH_Display_XmlHud.onSaveXml;
             --PIH_Display_XmlHud:onLoadXml(hud, hud:getXml()); --own hud load over Xml
-            if hud.ownTable.viewHudTyp == 1 then hud.autoZoomOutIn = "text";else hud.autoZoomOutIn = "";end; --set text zoom is ...typ 1
+            --if hud.ownTable.viewHudTyp == 1 then hud.autoZoomOutIn = "text";else hud.autoZoomOutIn = "";end; --set text zoom is ...typ 1
             --if ProductionInfoHud.currentMission.hlHudSystem.isAlreadyExistsXml("box", "PIH_Display_Box") then PIH_Display_XmlBox:loadBox("PIH_Display_Box", true);end; --optional load
-        else
-            ProductionInfoHud.loadError = true; --optional for !
-            print("#WARNING: ".. tostring(ProductionInfoHud.metadata.title).. " CAN NOT GENERATE Hud ! Check/Search: ? Mod cause with integrated HL Hud System ? ")
-        end;
+--        else
+--            ProductionInfoHud.loadError = true; --optional for !
+--            print("#WARNING: ".. tostring(ProductionInfoHud.metadata.title).. " CAN NOT GENERATE Hud ! Check/Search: ? Mod cause with integrated HL Hud System ? ")
+--        end;
     else
         ProductionInfoHud.loadError = true; --optional for !
         ProductionInfoHud.currentMission.hlUtils.modUnLoad("FS25_ProductionInfoHud");
@@ -110,7 +118,12 @@ function ProductionInfoHud:update(dt)
 
         -- update all info tables for display
         ProductionInfoHud:refreshProductionsTable();
+
+        -- temporär einfach sichtbar machen, wenn nicht sichtbar
+        local box = ProductionInfoHud.currentMission.hlHudSystem.hlBox:getData("PIH_Display_Box");
+        box.show = true;
     end
+
 end
 
 ---refresh all the products table
@@ -201,7 +214,7 @@ function ProductionInfoHud:refreshProductionsTable()
 
     ProductionInfoHud.CurrentProductionItems = myProductionItems;
 
---     ProductionInfoHud.DebugTable("myProductionItems", myProductionItems, 1);
+--     ProductionInfoHud.DebugTable("CurrentProductionItems", ProductionInfoHud.CurrentProductionItems, 1);
 --     ProductionInfoHud.DebugTable("myProductionPoints", myProductionPoints);
 end
 
