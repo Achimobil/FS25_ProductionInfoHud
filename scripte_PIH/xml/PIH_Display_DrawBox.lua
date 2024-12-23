@@ -34,8 +34,12 @@ function PIH_Display_DrawBox.setBox(args)
         if box.needsUpdate or box.ownTable.lineHeight == nil then
             box.ownTable.lineHeight = getTextHeight(size, utf8Substr("Äg", 0))+distance.textLine;
             box.ownTable.iconWidth, box.ownTable.iconHeight = box:getOptiWidthHeight( {typ="icon", height=box.ownTable.lineHeight-distance.textLine-(difH), width=w-(difW*2)} );
-            box.ownTable.textWidth = getTextWidth(size, utf8Substr("ThisIsTheMaxTextWidth", 0));
-            box.ownTable.amountWidth = getTextWidth(size, utf8Substr(ProductionInfoHud.i18n:formatVolume(99999999, 0), 0));
+            box.ownTable.timeWidth = getTextWidth(size, utf8Substr("999 Tage 23:23", 0));
+            box.ownTable.fillTypeWidth = getTextWidth(size, utf8Substr(ProductionInfoHud.longestFillTypeTitle, 0));
+            box.ownTable.textWidth = (w - box.ownTable.timeWidth - box.ownTable.fillTypeWidth - (difW*6));
+            if box.ownTable.textWidth < box.ownTable.timeWidth then
+                box.ownTable.textWidth = box.ownTable.timeWidth;
+            end
         end;
         box.needsUpdate = false;
     end;
@@ -48,11 +52,11 @@ function PIH_Display_DrawBox.setBox(args)
     local iconHeight = box.ownTable.iconHeight;
 --     local iconWidthS = iconWidth/1.3;
 --     local iconHeightS = iconHeight/1.3;
-    local nextPosX = x+difW;
+    local nextPosX = x+(difW*3);
     local nextPosY = y;
     local nextIconPosX = x+difW;
-    local nextLeftPosX = nextPosX;
-    local nextRightPosX = x+w-difW;
+    local nextLeftPosX = nextPosX+difW;
+    local nextRightPosX = nextPosX;
     nextPosY = nextPosY+(h)-(box.ownTable.lineHeight)-difH;
 --     local openGroup = PIH_DisplaySetGet:setViewFillTypes(box);
     box.screen.bounds[4] = #ProductionInfoHud.CurrentProductionItems+1; -- +1 for Imaginäre Line wenn untergruppe an ist (viewAmountStorages/viewBestPriceStations etc.
@@ -304,16 +308,13 @@ function PIH_Display_DrawBox.setBox(args)
                     setTextBold(true);
                     setTextColor(unpack(color));
                     setTextAlignment(0);
---                     if nextRightPosX > nextLeftPosX then
---                         setTextAlignment(2);
---                     end;
                     local text = ProductionInfoHud.currentMission.hlUtils.getTxtToWidth(tostring(productionItem.name), size, box.ownTable.textWidth, false, ".");
                     renderText(nextRightPosX, nextPosY, size, tostring(text));
                     setTextBold(false);
                     setTextColor(1, 1, 1, 1);
                     setTextAlignment(0);
-                    lineWidth = lineWidth-box.ownTable.textWidth;
-                    nextRightPosX = nextRightPosX-box.ownTable.textWidth;
+                    lineWidth = lineWidth+box.ownTable.textWidth;
+                    nextRightPosX = nextRightPosX+box.ownTable.textWidth;
                     canNextView = lineWidth > iconWidth;
                 end;
                 ---Production place---
@@ -321,16 +322,13 @@ function PIH_Display_DrawBox.setBox(args)
                 ---Filltype---
                 if canNextView then
                     setTextColor(unpack(color));
-                    setTextAlignment(2);
---                     if nextRightPosX > nextLeftPosX then
---                         setTextAlignment(2);
---                     end;
+                    setTextAlignment(0);
                     renderText(nextRightPosX, nextPosY, size, tostring(productionItem.fillTypeTitle));
                     setTextBold(false);
                     setTextColor(1, 1, 1, 1);
                     setTextAlignment(0);
-                    lineWidth = lineWidth-box.ownTable.textWidth;
-                    nextRightPosX = nextRightPosX-box.ownTable.textWidth;
+                    lineWidth = lineWidth+box.ownTable.fillTypeWidth;
+                    nextRightPosX = nextRightPosX+box.ownTable.fillTypeWidth;
                     canNextView = lineWidth > iconWidth;
                 end;
                 ---Filltype---
@@ -339,21 +337,18 @@ function PIH_Display_DrawBox.setBox(args)
                 if canNextView then
                     setTextColor(unpack(color));
                     setTextAlignment(2);
---                     if nextRightPosX > nextLeftPosX then
---                         setTextAlignment(2);
---                     end;
-                    renderText(nextRightPosX, nextPosY, size, tostring(productionItem.hoursLeft));
+                    renderText(nextRightPosX + box.ownTable.timeWidth, nextPosY, size, tostring(productionItem.TimeLeftString));
                     setTextBold(false);
                     setTextColor(1, 1, 1, 1);
                     setTextAlignment(0);
-                    lineWidth = lineWidth-box.ownTable.textWidth;
-                    nextRightPosX = nextRightPosX-box.ownTable.textWidth;
+                    lineWidth = lineWidth+box.ownTable.timeWidth;
+                    nextRightPosX = nextRightPosX+box.ownTable.timeWidth;
                     canNextView = lineWidth > iconWidth;
                 end;
                 ---Rest time---
 
                 nextPosY = nextPosY-box.ownTable.lineHeight;
-                nextRightPosX = x+w-difW;
+                nextRightPosX = nextPosX;
             elseif #ProductionInfoHud.CurrentProductionItems == 0 then
                 local moreTxt = "";
                 if not box.viewExtraLine and box.searchFilter:len() > 0 then moreTxt = tostring(ProductionInfoHud.i18n:getText("searchFilter_On"));end;

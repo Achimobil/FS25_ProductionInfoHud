@@ -2,7 +2,7 @@
 <l10n>
     <translationContributors>Achimobil</translationContributors>
     <texts>
-        <text name="input_HL_ONOFFMOUSECURSOR">HL Mouse an/aus</text>
+        <text name="input_HL_ONOFFMOUSECURSOR" text="HL Mouse an/aus"/>
 
         <!-- old stuff below -->
         <text name="input_TOGGLE_GUI" text="PIH: Anzeige umschalten"/>

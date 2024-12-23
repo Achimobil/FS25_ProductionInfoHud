@@ -205,10 +205,38 @@ function ProductionInfoHud:refreshProductionsTable()
                 end
             end
 
+            if productionItem.hoursLeft ~= nil then
+                local days = math.floor(productionItem.hoursLeft / 24);
+                local hoursLeft = productionItem.hoursLeft - (days * 24);
+                local hours = math.floor(hoursLeft);
+                hoursLeft = hoursLeft - hours;
+                local minutes = math.floor(hoursLeft * 60);
+                if(minutes <= 9) then minutes = "0" .. minutes end;
+                local timeString = "";
+                if (days ~= 0) then
+                    timeString = ProductionInfoHud.i18n:formatNumDay(days) .. " ";
+--                 else
+--                     productionItem.TextColor = ProductionInfoHud.colors.YELLOW;
+                end
+                timeString = timeString .. hours .. ":" .. minutes;
+                productionItem.TimeLeftString = timeString;
+                else
+                productionItem.TimeLeftString = "";
+            end
+
             -- alle items einfügen, da auch rest platz angezeigt werden soll wenn linie aus ist
             table.insert(myProductionItems, productionItem)
+
+            -- längsten filltypetitel für box behalten
+            local textWidth = getTextWidth(10, utf8Substr(productionItem.fillTypeTitle, 0));
+            if ProductionInfoHud.longestFillTypeTitleWidth == nil or ProductionInfoHud.longestFillTypeTitleWidth < textWidth then
+                ProductionInfoHud.longestFillTypeTitleWidth = textWidth;
+                ProductionInfoHud.longestFillTypeTitle = productionItem.fillTypeTitle;
+            end
+
         end
     end
+
 
     table.sort(myProductionItems, ProductionInfoHud.compPrductionTable)
 
