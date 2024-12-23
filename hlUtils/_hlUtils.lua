@@ -19,7 +19,7 @@ hlUtils.metadata = {
 	notes = "Nützliche Utils die man in Mods (meine fast alle) immer wieder mal braucht, incl. Maussteuerung (Default F9)",
 	author = "(by HappyLooser)",
 	version = "v0.97 Beta",
-	systemVersion = 0.97,
+	systemVersion = 0.96,
 	datum = "21.05.2023",
 	update = "08.12.2024",
 	web = "no",
@@ -37,7 +37,7 @@ function hlUtils:loadMap()
 	Mission00.onStartMission = Utils.appendedFunction(Mission00.onStartMission, hlUtils.startMission);
 	createFolder(getUserProfileAppPath().. "modSettings/");
 	createFolder(getUserProfileAppPath().. "modSettings/HL/");
-	if g_currentMission.hlUtils == nil then 
+	if g_currentMission.hlUtils == nil then
 		g_currentMission.hlUtils = {};
 		g_currentMission.hlUtils.version = hlUtils.metadata.systemVersion;
 		g_currentMission.hlUtils.modDir = hlUtils.modDir;
@@ -194,7 +194,7 @@ function hlUtils:playerHandTool()
 	end;	
 end;
 
-function hlUtils:vehicleZoom() 
+function hlUtils:vehicleZoom()
 	oldVehicleCamera = VehicleCamera.zoomSmoothly;
 	VehicleCamera.zoomSmoothly = function(self, offset)
 		local zoomTarget = self.zoomTarget;
@@ -225,7 +225,7 @@ function hlUtils:loadInputHelpDisplay() --update 0.97
 		local hasComboCommands = next(comboActionStatus) ~= nil;
 
 		local eventHelpElements = inputDisplayManager:getEventHelpElements(currentPressedMask, useGamepadButtons);
-		if (eventHelpElements == nil or #eventHelpElements == 0) and not hasComboCommands and isCombo then        
+		if (eventHelpElements == nil or #eventHelpElements == 0) and not hasComboCommands and isCombo then
 			eventHelpElements = inputDisplayManager:getEventHelpElements(0, useGamepadButtons);
 		end;
 		
@@ -256,7 +256,7 @@ function hlUtils:loadInputHelpDisplay() --update 0.97
 			end;
 		end;	
 		function setHelpExtensionTotalHeight()		
-			if self.helpExtensions ~= nil and #self.helpExtensions > 0 then 
+			if self.helpExtensions ~= nil and #self.helpExtensions > 0 then
 				for i=#self.helpExtensions, 1, -1 do
 					local helpExtension = self.helpExtensions[i];				
 					if helpExtension.setEventHelpElements ~= nil then
@@ -333,7 +333,7 @@ function hlUtils:addOverlays() --default hlUtils Overlays
 end;
 
 function hlUtils:addFillTypesOverlays() --load global for all Mods.. (optional here)
-	function loadIconFillTypes() 
+	function loadIconFillTypes()
 		if g_fillTypeManager.fillTypes ~= nil then
 			function isFillAnimals(index)		
 				if g_fillTypeManager.categoryNameToFillTypes["ANIMAL"][index] ~= nil or g_fillTypeManager.categoryNameToFillTypes["HORSE"][index] ~= nil then return true;end;
@@ -465,7 +465,7 @@ end;end;
 if g_currentMission.hlUtils.debugPrint==nil then g_currentMission.hlUtils.debugPrint=
 function(modName)
 	if modName == nil or type(modName) ~= "string" then return;end;
-	if g_currentMission.hlUtils.debug ~= nil and g_currentMission.hlUtils.debug[modName] ~= nil then 
+	if g_currentMission.hlUtils.debug ~= nil and g_currentMission.hlUtils.debug[modName] ~= nil then
 		local a=1;		
 		for key,value in pairs(g_currentMission.hlUtils.debug) do
 			for key1,value1 in pairs(value) do			
@@ -486,7 +486,7 @@ function (argsMod, args1, errorTxt, args2, args3)
 	if g_currentMission.hlUtils.debug[argsMod] == nil then g_currentMission.hlUtils.debug[argsMod] = {};end;
 	local errorString = "Trigger: ".. tostring(args1).. " -errorTxtCall: ".. tostring(errorTxt).. " -argsError: ".. tostring(args2).. " -resultError: ".. tostring(args3);
 	local alreadyExists = false;
-	if #g_currentMission.hlUtils.debug[argsMod] == 0 then 
+	if #g_currentMission.hlUtils.debug[argsMod] == 0 then
 		table.insert(g_currentMission.hlUtils.debug[argsMod], tostring(errorString));
 	else
 		if #g_currentMission.hlUtils.debug[argsMod] > limit then return;end;
@@ -507,7 +507,7 @@ function(objectId)
 		return true;
 	end;
 	local id = getNumOfChildren(Utils.getNoNil(objectId, 0));
-	if id ~= nil and id ~= 0 then 
+	if id ~= nil and id ~= 0 then
 		return true;
 	end;
 	return false;
@@ -566,12 +566,12 @@ end;end;
 if g_currentMission.hlUtils.getFullSize==nil then g_currentMission.hlUtils.getFullSize=
 function(isPaused ,isOpen)	
 	if (g_currentMission.paused and isPaused) or
-		(g_gui:getIsGuiVisible() and isOpen) or 
-		(g_currentMission.hud.ingameMessage.isGamePaused and isPaused) or 
+		(g_gui:getIsGuiVisible() and isOpen) or
+		(g_currentMission.hud.ingameMessage.isGamePaused and isPaused) or
 		--(g_currentMission.inGameMenu.isOpen and isOpen) or		
 		(g_currentMission.physicsPaused and isPaused) or
-		(not g_currentMission.hud.isVisible) or 
-		(g_currentMission.noHudApp ~= nil and g_currentMission.noHudApp) then 
+		(not g_currentMission.hud.isVisible) or
+		(g_currentMission.noHudApp ~= nil and g_currentMission.noHudApp) then
 		if g_currentMission.missionDynamicInfo.isMultiplayer and g_currentMission.manualPaused and isPaused and g_gameStateManager.gameState ~= 5 then return false;end;
 		return true;
 	end;
@@ -583,7 +583,7 @@ if g_currentMission.hlUtils.getProzentColor==nil then g_currentMission.hlUtils.g
 	
 if g_currentMission.hlUtils.setBackgroundColor==nil then g_currentMission.hlUtils.setBackgroundColor=
 function(overlay, color)
-	if overlay ~= nil and overlay.overlayId ~= nil and overlay.overlayId > 0 and type(color) == "table" then 
+	if overlay ~= nil and overlay.overlayId ~= nil and overlay.overlayId > 0 and type(color) == "table" then
 		setOverlayColor(overlay.overlayId, unpack(color));		
 	end;	
 end;end;
@@ -615,9 +615,9 @@ function(overlaysTable, debugPrint, debugTxt)
 	end;	
 end;end;
 if g_currentMission.hlUtils.getDefaultBackground==nil then g_currentMission.hlUtils.getDefaultBackground=
-function(overlaysTable, overlayName, newOther) 
+function(overlaysTable, overlayName, newOther)
 	if overlaysTable~=nil and overlayName~=nil then	
-		if newOther ~= nil and newOther then 
+		if newOther ~= nil and newOther then
 			overlaysTable[overlayName] = Overlay.new(g_baseUIFilename, 0, 0, 0, 0);
 			overlaysTable[overlayName]:setUVs(g_colorBgUVs);
 			overlaysTable[overlayName]:setColor(0, 0, 0, 0.65);			
@@ -627,9 +627,9 @@ function(overlaysTable, overlayName, newOther)
 	end;
 end;end;
 if g_currentMission.hlUtils.getDefaultNewBackground==nil then g_currentMission.hlUtils.getDefaultNewBackground=
-function(overlaysTable, overlayName, newOther) 
+function(overlaysTable, overlayName, newOther)
 	if overlaysTable~=nil and overlayName~=nil then	
-		if newOther ~= nil and newOther then 
+		if newOther ~= nil and newOther then
 			overlaysTable[overlayName] = Overlay.new("dataS/menu/gui.png", 0, 0, 0, 0);
 			overlaysTable[overlayName]:setUVs( {0.0673828125, 0.42236328125, 0.0673828125, 0.4541015625, 0.068603515625, 0.42236328125, 0.068603515625, 0.4541015625} );
 			overlaysTable[overlayName]:setColor(0, 0, 0, 0.65);			
@@ -691,7 +691,7 @@ function(overlay1, overlay2, txt, optiSize)
 	   box2x >= box1x + box1w or -- Is box2 on the right side of box1?
 	   box2y >= box1y + box1h    -- Is b2 under b1?
 	then
-		return false; 
+		return false;
 	else
 		return true;
 	end;	
@@ -709,7 +709,7 @@ function(overlay, cloneOverlay)
 end;end;
 
 if g_currentMission.hlUtils.getMaxIconWidth==nil then g_currentMission.hlUtils.getMaxIconWidth=
-function(maxWidth, iconWidth, roundUp) 
+function(maxWidth, iconWidth, roundUp)
 	if roundUp == nil or not roundUp then
 		return math.floor(maxWidth/iconWidth, -0.5);
 	else
@@ -747,7 +747,7 @@ function (formatO, sW, sH, pos1, pos2, dif) --default 64x64 area Overlay and def
 	local linePos = pos1;
 	local startPos = pos1*formatO-formatO;		
 	local endPos = pos2*formatO;
-	if startPos >= sW then 
+	if startPos >= sW then
 		for l=2, sH/formatO do
 			if startPos < sW*l then line = l;break;end;
 		end;
@@ -769,7 +769,7 @@ if g_currentMission.hlUtils.insertIcons == nil then g_currentMission.hlUtils.ins
 function(args)
 	if args == nil or type(args) ~= "table" or args.xmlTagName == nil or args.modName == nil or args.groupName == nil or args.iconFile == nil or args.xmlFile == nil then return nil;end;
 	local icons = nil;	
-	if type(args.loadIcons) == "table" then icons = args.loadIcons;end; 
+	if type(args.loadIcons) == "table" then icons = args.loadIcons;end;
 	local iconFilePath, xmlFilePath = g_currentMission.hlUtils.checkFilePath(args.iconFile, args.xmlFile, args.modDir);	
 	if iconFilePath == nil or xmlFilePath == nil then return nil;end;
 	local iconOverlayTable = nil;
@@ -892,7 +892,7 @@ function(args)
 			if func ~= nil then overlay.action = func;end;
 		end;		
 		local iconRotation = getXMLFloat(Xml, xmlNameTag.."#rotation");
-		if iconRotation ~= nil then 
+		if iconRotation ~= nil then
 			setOverlayRotation(overlay.overlayId, iconRotation, 0+overlay.width/2, 0+overlay.height/2);	
 		end;		
 		local iconColorState = false;
@@ -902,7 +902,7 @@ function(args)
 			local iconColor = getXMLString(Xml, xmlNameTag.."#color");			
 			if iconColor ~= nil then
 				local color = g_currentMission.hlUtils.getColor(tostring(iconColor), true);				
-				local iconTransparent = getXMLFloat(Xml, xmlNameTag.."#transparent"); 
+				local iconTransparent = getXMLFloat(Xml, xmlNameTag.."#transparent");
 				if iconTransparent then
 					color[4] = iconTransparent;
 				end;
@@ -993,14 +993,14 @@ g_currentMission.hlUtils.colorIntern = {   --RGB
 	blue =	 			{ 	0/255,   0/255, 255/255, 1.00 };
 	midnightBlue =		{  25/255,  25/255, 112/255, 1.00 };
 	royalBlue =			{  65/255, 105/255, 225/255, 1.00 };
-	activeGreen =   	{  43/255, 205/255,  10/255, 1.00 }; 
-	activeRed =    	 	{ 153/255,  22/255,  19/255, 1.00 }; 
-	closeRed =      	{ 116/255,   0/255,   0/255, 1.00 }; 
+	activeGreen =   	{  43/255, 205/255,  10/255, 1.00 };
+	activeRed =    	 	{ 153/255,  22/255,  19/255, 1.00 };
+	closeRed =      	{ 116/255,   0/255,   0/255, 1.00 };
 	warningRed =    	{ 222/255,   2/255,   3/255, 1.00 };
 	red =      			{ 255/255,   0/255,   0/255, 1.00 };
 	redDisabled =   	{ 255/255,   0/255,   0/255, 0.75 };
 	darkRed = 			{ 205/255,   0/255,   0/255, 1.00 };
-	shadow =        	{   4/255,   4/255,   4/255, 1.00 }; 
+	shadow =        	{   4/255,   4/255,   4/255, 1.00 };
 	textDark =      	{   1/255,   1/255,   1/255, 1.00 };
 	yellow =        	{ 255/255, 255/255,   0/255, 1.00 };
 	yellowDisabled =	{ 255/255, 255/255,   0/255, 0.75 };
@@ -1059,14 +1059,14 @@ g_currentMission.hlUtils.colorDefault = {	--RGB
 	hoverBestPrice =	{   4/255,  98/255, 180/255, 0.70 };
 	darkBlue =	 		{ 	0/255,   0/255, 139/255, 1.00 };
 	blue =	 			{ 	0/255,   0/255, 255/255, 1.00 };
-	activeGreen =   	{  43/255, 205/255,  10/255, 1.00 }; 
-	activeRed =    	 	{ 153/255,  22/255,  19/255, 1.00 }; 
-	closeRed =      	{ 116/255,   0/255,   0/255, 1.00 }; 
+	activeGreen =   	{  43/255, 205/255,  10/255, 1.00 };
+	activeRed =    	 	{ 153/255,  22/255,  19/255, 1.00 };
+	closeRed =      	{ 116/255,   0/255,   0/255, 1.00 };
 	warningRed =    	{ 222/255,   2/255,   3/255, 1.00 };
 	red =      			{ 255/255,   0/255,   0/255, 1.00 };
 	redDisabled =   	{ 255/255,   0/255,   0/255, 0.75 };
 	darkRed = 			{ 205/255,   0/255,   0/255, 1.00 };
-	shadow =        	{   4/255,   4/255,   4/255, 1.00 }; 
+	shadow =        	{   4/255,   4/255,   4/255, 1.00 };
 	textDark =      	{   1/255,   1/255,   1/255, 1.00 };
 	yellow =        	{ 255/255, 255/255,   0/255, 1.00 };
 	yellowDisabled =	{ 255/255, 255/255,   0/255, 0.75 };
@@ -1097,7 +1097,7 @@ g_currentMission.hlUtils.colorDefault = {	--RGB
 	khakiInactive =     { 240/255, 230/255, 140/255, 0.50 };
 	ls15 =          	{   0/255, 255/255, 255/255, 1.00 };
 	ls15Disabled =  	{   0/255, 255/255, 255/255, 0.75 };
-	mangenta =  		{ 255/255, 	 0/255, 255/255, 1.00 }; 
+	mangenta =  		{ 255/255, 	 0/255, 255/255, 1.00 };
 	deepPink =  		{ 255/255, 020/255, 147/255, 1.00 };
 	purple =  			{ 160/255, 032/255, 240/255, 1.00 };
 	ls22 =  			{  0.0003,  0.5647,  0.9822, 1.00 };
@@ -1110,7 +1110,7 @@ g_currentMission.hlUtils.colorDefault = {	--RGB
 	ls25bg 	 	 =  	{ 	0/255, 	0/255,    0/255, 0.65 };
 };
 
-g_currentMission.hlUtils.colorProzent = {[1]="white", [2]="green", [3]="yellowGreen", [4]="yellow", [5]="orange", [6]="orangeRed", [7]="red"}; --1 default return hl_ 
+g_currentMission.hlUtils.colorProzent = {[1]="white", [2]="green", [3]="yellowGreen", [4]="yellow", [5]="orange", [6]="orangeRed", [7]="red"}; --1 default return hl_
 g_currentMission.hlUtils.colorExtern = {};
 
 if g_currentMission.hlUtils.getColorProzentName==nil then g_currentMission.hlUtils.getColorProzentName=
@@ -1129,14 +1129,14 @@ function(name, intern, otherColor, t)
 	local defaultColor = { 255/255, 255/255, 255/255, 1.00 }; --white
 	if otherColor ~= nil then defaultColor = otherColor;else if t ~= nil and type(t) == "number" then defaultColor[4] = t;end;end;	
 	if intern then
-		if g_currentMission.hlUtils.colorIntern[name] ~= nil then 
+		if g_currentMission.hlUtils.colorIntern[name] ~= nil then
 			color = { unpack(g_currentMission.hlUtils.colorIntern[name]) };
 			if t ~= nil and type(t) == "number" then color[4] = t;end;
 			return color;
 		end;
 		if g_currentMission.hlUtils.colorIntern[name] == nil then return defaultColor;end;
 	else
-		if g_currentMission.hlUtils.colorExtern[name] ~= nil then 
+		if g_currentMission.hlUtils.colorExtern[name] ~= nil then
 			color = { unpack(g_currentMission.hlUtils.colorExtern[name]) };
 			if t ~= nil and type(t) == "number" then color[4] = t;end;
 			return color;
@@ -1276,7 +1276,7 @@ function(txt, size, width, trimFront, trimReplaceText, txtBold)
 			if width < totalWidth then
 				if trimFront then					
 					firstCharacter = getTextLineLength(size, txt, totalWidth - width + replaceTextWidth);
-					if utf8Substr(txt, firstCharacter) == nil then 
+					if utf8Substr(txt, firstCharacter) == nil then
 						setTextBold(false);
 						return tostring(trimReplaceText), 0, 0;
 					end;
@@ -1357,7 +1357,7 @@ function(oldTable)
             local value_type = type(value);
             local new_value;
             if value_type == "function" then
-                new_value = loadstring(string.dump(value));                
+                new_value = loadstring(string.dump(value));
             elseif value_type == "table" then
                 new_value = tableCopy(value);
             else
@@ -1441,10 +1441,10 @@ function(args) ---> table with optional values
 				end;				
 			end;
 		end;
-		if timerReady then 
+		if timerReady then
 			g_currentMission.hlUtils.timers[args.name] = {current_time = 0, delay = delay, action = action, ownTable = ownTable, onOff = true, repeatable = repeatable, runs = true}; --with Timer Name (runs = true/false,set auto over Timers)
 			return true;
-		else 
+		else
 			return false, "addTimer... Table name=.... not found/incorrect(needs string) or name already exists";
 		end;
 	end;
@@ -1481,17 +1481,17 @@ function(dt)
 			timer.current_time = timer.current_time + dt;
 			if timer.current_time > timer.delay then
 				if timer.onOff then timer.onOff = false;else timer.onOff = true;end; --onOff 1xon 1xoff all ..sec
-				timer.runs = false; --1x all ..sec, blink effect oder auslöser						 
-				if timer.action then timer.action(timer);end;            
-				if timer.repeatable then 
+				timer.runs = false; --1x all ..sec, blink effect oder auslöser						
+				if timer.action then timer.action(timer);end;
+				if timer.repeatable then
 					if type(timer.repeatable) == "number" then
 						timer.repeatable = timer.repeatable - 1
-						if timer.repeatable >= 0 then 
+						if timer.repeatable >= 0 then
 							timer.current_time = 0;							
-						else 
-							g_currentMission.hlUtils.timers[name] = nil; 
+						else
+							g_currentMission.hlUtils.timers[name] = nil;
 						end;
-					else 
+					else
 						timer.current_time = 0;						
 					end;
 				else
@@ -1552,10 +1552,10 @@ function(args) ---> table with optional values
 				end;				
 			end;
 		end;
-		if timerReady and #formatSwitch > 0 then 
+		if timerReady and #formatSwitch > 0 then
 			g_currentMission.hlUtils.switchTimers[args.name] = {current_time=0, delay=delay, ownTable=ownTable, isSwitch=isSwitch, switch=formatSwitch, action=action, repeatable=repeatable};
 			return true;
-		else 
+		else
 			return false, "addSwitchTimer... Table name=.... not found/incorrect(needs string) or name already exists or table switch missing";
 		end;
 	end;
@@ -1591,15 +1591,15 @@ function(dt)
 				if timer.isSwitch+1 > #timer.switch then timer.isSwitch = 1;else timer.isSwitch = timer.isSwitch+1;end;
 				timer.delay = timer.switch[timer.isSwitch];
 				if timer.action then timer.action(timer, timer.isSwitch);end;								
-				if timer.repeatable or lastSwitch < #timer.switch then 
+				if timer.repeatable or lastSwitch < #timer.switch then
 					if type(timer.repeatable) == "number" then
 						timer.repeatable = timer.repeatable - 1
-						if timer.repeatable >= 0 then 
+						if timer.repeatable >= 0 then
 							timer.current_time = 0;							
-						else 
-							g_currentMission.hlUtils.switchTimers[name] = nil; 
+						else
+							g_currentMission.hlUtils.switchTimers[name] = nil;
 						end;
-					else 
+					else
 						timer.current_time = 0;						
 					end;
 				else
@@ -1629,7 +1629,7 @@ function(on,frozen)
 	if frozen and not g_currentMission.isPlayerFrozen then
 		g_currentMission.isFrozen = true;			
 		g_currentMission.isPlayerFrozen = true;
-	elseif not frozen then 
+	elseif not frozen then
 		g_currentMission.isFrozen = false;			
 		g_currentMission.isPlayerFrozen = false;
 	end;	
@@ -1661,7 +1661,7 @@ function(args) --txt, txtSize, txtBold, txtColor, maxLine, duration, add, bg, bg
 	txtDisplay.txtHeight = 0;
 	txtDisplay.txtWidth = 0;	
 	setTextBold(args.txtBold or false);
-	if (txtDisplay.line > 1 or txtDisplay.line == 0) and txtDisplay.bg then 
+	if (txtDisplay.line > 1 or txtDisplay.line == 0) and txtDisplay.bg then
 		--local txtSplit = g_currentMission.hlUtils.stringSplit(txtDisplay.txt,"\n","");
 		local txtSplit = string.split(txtDisplay.txt, "\n");	
 		if txtSplit ~= nil and #txtSplit > 1 then			
@@ -1693,11 +1693,11 @@ if g_currentMission.hlUtils.drawTextDisplay==nil then g_currentMission.hlUtils.d
 function()
 	if #g_currentMission.hlUtils.textDisplay > 0 then			
 		local txtDisplay = g_currentMission.hlUtils.textDisplay[1];
-		if g_currentMission.hlUtils.timers["_hlUtilsDrawTextDisplay"] == nil then g_currentMission.hlUtils.addTimer( {delay=txtDisplay.duration, name="_hlUtilsDrawTextDisplay", repeatable=1, action=g_currentMission.hlUtils.deleteTextDisplay} );end; 
+		if g_currentMission.hlUtils.timers["_hlUtilsDrawTextDisplay"] == nil then g_currentMission.hlUtils.addTimer( {delay=txtDisplay.duration, name="_hlUtilsDrawTextDisplay", repeatable=1, action=g_currentMission.hlUtils.deleteTextDisplay} );end;
 		if g_currentMission.hlUtils.timers["_hlUtilsDrawTextDisplay"] ~= nil then
 			local overlay = g_currentMission.hlUtils.overlays["txtDisplay"];
 			g_currentMission.hlUtils.setBackgroundColor(overlay, g_currentMission.hlUtils.getColor(txtDisplay.bgColor, true, "blackInactive"));
-			local width =  txtDisplay.txtWidth*1.1; 
+			local width =  txtDisplay.txtWidth*1.1;
 			local height = txtDisplay.txtHeight*1.2;
 			local posX = 0.5-(width/2);
 			local posY = 0.485-height;
@@ -1710,7 +1710,7 @@ function()
 			setTextWrapWidth(0.9);			
 			setTextColor(unpack(g_currentMission.hlUtils.getColor(txtDisplay.color, true, "ls22")));
 			setTextBold(txtDisplay.bold);								
-			if (txtDisplay.warning ~= nil and txtDisplay.warning and g_currentMission.hlUtils.runsTimer("5mSec", true)) or txtDisplay.warning == nil or not txtDisplay.warning then 
+			if (txtDisplay.warning ~= nil and txtDisplay.warning and g_currentMission.hlUtils.runsTimer("5mSec", true)) or txtDisplay.warning == nil or not txtDisplay.warning then
 				renderText(overlay.x+(width/2)-(txtDisplay.txtWidth/2), overlay.y+(overlay.height)-(txtDisplay.txtHeight/txtDisplay.line), txtDisplay.size, txtDisplay.txt);
 			end;
 			--respect settings for other mods (not every mod) that's why
@@ -1962,8 +1962,8 @@ if g_currentMission.hlUtils.getTypId==nil then g_currentMission.hlUtils.getTypId
 function(r1, r2)	
 	local randomNr = math.random (r1 or 1, r2 or 9);			
 	local typIdDate_D = string.format("%0.2i", Utils.getNoNil(getDate("%d"), tostring(randomNr)));		
-	local typIdDate_M = string.format("%0.2i", Utils.getNoNil(getDate("%m"), tostring(randomNr))); 
-	local typIdDate_Y = string.format("%0.2i", Utils.getNoNil(getDate("%y"), tostring(randomNr))); 
+	local typIdDate_M = string.format("%0.2i", Utils.getNoNil(getDate("%m"), tostring(randomNr)));
+	local typIdDate_Y = string.format("%0.2i", Utils.getNoNil(getDate("%y"), tostring(randomNr)));
 	local typIdTimeH = string.format("%0.2i", Utils.getNoNil(getDate("%I"), tostring(randomNr)));		
 	local typIdTimeM = Utils.getNoNil(getDate("%M"), tostring(randomNr));
 	if tonumber(typIdTimeM) <= 0 then typIdTimeM = "60";else typIdTimeM = string.format("%0.2i", typIdTimeM);end;
@@ -2093,7 +2093,7 @@ end;end;
 --update 0.97
 if g_currentMission.hlUtils.getHelpMenuData==nil then g_currentMission.hlUtils.getHelpMenuData=
 function()	
-	if g_currentMission.hlUtils.helpMenuData.posY == nil then hlUtils.preInputHelpDisplayDraw(g_currentMission.hud.inputHelp, offsetX, offsetY);end; --is savegame f1menu off, first temp load 
+	if g_currentMission.hlUtils.helpMenuData.posY == nil then hlUtils.preInputHelpDisplayDraw(g_currentMission.hud.inputHelp, offsetX, offsetY);end; --is savegame f1menu off, first temp load
 	return g_currentMission.hlUtils.helpMenuData;	
 end;end;
 

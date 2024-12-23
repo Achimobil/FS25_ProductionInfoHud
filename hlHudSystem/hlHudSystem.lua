@@ -6,7 +6,7 @@ hlHudSystem.metadata = {
 	notes = "Erstellt Hud/PDA und Box Anzeigen für Mods etc. zum selbst befüllen von Daten/Icons etc. um diese im Spiel anzuzeigen",
 	author = "(by HappyLooser)",
 	version = "v1.36 Beta",
-	systemVersion = 1.36,
+	systemVersion = 1.34,
 	xmlVersion = 1,
 	languageVersion = 1;
 	datum = "21.05.2023",
@@ -21,7 +21,7 @@ hlHudSystem.modDir = g_currentModDirectory;
 function hlHudSystem:loadMap()
 	if hlHudSystem:getDetiServer() then return;end;
 	Mission00.onStartMission = Utils.prependedFunction(Mission00.onStartMission, hlHudSystem.onStartMission);
-	if g_currentMission.hlHudSystem == nil then 
+	if g_currentMission.hlHudSystem == nil then
 		g_currentMission.hlHudSystem = {};
 		g_currentMission.hlHudSystem.version = hlHudSystem.metadata.systemVersion;
 		g_currentMission.hlHudSystem.xmlVersion = hlHudSystem.metadata.xmlVersion;
@@ -246,7 +246,7 @@ end;
 
 function hlHudSystem:setClickArea(args) --free onClick areas somewhere on screen	
 	if args == nil or type(args) ~= "table" or args.whatClick == nil or type(args.whatClick) ~= "string" or args.onClick == nil or type(args.onClick) ~= "function" then return;end;
-	if not g_currentMission.hlUtils.isMouseCursor then 
+	if not g_currentMission.hlUtils.isMouseCursor then
 		self.clickAreas = {};
 		return;
 	end;
@@ -266,7 +266,7 @@ function hlHudSystem:setClickArea(args) --free onClick areas somewhere on screen
 end;
 
 function hlHudSystem:searchFilter(typ, resetBounds, dialogTxt)
-	local text = g_i18n:getText("button_apply"); 
+	local text = g_i18n:getText("button_apply");
 	local confirmText = g_i18n:getText("helpLine_FarmingBasics_MapFilters_filters_title").. "/".. g_i18n:getText("button_apply");
 	local backText = g_i18n:getText("button_close").. "/".. g_i18n:getText("button_delete")
 	local dialogText = dialogTxt or "Search (min. 1 Letter)\n* first + min. 1 Letter\nBsp: *hor -> w -> ha -> *ors ...";
@@ -294,7 +294,7 @@ function hlHudSystem:searchFilter(typ, resetBounds, dialogTxt)
 			disableFilter = true		
 		})
 	else
-		local text = g_i18n:getText("button_apply"); 
+		local text = g_i18n:getText("button_apply");
 		local okayText = g_i18n:getText("button_apply"); --g_i18n:getText("helpLine_FarmingBasics_MapFilters_filters_title").. "/".. g_i18n:getText("button_apply"); --to long ?
 		local backText = g_i18n:getText("button_close").. "/".. g_i18n:getText("button_delete")
 		local dialogPrompt = dialogTxt or "Search (min. 1 Letter)\n* first + min. 1 Letter\nBsp: *hor -> w -> ha -> *ors ...";
@@ -322,7 +322,7 @@ end;
 
 function hlHudSystem:yesNoDialog(args)	
 	if ls25Convert then
-		g_gui:showYesNoDialog({				 
+		g_gui:showYesNoDialog({				
 			text = args.text or "";
 			title = args.title or "Mod Info"; 				
 			callback = function(yes)

@@ -17,6 +17,7 @@ ProductionInfoHud = {}
 ProductionInfoHud.Debug = true;
 ProductionInfoHud.isInit = false;
 ProductionInfoHud.timePast = 0;
+ProductionInfoHud.longestFillTypeTitle = "";
 
 ProductionInfoHud.metadata = {
     title = "ProductionInfoHud",
@@ -50,24 +51,33 @@ function ProductionInfoHud.DebugText(text, ...)
     print("ProductionInfoHudDebug: " .. string.format(text, ...));
 end
 
+function ProductionInfoHud:loadMap(mapName)
+    print("---loading ".. tostring(ProductionInfoHud.metadata.title).. " ".. tostring(ProductionInfoHud.metadata.version).. "(#".. tostring(ProductionInfoHud.metadata.build).. ") ".. tostring(ProductionInfoHud.metadata.author).. "---")
+    if not ProductionInfoHud:getDetiServer() then
+        Mission00.onStartMission = Utils.appendedFunction(Mission00.onStartMission, ProductionInfoHud.RegisterDisplaySystem);
+    end;
+end;
+
 --- here all what needs to be initialized on first call
 function ProductionInfoHud:init()
 
-    ProductionInfoHud.isInit = true;
     ProductionInfoHud.currentMission = g_currentMission;
     ProductionInfoHud.i18n = g_i18n;
+
+    ProductionInfoHud.isInit = true;
     ProductionInfoHud.isClient = ProductionInfoHud.currentMission:getIsClient();
 
     -- ProductionChainManager
     ProductionInfoHud.chainManager = ProductionInfoHud.currentMission.productionChainManager;
-
-    -- Anzeigesystem Initialisieren
-    ProductionInfoHud:RegisterDisplaySystem();
 end
 
 --- Register the Display System from HappyLooser
 function ProductionInfoHud:RegisterDisplaySystem()
     if ProductionInfoHud:getDetiServer() then return;end;
+
+    ProductionInfoHud.currentMission = g_currentMission;
+    ProductionInfoHud.i18n = g_i18n;
+
     ProductionInfoHud.currentMission.hlUtils.modLoad("FS25_ProductionInfoHud");
     PIH_DisplaySetGet:setGlobalFunctions();
 --     PIH_Display.lastPlayerFarmId = ProductionInfoHud.currentMission.hlUtils.getPlayerFarmId();
@@ -120,8 +130,12 @@ function ProductionInfoHud:update(dt)
         ProductionInfoHud:refreshProductionsTable();
 
         -- temporär einfach sichtbar machen, wenn nicht sichtbar
-        local box = ProductionInfoHud.currentMission.hlHudSystem.hlBox:getData("PIH_Display_Box");
-        box.show = true;
+        if ProductionInfoHud.currentMission.hlHudSystem.hlBox ~= nil then
+            local box = ProductionInfoHud.currentMission.hlHudSystem.hlBox:getData("PIH_Display_Box");
+            if box.show ~= nil then
+                box.show = true;
+            end
+        end
     end
 
 end
