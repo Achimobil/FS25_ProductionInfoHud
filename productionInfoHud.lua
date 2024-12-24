@@ -154,7 +154,7 @@ function ProductionInfoHud:refreshProductionsTable()
 
         -- is the point shared, then the amounts needs to be divided
         local productionPointMultiplicator = 1;
-        if productionPoint.sharedThroughputCapacity then
+        if productionPoint.sharedThroughputCapacity and #productionPoint.activeProductions ~= 0 then
             productionPointMultiplicator = 1 / #productionPoint.activeProductions;
         end
 
@@ -199,10 +199,14 @@ function ProductionInfoHud:refreshProductionsTable()
                         productionItem.productionPerHour = productionItem.productionPerHour - (production.cyclesPerHour * fillTypeId2.amount * productionPointMultiplicator);
                     end
                 end
-                for _, fillTypeId2 in pairs(production.outputs) do
-                    if fillTypeId2.type == fillTypeId then
-                        productionItem.isInput = true;
-                        productionItem.productionPerHour = productionItem.productionPerHour + (production.cyclesPerHour * fillTypeId2.amount * productionPointMultiplicator);
+
+                -- outputs nur einbeziehen, wenn inputs alle da sind, also missing inputs state nicht summieren. Kann ja nicht voll laufen ohne Produktion
+                if production.status ~= ProductionPoint.PROD_STATUS.MISSING_INPUTS then
+                    for _, fillTypeId2 in pairs(production.outputs) do
+                        if fillTypeId2.type == fillTypeId then
+                            productionItem.isInput = true;
+                            productionItem.productionPerHour = productionItem.productionPerHour + (production.cyclesPerHour * fillTypeId2.amount * productionPointMultiplicator);
+                        end
                     end
                 end
 --                 ProductionInfoHud.DebugTable("production", production, 2);
@@ -224,28 +228,43 @@ function ProductionInfoHud:refreshProductionsTable()
                 local hoursLeft = productionItem.hoursLeft - (days * 24);
                 local hours = math.floor(hoursLeft);
                 hoursLeft = hoursLeft - hours;
+
                 local minutes = math.floor(hoursLeft * 60);
-                if(minutes <= 9) then minutes = "0" .. minutes end;
+                local minutesString = minutes;
+                if(minutes <= 9) then minutesString = 0 .. minutes end;
+
                 local timeString = "";
                 if (days ~= 0) then
                     timeString = ProductionInfoHud.i18n:formatNumDay(days) .. " ";
 --                 else
 --                     productionItem.TextColor = ProductionInfoHud.colors.YELLOW;
                 end
-                timeString = timeString .. hours .. ":" .. minutes;
+                timeString = timeString .. hours .. ":" .. minutesString;
+
+                -- wenn restzeit 0:00 ist, dann ist leer oder voll
+                if days == 0 and minutes <= 2 then
+                    if productionItem.isInput then
+                        timeString = ProductionInfoHud.i18n:getText("Empty");
+                    else
+                        timeString = ProductionInfoHud.i18n:getText("Full");
+                    end
+                end
+
                 productionItem.TimeLeftString = timeString;
-                else
+            else
                 productionItem.TimeLeftString = "";
             end
 
-            -- alle items einfügen, da auch rest platz angezeigt werden soll wenn linie aus ist
-            table.insert(myProductionItems, productionItem)
+            if productionItem.productionPerHour ~= 0 then
+                -- nur items mit einem Stundenwert einfügen, da für die Verteilliste eine eigene Liste gemacht wird
+                table.insert(myProductionItems, productionItem)
 
-            -- längsten filltypetitel für box behalten
-            local textWidth = getTextWidth(10, utf8Substr(productionItem.fillTypeTitle, 0));
-            if ProductionInfoHud.longestFillTypeTitleWidth == nil or ProductionInfoHud.longestFillTypeTitleWidth < textWidth then
-                ProductionInfoHud.longestFillTypeTitleWidth = textWidth;
-                ProductionInfoHud.longestFillTypeTitle = productionItem.fillTypeTitle;
+                -- längsten filltypetitel für box behalten
+                local textWidth = getTextWidth(10, utf8Substr(productionItem.fillTypeTitle, 0));
+                if ProductionInfoHud.longestFillTypeTitleWidth == nil or ProductionInfoHud.longestFillTypeTitleWidth < textWidth then
+                    ProductionInfoHud.longestFillTypeTitleWidth = textWidth;
+                    ProductionInfoHud.longestFillTypeTitle = productionItem.fillTypeTitle;
+                end
             end
 
         end

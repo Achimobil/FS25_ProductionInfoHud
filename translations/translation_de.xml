@@ -3,11 +3,11 @@
     <translationContributors>Achimobil</translationContributors>
     <texts>
         <text name="input_HL_ONOFFMOUSECURSOR" text="HL Mouse an/aus"/>
+        <text name="Empty" text="Leer"/>
+        <text name="Full" text="Voll"/>
 
         <!-- old stuff below -->
         <text name="input_TOGGLE_GUI" text="PIH: Anzeige umschalten"/>
-        <text name="Empty" text="Leer"/>
-        <text name="Full" text="Voll"/>
         <text name="NearlyFull" text="Fast voll"/>
         <text name="Overcrowded" text="Überbelegt"/>
         <text name="AllProductsOperativ" text="Alle Produktionen versorgt"/>
