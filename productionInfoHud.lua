@@ -140,22 +140,83 @@ function ProductionInfoHud:update(dt)
 
 end
 
+function ProductionInfoHud:AddProductionItemToList(myProductionItems, productionItem)
+    -- time factor for calcualting hours left based on days per Period
+    local timeFactor = (1 / ProductionInfoHud.currentMission.environment.daysPerPeriod);
+
+    -- restzeit berechnen
+    if productionItem.productionPerHour ~= 0 then
+        if productionItem.productionPerHour < 0 then
+            -- wenn productionPerHour negativ, dann wird verbraucht, aber die Stunden sollten alle positiv sein
+            productionItem.hoursLeft = productionItem.fillLevel / (productionItem.productionPerHour * timeFactor * -1);
+        else
+            -- wenn productionPerHour positiv, dann wird produziert, also Restzeit basiert auf bis lager voll ist
+            productionItem.hoursLeft = (productionItem.capacity - productionItem.fillLevel) / (productionItem.productionPerHour * timeFactor);
+        end
+    end
+
+    if productionItem.hoursLeft ~= nil then
+        local days = math.floor(productionItem.hoursLeft / 24);
+        local hoursLeft = productionItem.hoursLeft - (days * 24);
+        local hours = math.floor(hoursLeft);
+        hoursLeft = hoursLeft - hours;
+
+        local minutes = math.floor(hoursLeft * 60);
+        local minutesString = minutes;
+        if(minutes <= 9) then minutesString = 0 .. minutes end;
+
+        local timeString = "";
+        if (days ~= 0) then
+            timeString = ProductionInfoHud.i18n:formatNumDay(days) .. " ";
+        end
+        timeString = timeString .. hours .. ":" .. minutesString;
+
+        -- wenn restzeit 0:00 ist, dann ist leer oder voll
+        if days == 0 and minutes <= 2 then
+            if productionItem.isInput then
+                timeString = ProductionInfoHud.i18n:getText("Empty");
+            else
+                timeString = ProductionInfoHud.i18n:getText("Full");
+            end
+        end
+
+        productionItem.TimeLeftString = timeString;
+    else
+        productionItem.TimeLeftString = "";
+    end
+
+    -- ProductionInfoHud.DebugTable("productionItem", productionItem);
+    if productionItem.productionPerHour ~= 0 then
+        -- nur items mit einem Stundenwert einfügen, da für die Verteilliste eine eigene Liste gemacht wird
+        table.insert(myProductionItems, productionItem)
+
+        -- längsten filltypetitel für box behalten
+        local textWidth = getTextWidth(10, utf8Substr(productionItem.fillTypeTitle, 0));
+        if ProductionInfoHud.longestFillTypeTitleWidth == nil or ProductionInfoHud.longestFillTypeTitleWidth < textWidth then
+            ProductionInfoHud.longestFillTypeTitleWidth = textWidth;
+            ProductionInfoHud.longestFillTypeTitle = productionItem.fillTypeTitle;
+        end
+    end
+end
+
 ---refresh all the products table
 function ProductionInfoHud:refreshProductionsTable()
     local farmId = ProductionInfoHud.currentMission:getFarmId();
     local myProductionItems = {}
 
     local myProductionPoints = self.chainManager:getProductionPointsForFarmId(farmId);
-
     for _, productionPoint in pairs(myProductionPoints) do
         self:AddProductionPoint(myProductionItems, productionPoint);
     end
 
     local myFactories = self.chainManager:getFactoriesForFarmId(farmId);
-
     for _, factory in pairs(myFactories) do
---         ProductionInfoHud.DebugTable("factory", factory);
         self:AddFactory(myProductionItems, factory);
+    end
+
+    local myHusbandries = ProductionInfoHud.currentMission.husbandrySystem:getPlaceablesByFarm(farmId);
+    for _, husbandry in pairs(myHusbandries) do
+        self:AddHusbandry(myProductionItems, husbandry);
     end
 
     table.sort(myProductionItems, ProductionInfoHud.compPrductionTable)
@@ -166,15 +227,45 @@ function ProductionInfoHud:refreshProductionsTable()
 --     ProductionInfoHud.DebugTable("myProductionPoints", myProductionPoints);
 end
 
+---Add the given husbandry to the list
+-- @param table myProductionItems The list where it will be added to
+-- @param Husbandry husbandry What should be added
+function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
+--     ProductionInfoHud.DebugTable("husbandry", husbandry);
+
+    local spec = husbandry.spec_husbandryFood;
+
+    -- Food ist da, also Food Item erstellen
+    if spec ~= nil then
+        -- item für produktionsliste erstellen.
+        local productionItem = {}
+        productionItem.name = husbandry:getName();
+        productionItem.productionPerHour = husbandry.spec_husbandryFood.litersPerHour * -1; -- negative when more used than produced. calculated on one day per month as giants always does
+        productionItem.hoursLeft = nil; -- time until full or empty, nil when not changing
+        productionItem.fillLevel = husbandry:getTotalFood();
+        productionItem.capacity = husbandry:getFoodCapacity();
+        productionItem.isInput = true;
+        productionItem.isOutput = false;
+
+        if productionItem.capacity == 0 then
+            productionItem.capacityLevel = 0
+        elseif productionItem.capacity == nil then
+            productionItem.capacityLevel = 0
+            print("Error: No storage for 'Food' in productionPoint but defined to used. Has to be fixed in '" .. husbandry.owningPlaceable.customEnvironment .."'.")
+        else
+            productionItem.capacityLevel = productionItem.fillLevel / productionItem.capacity;
+        end
+        productionItem.fillTypeTitle = spec.info.title;
+
+        self:AddProductionItemToList(myProductionItems, productionItem);
+    end
+end
+
 ---Add the given factory to the list
 -- @param table myProductionItems The list where it will be added to
 -- @param Factory factory What should be added
 function ProductionInfoHud:AddFactory(myProductionItems, factory)
-    -- time factor for calcualting hours left based on days per Period
-    local timeFactor = (1 / ProductionInfoHud.currentMission.environment.daysPerPeriod);
-
     for fillTypeId, fillLevel in pairs(factory.spec_factory.storage.fillLevels) do
-
         -- item für produktionsliste erstellen. Ein Item pro fillType
         local productionItem = {}
         productionItem.name = factory:getName();
@@ -197,7 +288,6 @@ function ProductionInfoHud:AddFactory(myProductionItems, factory)
         productionItem.fillTypeTitle = g_fillTypeManager:getFillTypeTitleByIndex(fillTypeId);
 
         -- factories have only one production, so no loop needed here and only inputs are from interest
---         ProductionInfoHud.DebugTable("factory.spec_factory.inputs", factory.spec_factory.inputs);
         for _, fillTypeId2 in pairs(factory.spec_factory.inputs) do
             if fillTypeId2.fillType.index == fillTypeId then
                 productionItem.isInput = true;
@@ -205,61 +295,7 @@ function ProductionInfoHud:AddFactory(myProductionItems, factory)
             end
         end
 
-        -- restzeit berechnen
-        if productionItem.productionPerHour ~= 0 then
-            if productionItem.productionPerHour < 0 then
-                -- wenn productionPerHour negativ, dann wird verbraucht, aber die Stunden sollten alle positiv sein
-                productionItem.hoursLeft = productionItem.fillLevel / (productionItem.productionPerHour * timeFactor * -1);
-            else
-                -- wenn productionPerHour positiv, dann wird produziert, also Restzeit basiert auf bis lager voll ist
-                productionItem.hoursLeft = (productionItem.capacity - productionItem.fillLevel) / (productionItem.productionPerHour * timeFactor);
-            end
-        end
-
-        if productionItem.hoursLeft ~= nil then
-            local days = math.floor(productionItem.hoursLeft / 24);
-            local hoursLeft = productionItem.hoursLeft - (days * 24);
-            local hours = math.floor(hoursLeft);
-            hoursLeft = hoursLeft - hours;
-
-            local minutes = math.floor(hoursLeft * 60);
-            local minutesString = minutes;
-            if(minutes <= 9) then minutesString = 0 .. minutes end;
-
-            local timeString = "";
-            if (days ~= 0) then
-                timeString = ProductionInfoHud.i18n:formatNumDay(days) .. " ";
---                 else
---                     productionItem.TextColor = ProductionInfoHud.colors.YELLOW;
-            end
-            timeString = timeString .. hours .. ":" .. minutesString;
-
-            -- wenn restzeit 0:00 ist, dann ist leer oder voll
-            if days == 0 and minutes <= 2 then
-                if productionItem.isInput then
-                    timeString = ProductionInfoHud.i18n:getText("Empty");
-                else
-                    timeString = ProductionInfoHud.i18n:getText("Full");
-                end
-            end
-
-            productionItem.TimeLeftString = timeString;
-        else
-            productionItem.TimeLeftString = "";
-        end
--- ProductionInfoHud.DebugTable("productionItem", productionItem);
-        if productionItem.productionPerHour ~= 0 then
-            -- nur items mit einem Stundenwert einfügen, da für die Verteilliste eine eigene Liste gemacht wird
-            table.insert(myProductionItems, productionItem)
-
-            -- längsten filltypetitel für box behalten
-            local textWidth = getTextWidth(10, utf8Substr(productionItem.fillTypeTitle, 0));
-            if ProductionInfoHud.longestFillTypeTitleWidth == nil or ProductionInfoHud.longestFillTypeTitleWidth < textWidth then
-                ProductionInfoHud.longestFillTypeTitleWidth = textWidth;
-                ProductionInfoHud.longestFillTypeTitle = productionItem.fillTypeTitle;
-            end
-        end
-
+        self:AddProductionItemToList(myProductionItems, productionItem);
     end
 end
 
@@ -267,9 +303,6 @@ end
 -- @param table myProductionItems The list where it will be added to
 -- @param ProductionPoint productionPoint What should be added
 function ProductionInfoHud:AddProductionPoint(myProductionItems, productionPoint)
-    -- time factor for calcualting hours left based on days per Period
-    local timeFactor = (1 / ProductionInfoHud.currentMission.environment.daysPerPeriod);
-
     -- is the point shared, then the amounts needs to be divided
     local productionPointMultiplicator = 1;
     if productionPoint.sharedThroughputCapacity and #productionPoint.activeProductions ~= 0 then
@@ -327,64 +360,9 @@ function ProductionInfoHud:AddProductionPoint(myProductionItems, productionPoint
                     end
                 end
             end
---                 ProductionInfoHud.DebugTable("production", production, 2);
         end
 
-        -- restzeit berechnen
-        if productionItem.productionPerHour ~= 0 then
-            if productionItem.productionPerHour < 0 then
-                -- wenn productionPerHour negativ, dann wird verbraucht, aber die Stunden sollten alle positiv sein
-                productionItem.hoursLeft = productionItem.fillLevel / (productionItem.productionPerHour * timeFactor * -1);
-            else
-                -- wenn productionPerHour positiv, dann wird produziert, also Restzeit basiert auf bis lager voll ist
-                productionItem.hoursLeft = (productionItem.capacity - productionItem.fillLevel) / (productionItem.productionPerHour * timeFactor);
-            end
-        end
-
-        if productionItem.hoursLeft ~= nil then
-            local days = math.floor(productionItem.hoursLeft / 24);
-            local hoursLeft = productionItem.hoursLeft - (days * 24);
-            local hours = math.floor(hoursLeft);
-            hoursLeft = hoursLeft - hours;
-
-            local minutes = math.floor(hoursLeft * 60);
-            local minutesString = minutes;
-            if(minutes <= 9) then minutesString = 0 .. minutes end;
-
-            local timeString = "";
-            if (days ~= 0) then
-                timeString = ProductionInfoHud.i18n:formatNumDay(days) .. " ";
---                 else
---                     productionItem.TextColor = ProductionInfoHud.colors.YELLOW;
-            end
-            timeString = timeString .. hours .. ":" .. minutesString;
-
-            -- wenn restzeit 0:00 ist, dann ist leer oder voll
-            if days == 0 and minutes <= 2 then
-                if productionItem.isInput then
-                    timeString = ProductionInfoHud.i18n:getText("Empty");
-                else
-                    timeString = ProductionInfoHud.i18n:getText("Full");
-                end
-            end
-
-            productionItem.TimeLeftString = timeString;
-        else
-            productionItem.TimeLeftString = "";
-        end
-
-        if productionItem.productionPerHour ~= 0 then
-            -- nur items mit einem Stundenwert einfügen, da für die Verteilliste eine eigene Liste gemacht wird
-            table.insert(myProductionItems, productionItem)
-
-            -- längsten filltypetitel für box behalten
-            local textWidth = getTextWidth(10, utf8Substr(productionItem.fillTypeTitle, 0));
-            if ProductionInfoHud.longestFillTypeTitleWidth == nil or ProductionInfoHud.longestFillTypeTitleWidth < textWidth then
-                ProductionInfoHud.longestFillTypeTitleWidth = textWidth;
-                ProductionInfoHud.longestFillTypeTitle = productionItem.fillTypeTitle;
-            end
-        end
-
+        self:AddProductionItemToList(myProductionItems, productionItem);
     end
 end
 
