@@ -65,7 +65,6 @@ function ProductionInfoHud:init()
     ProductionInfoHud.i18n = g_i18n;
 
     ProductionInfoHud.isInit = true;
-    ProductionInfoHud.isClient = ProductionInfoHud.currentMission:getIsClient();
 
     -- ProductionChainManager
     ProductionInfoHud.chainManager = ProductionInfoHud.currentMission.productionChainManager;
@@ -116,9 +115,9 @@ end
 -- @param float dt time since last call in ms
 function ProductionInfoHud:update(dt)
 
-    if not ProductionInfoHud.isInit then ProductionInfoHud:init(); end
+    if ProductionInfoHud:getDetiServer() then return; end;
 
-    if not ProductionInfoHud.isClient then return; end
+    if not ProductionInfoHud.isInit then ProductionInfoHud:init(); end;
 
 
     ProductionInfoHud.timePast = ProductionInfoHud.timePast + dt;
@@ -201,7 +200,8 @@ function ProductionInfoHud:refreshProductionsTable()
                 end
 
                 -- outputs nur einbeziehen, wenn inputs alle da sind, also missing inputs state nicht summieren. Kann ja nicht voll laufen ohne Produktion
-                if production.status ~= ProductionPoint.PROD_STATUS.MISSING_INPUTS then
+                -- Auch die auf direktverkaufen müssen hier ausgeblendet werden
+                if production.status ~= ProductionPoint.PROD_STATUS.MISSING_INPUTS and productionPoint.outputFillTypeIdsDirectSell[fillTypeId] == nil then
                     for _, fillTypeId2 in pairs(production.outputs) do
                         if fillTypeId2.type == fillTypeId then
                             productionItem.isInput = true;
