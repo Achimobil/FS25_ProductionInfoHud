@@ -64,6 +64,7 @@ function ProductionInfoHud:init()
 
     ProductionInfoHud.currentMission = g_currentMission;
     ProductionInfoHud.i18n = g_i18n;
+    ProductionInfoHud.fillTypeManager = g_fillTypeManager;
 
     ProductionInfoHud.isInit = true;
 
@@ -77,34 +78,14 @@ function ProductionInfoHud:RegisterDisplaySystem()
 
     ProductionInfoHud.currentMission = g_currentMission;
     ProductionInfoHud.i18n = g_i18n;
+    ProductionInfoHud.fillTypeManager = g_fillTypeManager;
 
     ProductionInfoHud.currentMission.hlUtils.modLoad("FS25_ProductionInfoHud");
     PIH_DisplaySetGet:setGlobalFunctions();
---     PIH_Display.lastPlayerFarmId = ProductionInfoHud.currentMission.hlUtils.getPlayerFarmId();
---     ProductionInfoHud.DebugTable("ProductionInfoHud.currentMission.hlHudSystem", ProductionInfoHud.currentMission.hlHudSystem);
     if ProductionInfoHud.currentMission.hlHudSystem ~= nil and ProductionInfoHud.currentMission.hlHudSystem.hlHud ~= nil and ProductionInfoHud.currentMission.hlHudSystem.hlHud.generate ~= nil then --check is HL Hud System ready !
 
         -- box erstellen
         PIH_Display_XmlBox:loadBox("PIH_Display_Box", true)
-
-    -- das hier ist für das Hud mit dem Icon zum ein und ausblenden
---        print("#Info: ".. tostring(ProductionInfoHud.metadata.title).. " generate Hud --> for HL Hud System (".. tostring(ProductionInfoHud.currentMission.hlHudSystem.metadata.version).. ")")
---        local hud = ProductionInfoHud.currentMission.hlHudSystem.hlHud.generate( {name="PIH_Display_Hud", width=40, info="Production Info Hud Mod\n(PIH Display)", hiddenMod="ProductionInfoHud", ownTable={}} ); --loadDefaultIcons=true
---        if hud ~= nil then
-            --ProductionInfoHud.currentMission.hlUtils.loadLanguage( {modTitle=tostring(ProductionInfoHud.metadata.title), class="FS25_ProductionInfoHud", modDir=ProductionInfoHud.modDir.. "scripte_PIH/", xmlDir="FS25_ProductionInfoHud", xmlVersion=ProductionInfoHud.metadata.languageVersion} );
---             PIH_DisplaySetGet:loadFillTypesIcons();
---             PIH_DisplaySetGet:loadHudIcons(hud);
---             PIH_Display:loadSource(2);
---             hud.onDraw = PIH_Display_DrawHud.setHud;
---             hud.onClick = PIH_Display_MouseKeyEventsHud.onClick;
---             hud.onSaveXml = PIH_Display_XmlHud.onSaveXml;
-            --PIH_Display_XmlHud:onLoadXml(hud, hud:getXml()); --own hud load over Xml
-            --if hud.ownTable.viewHudTyp == 1 then hud.autoZoomOutIn = "text";else hud.autoZoomOutIn = "";end; --set text zoom is ...typ 1
-            --if ProductionInfoHud.currentMission.hlHudSystem.isAlreadyExistsXml("box", "PIH_Display_Box") then PIH_Display_XmlBox:loadBox("PIH_Display_Box", true);end; --optional load
---        else
---            ProductionInfoHud.loadError = true; --optional for !
---            print("#WARNING: ".. tostring(ProductionInfoHud.metadata.title).. " CAN NOT GENERATE Hud ! Check/Search: ? Mod cause with integrated HL Hud System ? ")
---        end;
     else
         ProductionInfoHud.loadError = true; --optional for !
         ProductionInfoHud.currentMission.hlUtils.modUnLoad("FS25_ProductionInfoHud");
@@ -140,6 +121,9 @@ function ProductionInfoHud:update(dt)
 
 end
 
+---Add the given item to the list after calculating some stuff
+-- @param table myProductionItems The list where it will be added to
+-- @param table productionItem What should be added
 function ProductionInfoHud:AddProductionItemToList(myProductionItems, productionItem)
     -- time factor for calcualting hours left based on days per Period
     local timeFactor = (1 / ProductionInfoHud.currentMission.environment.daysPerPeriod);
@@ -240,8 +224,10 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
         -- item für produktionsliste erstellen.
         local productionItem = {}
         productionItem.name = husbandry:getName();
-        productionItem.productionPerHour = husbandry.spec_husbandryFood.litersPerHour * -1; -- negative when more used than produced. calculated on one day per month as giants always does
-        productionItem.hoursLeft = nil; -- time until full or empty, nil when not changing
+        -- negative when more used than produced. calculated on one day per month as giants always does
+        productionItem.productionPerHour = spec.litersPerHour * -1;
+         -- time until full or empty, nil when not changing
+        productionItem.hoursLeft = nil;
         productionItem.fillLevel = husbandry:getTotalFood();
         productionItem.capacity = husbandry:getFoodCapacity();
         productionItem.isInput = true;
@@ -256,6 +242,36 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
             productionItem.capacityLevel = productionItem.fillLevel / productionItem.capacity;
         end
         productionItem.fillTypeTitle = spec.info.title;
+
+        self:AddProductionItemToList(myProductionItems, productionItem);
+    end
+
+    -- liguid manure ist da, also Item erstellen
+    spec = husbandry.spec_husbandryLiquidManure;
+    if spec ~= nil then
+        -- item für produktionsliste erstellen.
+        local productionItem = {}
+        productionItem.name = husbandry:getName();
+        productionItem.fillTypeId = spec.fillType;
+        -- negative when more used than produced. calculated on one day per month as giants always does
+        productionItem.productionPerHour = spec.litersPerHour;
+         -- time until full or empty, nil when not changing
+        productionItem.hoursLeft = nil;
+        productionItem.fillLevel = spec:getHusbandryFillLevel(spec.fillType)
+        productionItem.capacity = spec:getHusbandryCapacity(spec.fillType)
+        productionItem.isInput = false;
+        productionItem.isOutput = true;
+
+        if productionItem.capacity == 0 then
+            productionItem.capacityLevel = 0
+        elseif productionItem.capacity == nil then
+            productionItem.capacityLevel = 0
+            print("Error: No storage for 'Food' in productionPoint but defined to used. Has to be fixed in '" .. husbandry.owningPlaceable.customEnvironment .."'.")
+        else
+            productionItem.capacityLevel = productionItem.fillLevel / productionItem.capacity;
+        end
+
+        productionItem.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(spec.fillType);
 
         self:AddProductionItemToList(myProductionItems, productionItem);
     end
@@ -285,7 +301,7 @@ function ProductionInfoHud:AddFactory(myProductionItems, factory)
             productionItem.capacityLevel = productionItem.fillLevel / productionItem.capacity;
         end
 
-        productionItem.fillTypeTitle = g_fillTypeManager:getFillTypeTitleByIndex(fillTypeId);
+        productionItem.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillTypeId);
 
         -- factories have only one production, so no loop needed here and only inputs are from interest
         for _, fillTypeId2 in pairs(factory.spec_factory.inputs) do
@@ -339,7 +355,7 @@ function ProductionInfoHud:AddProductionPoint(myProductionItems, productionPoint
             productionItem.capacityLevel = productionItem.fillLevel / productionItem.capacity;
         end
 
-        productionItem.fillTypeTitle = g_fillTypeManager:getFillTypeTitleByIndex(fillTypeId);
+        productionItem.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillTypeId);
 
         -- loop through all active productions to see if the fillType is produced or consumed
         for _, production in pairs(productionPoint.activeProductions) do
