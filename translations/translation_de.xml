@@ -5,6 +5,7 @@
         <text name="input_HL_ONOFFMOUSECURSOR" text="HL Mouse an/aus"/>
         <text name="Empty" text="Leer"/>
         <text name="Full" text="Voll"/>
+        <text name="StorageMissing" text="Lager fehlt"/>
 
         <!-- old stuff below -->
         <text name="input_TOGGLE_GUI" text="PIH: Anzeige umschalten"/>

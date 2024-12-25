@@ -160,7 +160,12 @@ function ProductionInfoHud:AddProductionItemToList(myProductionItems, production
             if productionItem.isInput then
                 timeString = ProductionInfoHud.i18n:getText("Empty");
             else
-                timeString = ProductionInfoHud.i18n:getText("Full");
+                -- output but capacity 0 then target storage is missing
+                if productionItem.capacity == 0 then
+                    timeString = ProductionInfoHud.i18n:getText("StorageMissing");
+                else
+                    timeString = ProductionInfoHud.i18n:getText("Full");
+                end
             end
         end
 
@@ -217,9 +222,8 @@ end
 function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
 --     ProductionInfoHud.DebugTable("husbandry", husbandry);
 
-    local spec = husbandry.spec_husbandryFood;
-
     -- Food ist da, also Food Item erstellen
+    local spec = husbandry.spec_husbandryFood;
     if spec ~= nil then
         -- item für produktionsliste erstellen.
         local productionItem = {}
@@ -267,6 +271,126 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
         elseif productionItem.capacity == nil then
             productionItem.capacityLevel = 0
             print("Error: No storage for 'Food' in productionPoint but defined to used. Has to be fixed in '" .. husbandry.owningPlaceable.customEnvironment .."'.")
+        else
+            productionItem.capacityLevel = productionItem.fillLevel / productionItem.capacity;
+        end
+
+        productionItem.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(spec.fillType);
+
+        self:AddProductionItemToList(myProductionItems, productionItem);
+    end
+
+    -- milch ist da, also Item erstellen
+    spec = husbandry.spec_husbandryMilk;
+    if spec ~= nil then
+        -- milch hat eine liste von Filltypes, könnten also mehrere sein
+        for _, fillType in ipairs(spec.fillTypes) do
+            local litersPerHour = spec.litersPerHour[fillType]
+
+            -- item für produktionsliste erstellen.
+            local productionItem = {}
+            productionItem.name = husbandry:getName();
+            productionItem.fillTypeId = fillType;
+            -- negative when more used than produced. calculated on one day per month as giants always does
+            productionItem.productionPerHour = litersPerHour * husbandry.spec_husbandry.globalProductionFactor;
+             -- time until full or empty, nil when not changing
+            productionItem.hoursLeft = nil;
+            productionItem.fillLevel = spec:getHusbandryFillLevel(fillType)
+            productionItem.capacity = spec:getHusbandryCapacity(fillType)
+            productionItem.isInput = false;
+            productionItem.isOutput = true;
+
+            productionItem.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillType);
+
+            if productionItem.capacity == 0 then
+                productionItem.capacityLevel = 0
+            elseif productionItem.capacity == nil then
+                productionItem.capacityLevel = 0
+                print("Error: No storage for '" .. productionItem.fillTypeTitle .. "' in productionPoint but defined to used. Has to be fixed in '" .. husbandry.owningPlaceable.customEnvironment .."'.")
+            else
+                productionItem.capacityLevel = productionItem.fillLevel / productionItem.capacity;
+            end
+
+            self:AddProductionItemToList(myProductionItems, productionItem);
+        end
+    end
+
+    -- stroh ist da, also Item erstellen
+    spec = husbandry.spec_husbandryStraw;
+    if spec ~= nil then
+        -- input item für produktionsliste erstellen.
+        local productionItem = {}
+        productionItem.name = husbandry:getName();
+        productionItem.fillTypeId = spec.inputFillType;
+        -- negative when more used than produced. calculated on one day per month as giants always does
+        productionItem.productionPerHour = spec.inputLitersPerHour * -1;
+         -- time until full or empty, nil when not changing
+        productionItem.hoursLeft = nil;
+        productionItem.fillLevel = spec:getHusbandryFillLevel(spec.inputFillType)
+        productionItem.capacity = spec:getHusbandryCapacity(spec.inputFillType)
+        productionItem.isInput = true;
+        productionItem.isOutput = false;
+
+        if productionItem.capacity == 0 then
+            productionItem.capacityLevel = 0
+        elseif productionItem.capacity == nil then
+            productionItem.capacityLevel = 0
+            print("Error: No storage for 'Food' in productionPoint but defined to used. Has to be fixed in '" .. husbandry.owningPlaceable.customEnvironment .."'.")
+        else
+            productionItem.capacityLevel = productionItem.fillLevel / productionItem.capacity;
+        end
+
+        productionItem.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(spec.inputFillType);
+
+        self:AddProductionItemToList(myProductionItems, productionItem);
+
+        -- output item für produktionsliste erstellen.
+        local productionItemOutput = {}
+        productionItemOutput.name = husbandry:getName();
+        productionItemOutput.fillTypeId = spec.outputFillType;
+        -- negative when more used than produced. calculated on one day per month as giants always does
+        productionItemOutput.productionPerHour = spec.inputLitersPerHour;
+         -- time until full or empty, nil when not changing
+        productionItemOutput.hoursLeft = nil;
+        productionItemOutput.fillLevel = spec:getHusbandryFillLevel(spec.outputFillType)
+        productionItemOutput.capacity = spec:getHusbandryCapacity(spec.outputFillType)
+        productionItemOutput.isInput = false;
+        productionItemOutput.isOutput = true;
+        productionItemOutput.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(spec.outputFillType);
+
+        if productionItemOutput.capacity == 0 then
+            productionItemOutput.capacityLevel = 0
+        elseif productionItemOutput.capacity == nil then
+            productionItemOutput.capacityLevel = 0
+            print("Error: No storage for '" .. productionItemOutput.fillTypeTitle .. "' in productionPoint but defined to used. Has to be fixed in '" .. husbandry.owningPlaceable.customEnvironment .."'.")
+        else
+            productionItemOutput.capacityLevel = productionItemOutput.fillLevel / productionItemOutput.capacity;
+        end
+
+        self:AddProductionItemToList(myProductionItems, productionItemOutput);
+    end
+
+    -- wasser ist da, also Item erstellen, wenn nicht automatisch
+    spec = husbandry.spec_husbandryWater;
+    if spec ~= nil and not spec.automaticWaterSupply then
+        -- item für produktionsliste erstellen.
+        local productionItem = {}
+        productionItem.name = husbandry:getName();
+        productionItem.fillTypeId = spec.fillType;
+        -- negative when more used than produced. calculated on one day per month as giants always does
+        productionItem.productionPerHour = spec.litersPerHour * -1;
+         -- time until full or empty, nil when not changing
+        productionItem.hoursLeft = nil;
+        productionItem.fillLevel = spec:getHusbandryFillLevel(spec.fillType)
+        productionItem.capacity = spec:getHusbandryCapacity(spec.fillType)
+        productionItem.isInput = true;
+        productionItem.isOutput = false;
+
+        if productionItem.capacity == 0 then
+            productionItem.capacityLevel = 0
+        elseif productionItem.capacity == nil then
+            productionItem.capacityLevel = 0
+            print("Error: No storage for 'Water' in productionPoint but defined to used. Has to be fixed in '" .. husbandry.owningPlaceable.customEnvironment .."'.")
         else
             productionItem.capacityLevel = productionItem.fillLevel / productionItem.capacity;
         end
