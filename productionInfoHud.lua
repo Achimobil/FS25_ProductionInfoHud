@@ -156,7 +156,7 @@ function ProductionInfoHud:AddProductionItemToList(myProductionItems, production
         timeString = timeString .. hours .. ":" .. minutesString;
 
         -- wenn restzeit 0:00 ist, dann ist leer oder voll
-        if days == 0 and minutes <= 2 then
+        if days == 0 and hours == 0 and minutes <= 2 then
             if productionItem.isInput then
                 timeString = ProductionInfoHud.i18n:getText("Empty");
             else
@@ -246,6 +246,19 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
             productionItem.capacityLevel = productionItem.fillLevel / productionItem.capacity;
         end
         productionItem.fillTypeTitle = spec.info.title;
+
+        -- Weide einbeziehen
+        local specMeadow = husbandry.spec_husbandryMeadow;
+        if specMeadow ~= nil then
+            -- wenn normales futter leer, anzeige auf Weide umschalten
+            if productionItem.fillLevel == 0 then
+                productionItem.fillTypeTitle = specMeadow.info.title;
+                productionItem.fillLevel = specMeadow.info.value;
+            end
+
+            -- title anpassen für die Anzeige
+            productionItem.fillTypeTitle = productionItem.fillTypeTitle .. "*";
+        end
 
         self:AddProductionItemToList(myProductionItems, productionItem);
     end
