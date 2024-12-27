@@ -56,7 +56,7 @@ function PIH_Display_XmlBox:loadBox(name, onSave)
     if name == "PIH_Display_Box" then
         local box = ProductionInfoHud.currentMission.hlHudSystem.hlBox.generate( {name=name, width=250, height=150, info="Production Info Hud Mod\n(PIH Display)", autoZoomOutIn="text", hiddenMod="ProductionInfoHud"} );
         PIH_DisplaySetGet:loadBoxIcons(box); -- später zum laden von eigenen icons
-        box:setMinWidth(box.screen.pixelW*80); --set min. width new (default ..pixelW*30)
+        box:setMinWidth(box.screen.pixelW*120); --set min. width new (default ..pixelW*30)
         box.onDraw = PIH_Display_DrawBox.setBox;
 --         box.onClick = PIH_Display_MouseKeyEventsBox.onClick;
         box.screen.canBounds.on = true;

@@ -148,12 +148,14 @@ function ProductionInfoHud:AddProductionItemToList(myProductionItems, production
         local minutes = math.floor(hoursLeft * 60);
         local minutesString = minutes;
         if(minutes <= 9) then minutesString = 0 .. minutes end;
+        local hoursString = hours;
+        if(hours <= 9) and (days ~= 0) then hoursString = "0" .. hours end;
 
         local timeString = "";
         if (days ~= 0) then
             timeString = ProductionInfoHud.i18n:formatNumDay(days) .. " ";
         end
-        timeString = timeString .. hours .. ":" .. minutesString;
+        timeString = timeString .. hoursString .. ":" .. minutesString;
 
         -- wenn restzeit 0:00 ist, dann ist leer oder voll
         if days == 0 and hours == 0 and minutes <= 2 then

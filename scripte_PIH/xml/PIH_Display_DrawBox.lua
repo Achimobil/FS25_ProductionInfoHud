@@ -34,12 +34,20 @@ function PIH_Display_DrawBox.setBox(args)
         if box.needsUpdate or box.ownTable.lineHeight == nil then
             box.ownTable.lineHeight = getTextHeight(size, utf8Substr("Äg", 0))+distance.textLine;
             box.ownTable.iconWidth, box.ownTable.iconHeight = box:getOptiWidthHeight( {typ="icon", height=box.ownTable.lineHeight-distance.textLine-(difH), width=w-(difW*2)} );
-            box.ownTable.timeWidth = getTextWidth(size, utf8Substr("999 Tage 23:23", 0));
+            box.ownTable.timeWidth = getTextWidth(size, utf8Substr(" 99 Tage 23:23", 0));
             box.ownTable.fillTypeWidth = getTextWidth(size, utf8Substr(ProductionInfoHud.longestFillTypeTitle, 0));
             box.ownTable.textWidth = (w - box.ownTable.timeWidth - box.ownTable.fillTypeWidth - (difW*6));
-            if box.ownTable.textWidth < box.ownTable.timeWidth then
-                box.ownTable.textWidth = box.ownTable.timeWidth;
+            -- text breite soll mindestens die breite der halben Zeit haben
+--             if box.ownTable.textWidth < (box.ownTable.timeWidth/2) then
+--                 box.ownTable.textWidth = box.ownTable.timeWidth;
+--             end
+            -- Wenn jetzt aber die Textbreite kleiner ist als die breite des Filltypes, dann beides gleich breit machen
+            if box.ownTable.textWidth < box.ownTable.fillTypeWidth then
+                local both = (box.ownTable.textWidth + box.ownTable.fillTypeWidth)/2
+                box.ownTable.textWidth = both;
+                box.ownTable.fillTypeWidth = both;
             end
+            box:setMinWidth(box.ownTable.timeWidth * 3);
         end;
         box.needsUpdate = false;
     end;
@@ -323,7 +331,8 @@ function PIH_Display_DrawBox.setBox(args)
                 if canNextView then
                     setTextColor(unpack(color));
                     setTextAlignment(0);
-                    renderText(nextRightPosX, nextPosY, size, tostring(productionItem.fillTypeTitle));
+                    local text = ProductionInfoHud.currentMission.hlUtils.getTxtToWidth(tostring(productionItem.fillTypeTitle), size, box.ownTable.fillTypeWidth, false, ".");
+                    renderText(nextRightPosX, nextPosY, size, tostring(text));
                     setTextBold(false);
                     setTextColor(1, 1, 1, 1);
                     setTextAlignment(0);
