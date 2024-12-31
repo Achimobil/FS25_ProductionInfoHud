@@ -477,6 +477,11 @@ function ProductionInfoHud:AddProductionPoint(myProductionItems, productionPoint
         productionItem.isInput = false;
         productionItem.isOutput = false;
 
+        -- replace the long leasing text
+        if productionItem.name ~= nil then
+            productionItem.name = string.gsub(productionItem.name, "%(Leasing%) ", "");
+        end
+
         -- prüfen ob input type
         if productionPoint.inputFillTypeIds[fillTypeId] ~= nil then
             productionItem.isInput = productionPoint.inputFillTypeIds[fillTypeId];
