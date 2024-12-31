@@ -2,13 +2,13 @@ hlOwnTextTicker = {};
 
 function hlOwnTextTicker:generateData()	
 	g_currentMission.hlHudSystem.textTicker.checkPositionData = function() hlOwnTextTicker:checkPositionData();end;
-	g_currentMission.hlHudSystem.textTicker.deleteOverlays = function() hlOwnTextTicker:deleteOverlays();end;
+	--g_currentMission.hlHudSystem.textTicker.deleteOverlays = function() hlOwnTextTicker:deleteOverlays();end;
 	g_currentMission.hlHudSystem.textTicker.updatePositionData = function() hlOwnTextTicker:updatePositionData();end;
 	g_currentMission.hlHudSystem.textTicker.lastModSaying = -1;
 	hlOwnTextTicker:setPositionData(g_currentMission.hlHudSystem.textTicker.position[1], false);
 	
 	g_currentMission.hlHudSystem.textTicker:generateRunTimer(true, 1);	
-	if g_currentMission.hlHudSystem.ownData.textTickerSaveState then g_currentMission.hlHudSystem.textTicker:setOnOff(true);end; 
+	if g_currentMission.hlHudSystem.ownData.textTickerSaveState == true and not g_currentMission.hlHudSystem.textTicker.isOn then g_currentMission.hlHudSystem.textTicker:setOnOff(true);end; 
 end;
 
 function hlOwnTextTicker:setRunTimer() --set new over GuiBox click
@@ -28,8 +28,8 @@ function hlOwnTextTicker:deleteOverlays() --yourself start over ...
 	local textTicker = g_currentMission.hlHudSystem.textTicker;
 	if textTicker ~= nil then
 		textTicker:setOnOff(false);
-		if textTicker.overlays ~= nil then g_currentMission.hlUtils.deleteOverlays(textTicker.overlays, false, "Text Ticker icons over deleteOverlays");end;
 		if #textTicker.msg > 0 then textTicker:removeMsg(nil, true);end;
+		if textTicker.overlays ~= nil then g_currentMission.hlUtils.deleteOverlays(textTicker.overlays, false, "Text Ticker icons over deleteOverlays");end;		
 	end;
 end;
 

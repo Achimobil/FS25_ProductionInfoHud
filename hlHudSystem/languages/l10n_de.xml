@@ -11,7 +11,7 @@
 		<text name="hl_infoDisplay_displayChangeSize" text="%s Anzeige Typ %s = %s Größe (MauseScroll Hoch/Runter)" />		
 		<text name="hl_infoDisplay_lineDistance" text="*Linien Abstand Hoch/Runter* %s (MauseKlick Links/Rechts)" />
 		<text name="hl_infoDisplay_textSize" text="*TEXT GRÖSSE* %s (MauseRad Hoch/Runter)" />
-		<text name="hl_infoDisplay_firstStart" text="-Du kannst in allen 4 Ecken des Hud/Pda oder Box Standart Mause Aktionen ausführen/n/-Aktiviere dazu die Maussteuerung (HL HUD SYSTEM: Standart F9 Taste-Spieler Interaktion)/n/-Innerhalb der Hud/Pda oder Box stehen dir weiter Maus Aktionen zu Verfügung/n/-Diese können Unterschiedlich sein und werden vom Mod Ersteller gesetzt/n/-Dafür muss sich der Mauszeiger(in der Regel) in diesem Bereich befinden" />
+		<text name="hl_infoDisplay_firstStart" text="-Du kannst in allen 4 Ecken des Hud/Pda oder Box Standart Mause Aktionen ausführen/n/-Aktiviere dazu die Maussteuerung (HL HUD SYSTEM: Standart F9 Taste)/n/-Innerhalb der Hud/Pda oder Box stehen dir weitere Maus Aktionen zu Verfügung/n/-Diese können Unterschiedlich sein und werden vom Mod Ersteller gesetzt/n/-Dafür muss sich der Mauszeiger(in der Regel) in diesem Bereich befinden" />
         <text name="hl_infoDisplay_separator" text="*%s TRENNLINIE AN/AUS* (MausKlick Links)" />
 		<text name="hl_infoDisplay_autoSaveTypOff" text="Automatisches speichern ist für dies %s Deaktiviert vom Creator Mod" />
 		<text name="hl_infoDisplay_autoSaveOn" text="*GLOBAL HUD/PDA/BOX* Automatisches speichern ist AN" />
@@ -49,13 +49,13 @@
 		
 		<text name="hl_guiBox_textTicker_headline" text="*Text Ticker Einstellungen*" />
 		<text name="hl_guiBox_textTicker_textTicker" text="Text Ticker" />
-		<text name="hl_guiBox_textTicker_help_textTicker" text="Mit dem Text Ticker können Mods, Infos in einer Laufschrift Anzeige lassen./n/! Dieses Hud System hat keinen Einfluss auf die Infos der Mods !" />
+		<text name="hl_guiBox_textTicker_help_textTicker" text="Mit dem Text Ticker können Mods, Infos in einer Laufschrift anzeigen lassen./n/! Dieses Hud System hat keinen Einfluss auf die Infos der Mods !" />
 		<text name="hl_guiBox_textTicker_position" text="Position" />
 		<text name="hl_guiBox_textTicker_help_position" text="Bestimmt die %s Position/n/Alternative Positionen sind nur verfügbar, wenn diese hinterlegt wurden." />
 		<text name="hl_guiBox_textTicker_drawBg" text="Hintergrund" />
 		<text name="hl_guiBox_textTicker_help_drawBg" text="Zeigt einen Hintergrund an wenn eine Laufschrift angezeigt wird." />
 		<text name="hl_guiBox_textTicker_runTimer" text="Geschwindigkeit" />
-		<text name="hl_guiBox_textTicker_help_runTimer" text="*Standart Wert %s* (%s-%s)/n/Bestimmt die Laufgeschwindigkeit in der die Texte angezeigt werden./n/! Rechner\Server Performens können diesen Wert beeinflussen !" />
+		<text name="hl_guiBox_textTicker_help_runTimer" text="*Standart Wert %s* (%s-%s)/n/Bestimmt die Laufgeschwindigkeit in der die Texte angezeigt werden./n/! Rechner\Server Leistung können diesen Wert beeinflussen !" />
 		<text name="hl_guiBox_textTicker_dropWidth" text="Anzeige Teilbreite" />
 		<text name="hl_guiBox_textTicker_help_dropWidth" text="*Standart Wert %s*/n/Bestimmt die Teilbreite der Texte die angezeigt werden./n/Beeinflusst auch geringfügig die Laufgeschwindigkeit./n/Einige Sprachen/Wörter können diesen Wert beeinflussen./n/Hat keinen Einfluss auf die Buchstaben oder Textlänge." />
 		<text name="hl_guiBox_textTicker_setInfo" text="Start Info" />
@@ -64,8 +64,8 @@
 		<text name="hl_guiBox_textTicker_help_setSound" text="Status: %s/n/Einen Sound abspielen der dich auf eine kommende Nachricht Hinweisst./n/Dieser wird nur abgespielt wenn vorher keine anderen Nachrichten aktiv waren." />
 		<text name="hl_guiBox_textTicker_help_sample" text="Einen Sound auswählen (1-%s)" />
 		<text name="hl_guiBox_modHidder_headline" text="Mod Hidder(HL Hud System)" />
-		<text name="hl_guiBox_modHidder_help" text="Mods die mit dem *HL Hud System* laufen An/Aus schalten/n/! Die Mods müssen diese Funktion auch Unterstützen !/n/Was deaktivert ist in einem Mod wird vom Modder eingestellt" />
-		<text name="hl_guiBox_otherMods_headline" text="Anderer Mods Settings" />
+		<text name="hl_guiBox_modHidder_help" text="Mods die mit dem *HL Hud System* laufen An/Aus schalten/n/! Die Mods müssen diese Funktion auch Unterstützen !/n/Was deaktiviert ist, wird vom Modder bestimmt" />
+		<text name="hl_guiBox_otherMods_headline" text="Andere Mods Settings" />
 		<text name="hl_guiBox_otherMods_help" text="Gui Box Settings anderer Mods die über das *Hl Hud System* erstellt wurden/n/! Die Mods müssen diese Funktion auch Unterstützen !" />
 	</texts>
 </l10n>

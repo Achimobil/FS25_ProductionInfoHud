@@ -55,7 +55,7 @@ function hlInfoBox:draw()
 			local boxX = posX-boxWidth*0.5;
 			local boxY = posY-boxHeight*0.5;
 
-			drawFilledRectRound(boxX, boxY, boxWidth, boxHeight, 0.35, 0, 0, 0, 0.8);
+			drawFilledRectRound(boxX, boxY, boxWidth, boxHeight, 0.35, 0, 0, 0, 0.8); --uiScale,rgb a
 			posY = posY - boxHeight;
 
 			infoBox.icon:setPosition(boxX + infoBox.boxPaddingX, boxY + boxHeight*0.5 - infoBox.icon.height*0.5);

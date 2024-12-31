@@ -47,6 +47,7 @@ function hlOwnGuiBoxXml:onLoadXml(guiBox, Xml, xmlNameTag)
 			end;
 			if getXMLBool(Xml, groupNameTag.."#isOn") ~= nil then 
 				local state = getXMLBool(Xml, groupNameTag.."#isOn");
+				--if state then textTicker:setOnOff(true);end;				
 				g_currentMission.hlHudSystem.ownData.textTickerSaveState = state;				
 			end;
 			for a=1, #textTicker.pos do				
@@ -80,8 +81,8 @@ function hlOwnGuiBoxXml.onSaveXml(guiBox, Xml, xmlNameTag)
 	
 	local textTicker = g_currentMission.hlHudSystem.textTicker;		
 	if textTicker ~= nil then
-		groupNameTag = (xmlNameTag.. ".textTicker(%d)"):format(0);
-		setXMLBool(Xml, groupNameTag.."#isOn", textTicker.isOn);
+		groupNameTag = (xmlNameTag.. ".textTicker(%d)"):format(0);		
+		setXMLBool(Xml, groupNameTag.."#isOn", g_currentMission.hlHudSystem.ownData.textTickerSaveState);
 		setXMLInt(Xml, groupNameTag.."#runTimer", textTicker.runTimer[1]);
 		setXMLInt(Xml, groupNameTag.."#info", textTicker.info[1]);
 		setXMLInt(Xml, groupNameTag.."#sound", textTicker.sound[1]);

@@ -5,12 +5,12 @@ hlHudSystem.metadata = {
 	title = "HL Hud System",
 	notes = "Erstellt Hud/PDA und Box Anzeigen für Mods etc. zum selbst befüllen von Daten/Icons etc. um diese im Spiel anzuzeigen",
 	author = "(by HappyLooser)",
-	version = "v1.36 Beta",
-	systemVersion = 1.34,
+	version = "v1.38 Beta",
+	systemVersion = 1.38,
 	xmlVersion = 1,
 	languageVersion = 1;
 	datum = "21.05.2023",
-	update = "15.12.2024",
+	update = "25.12.2024",
 	web = "no",
 	info = "Link Freigabe und Änderungen ist ohne meine Zustimmung nicht erlaubt",
 	info1 = "Benutzung als HUD System in einem Mod (ohne Code Änderung) ist ohne Zustimmung erlaubt",
@@ -21,7 +21,7 @@ hlHudSystem.modDir = g_currentModDirectory;
 function hlHudSystem:loadMap()
 	if hlHudSystem:getDetiServer() then return;end;
 	Mission00.onStartMission = Utils.prependedFunction(Mission00.onStartMission, hlHudSystem.onStartMission);
-	if g_currentMission.hlHudSystem == nil then
+	if g_currentMission.hlHudSystem == nil then 
 		g_currentMission.hlHudSystem = {};
 		g_currentMission.hlHudSystem.version = hlHudSystem.metadata.systemVersion;
 		g_currentMission.hlHudSystem.xmlVersion = hlHudSystem.metadata.xmlVersion;
@@ -176,15 +176,16 @@ function hlHudSystem.new()
 	self.setMapHotspot = function(objects, color, blinking, insert)	g_currentMission.hlUtils.generateObjectMapHotspot( {objects=objects, color=color, file=g_currentMission.hlHudSystem.modDir.. "hlHudSystem/icons/icons.dds", fileFormat={64, 512, 1024, 15}, blinking=blinking, insert=insert} );end;
 	----
 	self.setAllGuiBoxOff = function() g_currentMission.hlHudSystem.hlGuiBox:setShow();end;	
-	--self.camBox = {setObject=function(args) hlCamBox:setObject(args);end;
-	--			deleteObject=function(camBox) hlCamBox:deleteObject(camBox);end;
-	--			setShow=function(state) hlCamBox:setShow(state);end;
-	--};	
+	self.camBox = {setObject=function(args) hlCamBox:setObject(args);end;
+				deleteObject=function(camBox) hlCamBox:deleteObject(camBox);end;
+				setShow=function(state) hlCamBox:setShow(state);end;
+	};	
 	----
 	self.guiMenu = {};
 	self.textTicker = hlTextTicker.new( {update=true,draw=true,delete=false,mouseInteraction=true} );	
 	self.infoBox = hlHudSystemOverlays:generateInfoBox();
 	self.showInfoBox = function(args) hlInfoBox:addInfo(unpack(args));end;
+		
 	self.onLoadComplete = 0;
 	
 	return self;
@@ -223,6 +224,10 @@ function hlHudSystem:getHudIsVisible() --by Giants
 	return g_currentMission.hud.isVisible and not g_noHudModeEnabled;
 end;
 
+function hlHudSystem:getIsMpOff() 
+	return g_currentMission.missionDynamicInfo.isMultiplayer and g_currentMission.hlHudSystem.ownData.mpOff;
+end;
+
 function hlHudSystem.autoSave()
 	if hlHudSystem:getDetiServer() then return;end;
 	if g_currentMission.missionDynamicInfo.isMultiplayer and g_currentMission.hlHudSystem.ownData.mpOff then return;end;
@@ -246,7 +251,7 @@ end;
 
 function hlHudSystem:setClickArea(args) --free onClick areas somewhere on screen	
 	if args == nil or type(args) ~= "table" or args.whatClick == nil or type(args.whatClick) ~= "string" or args.onClick == nil or type(args.onClick) ~= "function" then return;end;
-	if not g_currentMission.hlUtils.isMouseCursor then
+	if not g_currentMission.hlUtils.isMouseCursor then 
 		self.clickAreas = {};
 		return;
 	end;
@@ -266,7 +271,7 @@ function hlHudSystem:setClickArea(args) --free onClick areas somewhere on screen
 end;
 
 function hlHudSystem:searchFilter(typ, resetBounds, dialogTxt)
-	local text = g_i18n:getText("button_apply");
+	local text = g_i18n:getText("button_apply"); 
 	local confirmText = g_i18n:getText("helpLine_FarmingBasics_MapFilters_filters_title").. "/".. g_i18n:getText("button_apply");
 	local backText = g_i18n:getText("button_close").. "/".. g_i18n:getText("button_delete")
 	local dialogText = dialogTxt or "Search (min. 1 Letter)\n* first + min. 1 Letter\nBsp: *hor -> w -> ha -> *ors ...";
@@ -294,7 +299,7 @@ function hlHudSystem:searchFilter(typ, resetBounds, dialogTxt)
 			disableFilter = true		
 		})
 	else
-		local text = g_i18n:getText("button_apply");
+		local text = g_i18n:getText("button_apply"); 
 		local okayText = g_i18n:getText("button_apply"); --g_i18n:getText("helpLine_FarmingBasics_MapFilters_filters_title").. "/".. g_i18n:getText("button_apply"); --to long ?
 		local backText = g_i18n:getText("button_close").. "/".. g_i18n:getText("button_delete")
 		local dialogPrompt = dialogTxt or "Search (min. 1 Letter)\n* first + min. 1 Letter\nBsp: *hor -> w -> ha -> *ors ...";
@@ -322,7 +327,7 @@ end;
 
 function hlHudSystem:yesNoDialog(args)	
 	if ls25Convert then
-		g_gui:showYesNoDialog({				
+		g_gui:showYesNoDialog({				 
 			text = args.text or "";
 			title = args.title or "Mod Info"; 				
 			callback = function(yes)

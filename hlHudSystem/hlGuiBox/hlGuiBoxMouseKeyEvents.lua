@@ -93,6 +93,11 @@ function hlGuiBoxMouseKeyEvents.onClickOwnGuiBox(args)
 		return typTable[what][1];		
 	end;
 	
+	function setTextTickerWarningByTimeScale()
+		local info = " (<".. tostring(g_currentMission.hlHudSystem.textTicker.maxTimeScale).. ")";
+		g_currentMission.hlHudSystem.showInfoBox( {"TextTicker: ".. tostring(g_i18n:getText("input_DECREASE_TIMESCALE")).. info, 2500, g_currentMission.hlUtils.getColor("orangeRed", true)} );	
+	end;
+	
 	if args.isDown then
 		if g_currentMission.hlUtils.dragDrop.on then return;end;
 		if args.button == Input.MOUSE_BUTTON_LEFT then
@@ -120,16 +125,21 @@ function hlGuiBoxMouseKeyEvents.onClickOwnGuiBox(args)
 									setValue("saveInfo", 1, true, guiBox.ownTable);
 								end;								
 							elseif guiBox.guiLines[args.clickAreaTable.line] == "textTicker_" then
+								if not g_currentMission.hlHudSystem.textTicker:isCorrectTimeScale() then setTextTickerWarningByTimeScale();return;end;
 								g_currentMission.hlHudSystem.textTicker:setOnOff();
 								if g_currentMission.hlHudSystem.textTicker.isOn then g_currentMission.hlHudSystem.textTicker:addMsg( {text=g_currentMission.hlHudSystem.textTicker.positionUpdateText, color="ls25active", blinking=true, separator=false} );end;
+								g_currentMission.hlHudSystem.ownData.textTickerSaveState = g_currentMission.hlHudSystem.textTicker.isOn;
 								g_currentMission.hlHudSystem.isSave = false; --global							
 							elseif guiBox.guiLines[args.clickAreaTable.line] == "drawBg_" then
+								if not g_currentMission.hlHudSystem.textTicker:isCorrectTimeScale() then setTextTickerWarningByTimeScale();return;end;
 								g_currentMission.hlHudSystem.textTicker.pos[g_currentMission.hlHudSystem.textTicker.position[1]].drawBg = not g_currentMission.hlHudSystem.textTicker.pos[g_currentMission.hlHudSystem.textTicker.position[1]].drawBg;
 								g_currentMission.hlHudSystem.isSave = false; --global
 							elseif guiBox.guiLines[args.clickAreaTable.line] == "setInfo_" then
+								if not g_currentMission.hlHudSystem.textTicker:isCorrectTimeScale() then setTextTickerWarningByTimeScale();return;end;
 								local state = setValue("info", 1, true);
 								if state > 1 then g_currentMission.hud:addSideNotification(FSBaseMission.INGAME_NOTIFICATION_OK, g_currentMission.hlHudSystem.textTicker.info[5], 3500);end;
 							elseif guiBox.guiLines[args.clickAreaTable.line] == "setSound_" then
+								if not g_currentMission.hlHudSystem.textTicker:isCorrectTimeScale() then setTextTickerWarningByTimeScale();return;end;
 								local state = setValue("sound", 1, true);
 								if state > 1 then g_currentMission.hud:addSideNotification(FSBaseMission.INGAME_NOTIFICATION_OK, "", 100, g_currentMission.hlHudSystem.textTicker.sample[g_currentMission.hlHudSystem.textTicker.soundSample[1]()]);end;
 							elseif args.clickAreaTable.lineCallSequence ~= nil and string.find(args.clickAreaTable.lineCallSequence, "modHidder_") then
@@ -159,22 +169,26 @@ function hlGuiBoxMouseKeyEvents.onClickOwnGuiBox(args)
 									g_currentMission.hlUtils.removeTimer("hlHudSystem_autoSave");								
 									g_currentMission.hlUtils.addTimer( {delay=guiBox.ownTable.autoSaveTimer[1], name="hlHudSystem_autoSave", repeatable=true, ms=false, action=g_currentMission.hlHudSystem.autoSave} );
 								end;
-							elseif guiBox.guiLines[args.clickAreaTable.line] == "position_" then
+							elseif guiBox.guiLines[args.clickAreaTable.line] == "position_" then								
 								if g_currentMission.hlHudSystem.textTicker.position[3] > 1 and #g_currentMission.hlHudSystem.textTicker.pos > 1 then
+									if not g_currentMission.hlHudSystem.textTicker:isCorrectTimeScale() then setTextTickerWarningByTimeScale();return;end;
 									if not g_currentMission.hlHudSystem.textTicker.isReset then
 										local state = setValue("position", 1, true);
 										hlOwnTextTicker:updatePositionData();
 									end;
 								end;
 							elseif guiBox.guiLines[args.clickAreaTable.line] == "runTimer_" then
+								if not g_currentMission.hlHudSystem.textTicker:isCorrectTimeScale() then setTextTickerWarningByTimeScale();return;end;
 								setValue("runTimer", g_currentMission.hlHudSystem.textTicker.runTimer[4], true);
 								hlOwnTextTicker:setRunTimer();
 								if #g_currentMission.hlHudSystem.textTicker.msg == 0 then g_currentMission.hlHudSystem.textTicker:addMsg( {text="<<<<<Test>>>>>", color="ls25active", separator=false} );end;
 							elseif guiBox.guiLines[args.clickAreaTable.line] == "dropWidth_" then
+								if not g_currentMission.hlHudSystem.textTicker:isCorrectTimeScale() then setTextTickerWarningByTimeScale();return;end;
 								setValue("dropWidth", g_currentMission.hlHudSystem.textTicker.dropWidth[4], true);								
 								if #g_currentMission.hlHudSystem.textTicker.msg == 0 then g_currentMission.hlHudSystem.textTicker:addMsg( {text="<<<<<Test>>>>>", color="ls25active", separator=false} );end;
 							elseif guiBox.guiLines[args.clickAreaTable.line] == "setSound_" then								
 								if g_currentMission.hlHudSystem.textTicker.sound[1] == 1 then return;end;
+								if not g_currentMission.hlHudSystem.textTicker:isCorrectTimeScale() then setTextTickerWarningByTimeScale();return;end;
 								setValue("soundSample", 1, true);
 								g_currentMission.hud:addSideNotification(FSBaseMission.INGAME_NOTIFICATION_OK, "", 100, g_currentMission.hlHudSystem.textTicker.sample[g_currentMission.hlHudSystem.textTicker.soundSample[1]]());								
 							end;
@@ -197,20 +211,24 @@ function hlGuiBoxMouseKeyEvents.onClickOwnGuiBox(args)
 								end;
 							elseif guiBox.guiLines[args.clickAreaTable.line] == "position_" then
 								if g_currentMission.hlHudSystem.textTicker.position[3] > 1 and #g_currentMission.hlHudSystem.textTicker.pos > 1 then
+									if not g_currentMission.hlHudSystem.textTicker:isCorrectTimeScale() then setTextTickerWarningByTimeScale();return;end;
 									if not g_currentMission.hlHudSystem.textTicker.isReset then
 										local state = setValue("position", 1, false);
 										hlOwnTextTicker:updatePositionData();
 									end;
 								end;
 							elseif guiBox.guiLines[args.clickAreaTable.line] == "runTimer_" then
+								if not g_currentMission.hlHudSystem.textTicker:isCorrectTimeScale() then setTextTickerWarningByTimeScale();return;end;
 								setValue("runTimer", g_currentMission.hlHudSystem.textTicker.runTimer[4], false);
 								hlOwnTextTicker:setRunTimer();
 								if #g_currentMission.hlHudSystem.textTicker.msg == 0 then g_currentMission.hlHudSystem.textTicker:addMsg( {text="<<<<<Test>>>>>", color="ls25active", separator=false} );end;
 							elseif guiBox.guiLines[args.clickAreaTable.line] == "dropWidth_" then
+								if not g_currentMission.hlHudSystem.textTicker:isCorrectTimeScale() then setTextTickerWarningByTimeScale();return;end;
 								setValue("dropWidth", g_currentMission.hlHudSystem.textTicker.dropWidth[4], false);								
 								if #g_currentMission.hlHudSystem.textTicker.msg == 0 then g_currentMission.hlHudSystem.textTicker:addMsg( {text="<<<<<Test>>>>>", color="ls25active", separator=false} );end;
-							elseif guiBox.guiLines[args.clickAreaTable.line] == "setSound_" then
+							elseif guiBox.guiLines[args.clickAreaTable.line] == "setSound_" then								
 								if g_currentMission.hlHudSystem.textTicker.sound[1] == 1 then return;end;
+								if not g_currentMission.hlHudSystem.textTicker:isCorrectTimeScale() then setTextTickerWarningByTimeScale();return;end;
 								setValue("soundSample", 1, false);
 								g_currentMission.hud:addSideNotification(FSBaseMission.INGAME_NOTIFICATION_OK, "", 100, g_currentMission.hlHudSystem.textTicker.sample[g_currentMission.hlHudSystem.textTicker.soundSample[1]]());
 							end;

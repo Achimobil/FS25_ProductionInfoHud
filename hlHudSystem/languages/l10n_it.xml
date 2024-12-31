@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<l10n version="1">
+	<translationContributors>Roby</translationContributors>
+	<texts>
+		<text name="hl_notImplement" text="*Non ancora attivo*" />
+		<text name="hl_infoDisplay_settingHlHudSystem" text="*Impostazione del sistema Hl Hud* ACCESO/SPENTO (Clic destro del mouse))" />
+		<text name="hl_infoDisplay_notFoundHud" text="! Nessuna impostazione HUD trovata !" />
+		<text name="hl_infoDisplay_viewMpOff" text="*GLOBALE HUD/PDA/BOX* Mostra ACCESO/SPENTO/n/Disabilita TUTTI gli annunci (Attivo solo in multiplayer)" />
+		<text name="hl_infoDisplay_viewNotAllIcons" text="! Attenzione, non tutte le icone vengono visualizzate !/n/Modificare la larghezza %s (in basso a destra)" />
+		<text name="hl_infoDisplay_displayTypSwitch" text="%s Cambia il tipo di visualizzazione (Clic del mouse a sinistra)" />
+		<text name="hl_infoDisplay_displayChangeSize" text="%s Tipo di visualizzazione %s = %s Dimensioni (Scorri il mouse su/giù)" />		
+		<text name="hl_infoDisplay_lineDistance" text="*Interlinea su/giù* %s (Clic del mouse a sinistra/destra)" />
+		<text name="hl_infoDisplay_textSize" text="*DIMENSIONI TESTO* %s (MauseRad Hoch/Runter)" />
+		<text name="hl_infoDisplay_firstStart" text="-Puoi farlo in tutti e 4 gli angoli del Hud/Pda o selezionare le azioni standard del mouse eseguire/n/-Per fare ciò, attiva il controllo del mouse (HL HUD SYSTEM: Interazione tasto giocatore standard F9)/n/-Altre azioni del mouse sono disponibili all'interno dell'Hud/Pda o del Box/n/-Questi possono essere diversi e vengono impostati dal creatore della mod/n/-Per fare ciò, il cursore del mouse deve (di solito) trovarsi in quest'area" />
+        <text name="hl_infoDisplay_separator" text="*%s LINEA DI PARTIZIONE ACCESO/SPENTO* (Clic del mouse a sinistra)" />
+		<text name="hl_infoDisplay_autoSaveTypOff" text="Il salvataggio automatico è disabilitato per questo %s dal Creator Mod" />
+		<text name="hl_infoDisplay_autoSaveOn" text="*GLOBALE HUD/PDA/BOX* Il salvataggio automatico è attivato" />
+		<text name="hl_infoDisplay_autoSaveOff" text="*GLOBALE HUD/PDA/BOX* Il salvataggio automatico è disattivato" />		
+		<text name="hl_infoDisplay_autoSaveTimer" text="Intervallo salvataggio ogni ~%s sec." />	
+		<text name="hl_infoDisplay_saveAll" text="*HUD/PDA/BOX SALVA* tutto (Clic del mouse a sinistra)" />
+		<text name="hl_infoDisplay_save" text="*%s SALVA* (Clic del mouse a sinistra)" />
+		<text name="hl_infoDisplay_close" text="*%s CHIUDI* (Clic del mouse a sinistra)" />
+		<text name="hl_infoDisplay_dragDropHudsWH" text="*ALTEZZA* Tutto HUD/n/*LARGHEZZA* solo questo HUD (Fare clic con il mouse a sinistra/muovi/a sinistra)/n/-L'ALTEZZA ha un valore Max/Min. limite/n/-La LARGHEZZA ha un limite minimo" />
+		<text name="hl_infoDisplay_dragDrop" text="*%s POSIZIONE TRASCINAMENTO E RILASCIO* (Clic del mouse a sinistra/%s sposta/a sinistra)" />
+		<text name="hl_infoDisplay_dragDropWH" text="*%s LARGHEZZA/ALTEZZA* (Fare clic con il mouse a sinistra/muovi/sinistra)/n/-La LARGHEZZA/ALTEZZA hanno un limite minimo" />
+		<text name="hl_infoDisplay_positionHud" text="*POSIZIONE HUD* solo questo HUD (Clic del mouse a sinistra/Rechts |--H--|)" />
+		<text name="hl_infoDisplay_settingGlobal" text="*IMPOSTAZIONI HUD GLOBALI ACCESO/SPENTO* (Clic del mouse a sinistra/Muoversi nel raggio d'azione di un HUDS)" />
+		<text name="hl_infoDisplay_setting" text="*%s IMPOSTAZIONI ACCESO/SPENTO* (Clic del mouse a sinistra)/n/-Le impostazioni dipendono dal Creator Mod" />
+		<text name="hl_infoDisplay_zoomOutIn" text="*ZOOM* Testo/Icona in %s (Rotella del mouse su/giù)/n/-Se questa %s impostazione è attiva" />
+		<text name="hl_infoDisplay_dragDropWarningMinW" text="LARGHEZZA min %s raggiunta" />
+		<text name="hl_infoDisplay_dragDropWarningMinH" text="ALTEZZA min %s raggiunta" />
+		<text name="hl_infoDisplay_dragDropWarningMaxH" text="ALTEZZA massima %s raggiunta" />
+		<text name="hl_infoDisplay_dragDropWarningMinWH" text="ALTEZZA/LARGHEZZA min %s raggiunta" />
+		<text name="hl_infoDisplay_help" text="*%s AIUTO ACCESO/SPENTO* (Clic del mouse a sinistra)/n/-L'aiuto dipende dal Creator Mod" />
+		<text name="hl_infoDisplay_extraLine" text="*%s MENÙ APERTO/CHIUSO* (Clic del mouse a sinistra)/n/-Il MENU dipende dal Creator Mod" />
+		<text name="hl_infoDisplay_search" text="*FILTRO DI RICERCA* Attiva/Usa/n/-Il FILTRO dipende dal Creator Mod" />
+		<text name="hl_infoDisplay_autoClose" text="*Il display si apre/chiude automaticamente* (Clic del mouse sinistro)/n/-Apre/chiude questo display quando si utilizza il mouse ACCESO/SPENTO È/n/-Il display deve essere acceso" />
+		<text name="hl_infoDisplay_dragDropLimitedWH" text="*LIMITATO DALLA MOD*" />		
+						
+		<text name="hl_guiBox_global_headline" text="*Impostazioni globali*" />
+		<text name="hl_guiBox_global_infoDisplay" text="Informazioni standard" />
+		<text name="hl_guiBox_global_help_infoDisplay" text="*HUD/PDA/BOX Informazioni standard ACCESO/SPENTO* tutto/n/Può visualizzare alcune informazioni utili quando si passa sopra un'area./n/Non ha alcuna influenza sulle informazioni della mod." />
+		<text name="hl_guiBox_global_autoSave" text="Salva automaticamente" />
+		<text name="hl_guiBox_global_help_autoSave" text="Salva automaticamente tutti i dati all'intervallo di memorizzazione impostato./n/Salva solo i dati da HUD/PDA/BOX che sono stati approvati dal Creator Mod./n/Puoi comunque salvare manualmente in qualsiasi momento facendo clic sull'icona di salvataggio con il cursore del mouse." />
+		<text name="hl_guiBox_global_saveInfo" text="Informazioni sull'archiviazione" />
+		<text name="hl_guiBox_global_help_saveInfo" text="Visualizza una breve informazione quando tutti i dati vengono salvati automaticamente./n/Non influisce sul salvataggio nei PDA/BOX" />
+		<text name="hl_guiBox_global_autoSaveTimer" text="Intervallo di memorizzazione" />				
+		<text name="hl_guiBox_global_help_autoSaveTimer" text="Salva intervallo ogni ~%s sec (Standard %s)./n/La fine del gioco (regolare) avviene sempre con il salvataggio automatico." />
+		
+		<text name="hl_guiBox_textTicker_headline" text="*Impostazioni del testo scorrevole*" />
+		<text name="hl_guiBox_textTicker_textTicker" text="testo scorrevole" />
+		<text name="hl_guiBox_textTicker_help_textTicker" text="Con il testo scorrevole, i mod possono visualizzare le informazioni in uno scorrevole./n/! Questo sistema Hud non ha alcuna influenza sulle informazioni dei mod !" />
+		<text name="hl_guiBox_textTicker_position" text="Posizione" />
+		<text name="hl_guiBox_textTicker_help_position" text="Determina la posizione %s/n/Posizioni alternative sono disponibili solo se sono state depositate." />
+		<text name="hl_guiBox_textTicker_drawBg" text="sfondo" />
+		<text name="hl_guiBox_textTicker_help_drawBg" text="Visualizza uno sfondo quando viene visualizzato un titolo a scorrimento." />
+		<text name="hl_guiBox_textTicker_runTimer" text="velocità" />
+		<text name="hl_guiBox_textTicker_help_runTimer" text="*Valore standard %s* (%s-%s)/n/Determina la velocità di scorrimento con cui vengono visualizzati i testi./n/! Le prestazioni del computer\server possono influenzare questo valore !" />
+		<text name="hl_guiBox_textTicker_dropWidth" text="Visualizzazione della larghezza parziale" />
+		<text name="hl_guiBox_textTicker_help_dropWidth" text="*Valore standard %s*/n/Determina la larghezza dei testi visualizzati./n/Influisce leggermente anche sulla velocità scorriemnto./n/Alcune lingue/parole potrebbero influenzare questo valore./n/Non influisce sulle lettere o sulla lunghezza del testo." />
+		<text name="hl_guiBox_textTicker_setInfo" text="Avvia informazioni" />
+		<text name="hl_guiBox_textTicker_help_setInfo" text="Visualizza brevi informazioni su un messaggio in arrivo nella barra informazioni LS./n/Viene visualizzato solo se in precedenza non erano attivi altri messaggi." />
+		<text name="hl_guiBox_textTicker_setSound" text="Avvia il suono" />
+		<text name="hl_guiBox_textTicker_help_setSound" text="Stato: %s/n/Riproduci un suono per avvisarti di un messaggio in arrivo./n/Questo verrà riprodotto solo se nessun altro messaggio era attivo in precedenza." />
+		<text name="hl_guiBox_textTicker_help_sample" text="Seleziona un suono (1-%s)" />
+		<text name="hl_guiBox_modHidder_headline" text="Mod Nascosto (sistema Hud HL)" />
+		<text name="hl_guiBox_modHidder_help" text="Mod che funzionano con *HL Hud System* ACCESO/SPENTO interruttore/n/! Anche le mod devono supportare questa funzione !/n/Ciò che viene disattivato in una mod viene impostato dal modder" />
+		<text name="hl_guiBox_otherMods_headline" text="Altre impostazioni delle mod" />
+		<text name="hl_guiBox_otherMods_help" text="Impostazioni della Gui Box di altri mod creati tramite *Hl Hud System*/n/! Le mod devono supportare anche questa funzione !" />
+	</texts>
+</l10n>

@@ -36,6 +36,7 @@ function hlTextTicker.new(args)
 	self.msg = {};
 	self.repeatableMsg = {};
 	self.clickAreas = {};
+	self.maxTimeScale = 10;
 	self.isReset = false;
 	self.updateIsIngameMapLarge = false;
 	self.updateIsFullSize = false;
@@ -49,7 +50,8 @@ function hlTextTicker.new(args)
 	};
 	
 	self.addCallbacks = {firstStart=false,update=args.update or false,draw=args.draw or false,delete=args.delete or false};
-		
+	self.cleanEmotionalText = "()";
+	
 	return self;
 end;
 
@@ -70,6 +72,8 @@ end;
 
 function hlTextTicker:addMsg(args)
 	if args == nil or type(args) ~= "table" or args.text == nil or type(args.text) ~= "string" or args.text:len() < 2 then return false;end;
+	local text = self:cleanEmotionalMsg(args.text);
+	if text:len() < 2 then return false;end;
 	local firstWait = args.firstWait or 0; -- ~ticks(mSec)	
 	if #self.msg == 0 and firstWait == 0 and not self.isReset then
 		if self.info[1] > 1 then self.info[4] = true;end;
@@ -82,15 +86,15 @@ function hlTextTicker:addMsg(args)
 		elseif type(args.separator) == "string" then
 			separatorText = args.separator;
 		end;
-	end;
+	end;	
 	local msgTable = self.msg;	
 	local tablePos = #msgTable;	
 	if firstWait == 0 then
-		table.insert(msgTable, {text=separatorText.. args.text,splitText={},runText="",isRun=false,isDelRun=false,isLastCharacter=false,insertText={},tick={0,0,self.tick}});
+		table.insert(msgTable, {text=separatorText.. text,splitText={},runText="",isRun=false,isDelRun=false,isLastCharacter=false,insertText={},tick={0,0,self.tick}});
 		tablePos = #msgTable;
 	else
 		msgTable = self.repeatableMsg;		
-		table.insert(msgTable, {text=separatorText.. args.text, reloadWait=firstWait});
+		table.insert(msgTable, {text=separatorText.. text, reloadWait=firstWait});
 		tablePos = #msgTable;
 	end;
 	if args.color ~= nil and type(args.color) == "table" then msgTable[tablePos].color = args.color;else msgTable[tablePos].color = g_currentMission.hlUtils.getColor(args.color, true, "ls25active");end;	
@@ -129,6 +133,15 @@ function hlTextTicker:addMsg(args)
 	if args.id == nil then return msgTable[tablePos].id;end;
 end;
 
+function hlTextTicker:cleanEmotionalMsg(text)	
+	return string.gsub(text, "["..self.cleanEmotionalText.."]", "-");
+end;
+
+function hlTextTicker:isCorrectTimeScale()
+	if self.maxTimeScale == nil or self.maxTimeScale < 0 then return true;end;
+	return g_currentMission.missionInfo.timeScale <= self.maxTimeScale;
+end;
+
 function hlTextTicker.deleteOverlays() --optional yourself start own over ...
 	
 end;
@@ -142,7 +155,7 @@ end;
 function hlTextTicker:update(dt) --yourself start over hlTextTicker.new( {update=true,draw=xxx,delete=xxx} )
 	if g_currentMission.hlHudSystem:getDetiServer() or not g_currentMission.hlHudSystem:getHudIsVisible() or g_currentMission.hlUtils:getFullSize(true, true) then return;end;
 	self.checkPositionData();
-	if self.msg ~= nil then
+	if self.msg ~= nil and self:isCorrectTimeScale() then
 		self.dt = dt; --needs		
 		if #self.repeatableMsg > 0 and self.isOn and not self.isReset then self:updateRepeatableMsg(dt);end;
 		if #self.msg > 0 and self.isOn and not self.isReset then self.run = true;else self.run = false;end;	
@@ -165,7 +178,7 @@ end;
 function hlTextTicker:draw() --yourself start over hlTextTicker.new( {update=xxx,draw=true,delete=xxx} )
 	if g_currentMission.hlHudSystem:getDetiServer() or not g_currentMission.hlHudSystem:getHudIsVisible() or g_currentMission.hlUtils:getFullSize(true, true) then return;end;
 	if not self.run or not self.isOn or self.isReset then return;end;
-	if #self.msg > 0 then
+	if #self.msg > 0 and self:isCorrectTimeScale() then
 		self.clickAreas = {};
 		local posData = self:getPositionData();
 		local mouseInteraction = self.mouseInteraction and g_currentMission.hlUtils.isMouseCursor and not g_currentMission.hlUtils.dragDrop.on;
