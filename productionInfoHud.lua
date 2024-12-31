@@ -62,33 +62,31 @@ end;
 --- here all what needs to be initialized on first call
 function ProductionInfoHud:init()
 
-    ProductionInfoHud.currentMission = g_currentMission;
     ProductionInfoHud.i18n = g_i18n;
     ProductionInfoHud.fillTypeManager = g_fillTypeManager;
 
     ProductionInfoHud.isInit = true;
 
     -- ProductionChainManager
-    ProductionInfoHud.chainManager = ProductionInfoHud.currentMission.productionChainManager;
+    ProductionInfoHud.chainManager = g_currentMission.productionChainManager;
 end
 
 --- Register the Display System from HappyLooser
 function ProductionInfoHud:RegisterDisplaySystem()
     if ProductionInfoHud:getDetiServer() then return;end;
 
-    ProductionInfoHud.currentMission = g_currentMission;
     ProductionInfoHud.i18n = g_i18n;
     ProductionInfoHud.fillTypeManager = g_fillTypeManager;
 
-    ProductionInfoHud.currentMission.hlUtils.modLoad("FS25_ProductionInfoHud");
+    g_currentMission.hlUtils.modLoad("FS25_ProductionInfoHud");
     PIH_DisplaySetGet:setGlobalFunctions();
-    if ProductionInfoHud.currentMission.hlHudSystem ~= nil and ProductionInfoHud.currentMission.hlHudSystem.hlHud ~= nil and ProductionInfoHud.currentMission.hlHudSystem.hlHud.generate ~= nil then --check is HL Hud System ready !
+    if g_currentMission.hlHudSystem ~= nil and g_currentMission.hlHudSystem.hlHud ~= nil and g_currentMission.hlHudSystem.hlHud.generate ~= nil then --check is HL Hud System ready !
 
         -- box erstellen
         PIH_Display_XmlBox:loadBox("PIH_Display_Box", true)
     else
         ProductionInfoHud.loadError = true; --optional for !
-        ProductionInfoHud.currentMission.hlUtils.modUnLoad("FS25_ProductionInfoHud");
+        g_currentMission.hlUtils.modUnLoad("FS25_ProductionInfoHud");
         print("#WARNING: ".. tostring(ProductionInfoHud.metadata.title).. " CAN NOT GENERATE Hud/Pda/Box ! MISSING --> HL Hud System ! Check/Search: ? Corrupt Mod with integrated HL Hud System ? ")
     end;
 end
@@ -111,8 +109,8 @@ function ProductionInfoHud:update(dt)
         ProductionInfoHud:refreshProductionsTable();
 
         -- temporär einfach sichtbar machen, wenn nicht sichtbar
-        if ProductionInfoHud.currentMission.hlHudSystem.hlBox ~= nil then
-            local box = ProductionInfoHud.currentMission.hlHudSystem.hlBox:getData("PIH_Display_Box");
+        if g_currentMission.hlHudSystem.hlBox ~= nil then
+            local box = g_currentMission.hlHudSystem.hlBox:getData("PIH_Display_Box");
             if box.show ~= nil then
                 box.show = true;
             end
@@ -126,7 +124,7 @@ end
 -- @param table productionItem What should be added
 function ProductionInfoHud:AddProductionItemToList(myProductionItems, productionItem)
     -- time factor for calcualting hours left based on days per Period
-    local timeFactor = (1 / ProductionInfoHud.currentMission.environment.daysPerPeriod);
+    local timeFactor = (1 / g_currentMission.environment.daysPerPeriod);
 
     -- restzeit berechnen
     if productionItem.productionPerHour ~= 0 then
@@ -192,7 +190,7 @@ end
 
 ---refresh all the products table
 function ProductionInfoHud:refreshProductionsTable()
-    local farmId = ProductionInfoHud.currentMission:getFarmId();
+    local farmId = g_currentMission:getFarmId();
     local myProductionItems = {}
 
     local myProductionPoints = self.chainManager:getProductionPointsForFarmId(farmId);
@@ -205,7 +203,7 @@ function ProductionInfoHud:refreshProductionsTable()
         self:AddFactory(myProductionItems, factory);
     end
 
-    local myHusbandries = ProductionInfoHud.currentMission.husbandrySystem:getPlaceablesByFarm(farmId);
+    local myHusbandries = g_currentMission.husbandrySystem:getPlaceablesByFarm(farmId);
     for _, husbandry in pairs(myHusbandries) do
         self:AddHusbandry(myProductionItems, husbandry);
     end

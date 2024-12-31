@@ -3,7 +3,7 @@ PIH_Display_DrawBox = {};
 function PIH_Display_DrawBox.setBox(args)
 -- ProductionInfoHud.DebugTable("PIH_Display_DrawBox.setBox", args);
     if args == nil or type(args) ~= "table" or args.typPos == nil or args.inArea == nil then return;end;
-    local box = ProductionInfoHud.currentMission.hlHudSystem.box[args.typPos];
+    local box = g_currentMission.hlHudSystem.box[args.typPos];
     if box == nil then return;end;
     if ProductionInfoHud.CurrentProductionItems == nil then return;end;
 
@@ -21,9 +21,6 @@ function PIH_Display_DrawBox.setBox(args)
     local size = box.screen.size.zoomOutIn.text[1];
 --     local difSize = 0.0015;
 
---     local overlaySubFillTypesGroup = ProductionInfoHud.currentMission.hlUtils.overlays["LS_FillTypes"]["subFillTypes"];
---     local overlayFillTypesGroup = ProductionInfoHud.currentMission.hlUtils.overlays["LS_FillTypes"]["fillTypes"];
---     local overlayFillTypesByName = ProductionInfoHud.currentMission.hlUtils.overlays.byName["LS_FillTypes"]["fillTypes"];
     local overlayDefaultGroup = box.overlays.icons["defaultIcons"]["box"];
     local overlayDefaultByName = box.overlays.icons.byName["defaultIcons"]["box"];
     local overlay = nil;
@@ -37,10 +34,6 @@ function PIH_Display_DrawBox.setBox(args)
             box.ownTable.timeWidth = getTextWidth(size, utf8Substr(" 99 Tage 23:23", 0));
             box.ownTable.fillTypeWidth = getTextWidth(size, utf8Substr(ProductionInfoHud.longestFillTypeTitle, 0));
             box.ownTable.textWidth = (w - box.ownTable.timeWidth - box.ownTable.fillTypeWidth - (difW*6));
-            -- text breite soll mindestens die breite der halben Zeit haben
---             if box.ownTable.textWidth < (box.ownTable.timeWidth/2) then
---                 box.ownTable.textWidth = box.ownTable.timeWidth;
---             end
             -- Wenn jetzt aber die Textbreite kleiner ist als die breite des Filltypes, dann beides gleich breit machen
             if box.ownTable.textWidth < box.ownTable.fillTypeWidth then
                 local both = (box.ownTable.textWidth + box.ownTable.fillTypeWidth)/2
@@ -53,13 +46,14 @@ function PIH_Display_DrawBox.setBox(args)
     end;
     needsUpdate();
 
-    if not ProductionInfoHud.currentMission.hlUtils.isMouseCursor then box.isSetting = false;end;
+    if not g_currentMission.hlUtils.isMouseCursor then box.isSetting = false;end;
 
     local iconColor = nil;
     local iconWidth = box.ownTable.iconWidth;
     local iconHeight = box.ownTable.iconHeight;
---     local iconWidthS = iconWidth/1.3;
---     local iconHeightS = iconHeight/1.3;
+    local iconWidthS = iconWidth/1.3;
+    local iconSpace = iconWidthS + (2*difW);
+    local iconHeightS = iconHeight/1.3;
     local nextPosX = x+(difW*3);
     local nextPosY = y;
     local nextIconPosX = x+difW;
@@ -75,10 +69,10 @@ function PIH_Display_DrawBox.setBox(args)
     --PIH_Display.testString[3] = "bounds4: ".. tostring(box.screen.bounds[4]);
 
     function setInfoHelpText(txt, maxLine, txtColor) --global or mod
-        if box.isSetting and box.settingTyp == 1 and ProductionInfoHud.currentMission.hlHudSystem.infoDisplay.on then --insert more text
+        if box.isSetting and box.settingTyp == 1 and g_currentMission.hlHudSystem.infoDisplay.on then --insert more text
             box:setMoreInfo(tostring(txt));
         else
-            ProductionInfoHud.currentMission.hlHudSystem:addTextDisplay( {txt=tostring(txt), maxLine=maxLine, txtColor=txtColor} );
+            g_currentMission.hlHudSystem:addTextDisplay( {txt=tostring(txt), maxLine=maxLine, txtColor=txtColor} );
         end;
     end;
 
@@ -87,11 +81,11 @@ function PIH_Display_DrawBox.setBox(args)
         --warningLine--
         function setWarningLineIcon()
             overlay = overlayDefaultGroup[overlayDefaultByName["right"]];
-            ProductionInfoHud.currentMission.hlUtils.setOverlay(overlay, x+w-((iconWidth/1.5/2)), nextPosY-0.003, iconWidth/1.5, iconHeight/1.5);
-            ProductionInfoHud.currentMission.hlUtils.setBackgroundColor(overlay, ProductionInfoHud.currentMission.hlUtils.getColor(box.overlays.color.warning, true));
+            g_currentMission.hlUtils.setOverlay(overlay, x+w-((iconWidth/1.5/2)), nextPosY-0.003, iconWidth/1.5, iconHeight/1.5);
+            g_currentMission.hlUtils.setBackgroundColor(overlay, g_currentMission.hlUtils.getColor(box.overlays.color.warning, true));
             local inIconArea = overlay.mouseInArea();
             if inIconArea and box.isHelp then setInfoHelpText(string.format(box:getI18n("hl_infoDisplay_viewNotAllIcons"), "Box"), 0);end;
-            if ProductionInfoHud.currentMission.hlUtils.runsTimer("1sec", true) then
+            if g_currentMission.hlUtils.runsTimer("1sec", true) then
                 overlay:render();
             end;
         end;
@@ -105,12 +99,12 @@ function PIH_Display_DrawBox.setBox(args)
                 overlay = overlayDefaultGroup[overlayDefaultByName["lineHorizontalUpDown"]];
                 tempOverlay = box.overlays.bgLine;
                 if overlay ~= nil and tempOverlay ~= nil then
-                    ProductionInfoHud.currentMission.hlUtils.setOverlay(overlay, nextIconPosX, nextPosY, iconWidth, iconHeight);
+                    g_currentMission.hlUtils.setOverlay(overlay, nextIconPosX, nextPosY, iconWidth, iconHeight);
                     inIconArea = overlay.mouseInArea();
-                    if inIconArea then ProductionInfoHud.currentMission.hlUtils.setBackgroundColor(overlay, ProductionInfoHud.currentMission.hlUtils.getColor(box.overlays.color.inArea, true));else ProductionInfoHud.currentMission.hlUtils.setBackgroundColor(overlay, ProductionInfoHud.currentMission.hlUtils.getColor(box.overlays.color.text, true));end;
+                    if inIconArea then g_currentMission.hlUtils.setBackgroundColor(overlay, g_currentMission.hlUtils.getColor(box.overlays.color.inArea, true));else g_currentMission.hlUtils.setBackgroundColor(overlay, g_currentMission.hlUtils.getColor(box.overlays.color.text, true));end;
                     overlay:render();
                     if inIconArea and box.isHelp then setInfoHelpText(string.format(box:getI18n("hl_infoDisplay_lineDistance"), string.format("%1.2f", box.screen.size.distance.textLine/box.screen.pixelH)));end;
-                    if not ProductionInfoHud.currentMission.hlUtils:disableInArea() and inArea and inIconArea then box:setClickArea( {overlay.x, overlay.x+overlay.width, overlay.y, overlay.y+overlay.height, onClick=PIH_Display_MouseKeyEventsBox.onClickArea, whatClick="PIH_Display_Box", typPos=boxNumber, whereClick="settingLineDistance_", ownTable={}} );end;
+                    if not g_currentMission.hlUtils:disableInArea() and inArea and inIconArea then box:setClickArea( {overlay.x, overlay.x+overlay.width, overlay.y, overlay.y+overlay.height, onClick=PIH_Display_MouseKeyEventsBox.onClickArea, whatClick="PIH_Display_Box", typPos=boxNumber, whereClick="settingLineDistance_", ownTable={}} );end;
                     nextIconPosX = nextIconPosX+iconWidth+difW;
                 end;
             else
@@ -137,13 +131,13 @@ function PIH_Display_DrawBox.setBox(args)
             local inIconArea = false;
             function setOverlay(whereClick, color, marked)
                 if color == nil then color = box.overlays.color.notActive;end;
-                ProductionInfoHud.currentMission.hlUtils.setOverlay(overlay, nextIconPosX, nextPosY, iconWidth, iconHeight);
+                g_currentMission.hlUtils.setOverlay(overlay, nextIconPosX, nextPosY, iconWidth, iconHeight);
                 inIconArea = overlay.mouseInArea();
-                ProductionInfoHud.currentMission.hlUtils.setBackgroundColor(overlay, ProductionInfoHud.currentMission.hlUtils.getColor(color, true));
+                g_currentMission.hlUtils.setBackgroundColor(overlay, g_currentMission.hlUtils.getColor(color, true));
                 overlay:render();
-                if not ProductionInfoHud.currentMission.hlUtils:disableInArea() and inArea and inIconArea and whereClick ~= nil then box:setClickArea( {overlay.x, overlay.x+overlay.width, overlay.y, overlay.y+overlay.height, onClick=PIH_Display_MouseKeyEventsBox.onClickArea, whatClick="PIH_Display_Box", typPos=boxNumber, whereClick=whereClick, ownTable={}} );end;
+                if not g_currentMission.hlUtils:disableInArea() and inArea and inIconArea and whereClick ~= nil then box:setClickArea( {overlay.x, overlay.x+overlay.width, overlay.y, overlay.y+overlay.height, onClick=PIH_Display_MouseKeyEventsBox.onClickArea, whatClick="PIH_Display_Box", typPos=boxNumber, whereClick=whereClick, ownTable={}} );end;
                 if marked ~= nil and marked then
-                    setTextColor(unpack(ProductionInfoHud.currentMission.hlUtils.getColor(box.overlays.color.warning, true)));
+                    setTextColor(unpack(g_currentMission.hlUtils.getColor(box.overlays.color.warning, true)));
                     renderText(nextIconPosX, nextPosY+(iconHeight/1.6), size, tostring("*"));
                     setTextColor(1, 1, 1, 1);
                 end;
@@ -289,10 +283,11 @@ function PIH_Display_DrawBox.setBox(args)
             end;
             nextPosY = nextPosY-box.ownTable.lineHeight;
         end;
+
         if box.viewExtraLine and not box.isSetting then viewExtraLine();elseif box.viewExtraLine and box.isSetting then viewExtraLineSetting();end;
         --viewExtraLine--
 
-        local color = ProductionInfoHud.currentMission.hlUtils.getColor(box.overlays.color.text, true);
+        local color = g_currentMission.hlUtils.getColor(box.overlays.color.text, true);
 --         local maxTxtWidth = w-(difW*2);
         local bounds1 = box.screen.bounds[1];
         local bounds2 = box.screen.bounds[2];
@@ -302,9 +297,6 @@ function PIH_Display_DrawBox.setBox(args)
 
             -- Ab hier anzeige der Zeilen - Achim
 
-
---             local trimReplaceText = ".";
---             local trimText = 0;
             if ProductionInfoHud.CurrentProductionItems[t] ~= nil then
                 local productionItem = ProductionInfoHud.CurrentProductionItems[t];
 
@@ -316,7 +308,7 @@ function PIH_Display_DrawBox.setBox(args)
                     setTextBold(true);
                     setTextColor(unpack(color));
                     setTextAlignment(0);
-                    local text = ProductionInfoHud.currentMission.hlUtils.getTxtToWidth(tostring(productionItem.name), size, box.ownTable.textWidth, false, ".");
+                    local text = g_currentMission.hlUtils.getTxtToWidth(tostring(productionItem.name), size, box.ownTable.textWidth, false, ".");
                     renderText(nextRightPosX, nextPosY, size, tostring(text));
                     setTextBold(false);
                     setTextColor(1, 1, 1, 1);
@@ -329,15 +321,32 @@ function PIH_Display_DrawBox.setBox(args)
 
                 ---Filltype---
                 if canNextView then
+                    if productionItem.isInput then
+                        overlay = overlayDefaultGroup[overlayDefaultByName["selling"]];
+                    elseif productionItem.isOutput then
+                        overlay = overlayDefaultGroup[overlayDefaultByName["bying"]];
+                    else
+                        overlay = nil;
+                    end
+--                     ProductionInfoHud.DebugTable("overlayDefaultByName", overlayDefaultByName)
+--                     ProductionInfoHud.DebugTable("overlayDefaultGroup", overlayDefaultGroup)
+--                     ProductionInfoHud.DebugText("overlay: %s", overlay);
+                    if overlay ~= nil then
+                        g_currentMission.hlUtils.setOverlay(overlay, nextRightPosX + difW, nextPosY, iconWidthS, iconHeightS);
+                        overlay:render();
+                    end
+
+                    nextRightPosX = nextRightPosX + iconSpace;
+
                     setTextColor(unpack(color));
                     setTextAlignment(0);
-                    local text = ProductionInfoHud.currentMission.hlUtils.getTxtToWidth(tostring(productionItem.fillTypeTitle), size, box.ownTable.fillTypeWidth, false, ".");
+                    local text = g_currentMission.hlUtils.getTxtToWidth(tostring(productionItem.fillTypeTitle), size, box.ownTable.fillTypeWidth - iconSpace, false, ".");
                     renderText(nextRightPosX, nextPosY, size, tostring(text));
                     setTextBold(false);
                     setTextColor(1, 1, 1, 1);
                     setTextAlignment(0);
                     lineWidth = lineWidth+box.ownTable.fillTypeWidth;
-                    nextRightPosX = nextRightPosX+box.ownTable.fillTypeWidth;
+                    nextRightPosX = nextRightPosX + box.ownTable.fillTypeWidth - iconSpace;
                     canNextView = lineWidth > iconWidth;
                 end;
                 ---Filltype---
@@ -361,8 +370,8 @@ function PIH_Display_DrawBox.setBox(args)
             elseif #ProductionInfoHud.CurrentProductionItems == 0 then
                 local moreTxt = "";
                 if not box.viewExtraLine and box.searchFilter:len() > 0 then moreTxt = tostring(ProductionInfoHud.i18n:getText("searchFilter_On"));end;
-                local text = ProductionInfoHud.currentMission.hlUtils.getTxtToWidth(tostring(ProductionInfoHud.i18n:getText("character_option_none")).. moreTxt, size, w-(difW*2), false, ".");
-                setTextColor(unpack(ProductionInfoHud.currentMission.hlUtils.getColor(box.overlays.color.text, true)));
+                local text = g_currentMission.hlUtils.getTxtToWidth(tostring(ProductionInfoHud.i18n:getText("character_option_none")).. moreTxt, size, w-(difW*2), false, ".");
+                setTextColor(unpack(g_currentMission.hlUtils.getColor(box.overlays.color.text, true)));
                 renderText(nextLeftPosX, nextPosY, size, tostring(text));
                 setTextColor(1, 1, 1, 1);
                 break;
