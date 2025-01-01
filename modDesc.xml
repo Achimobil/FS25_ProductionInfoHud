@@ -2,7 +2,7 @@
 <modDesc descVersion="94">
     <author>Achimobil</author>
     <contributor>HappyLooser</contributor>
-    <version>0.0.0.10</version>
+    <version>0.0.0.11</version>
 
     <title>
         <de>Produktionen Info Hud</de>
@@ -21,6 +21,7 @@
         <sourceFile filename="hlUtils/_hlUtils.lua"/>
         <sourceFile filename="hlHudSystem/hlHudSystem.lua"/>
         <sourceFile filename="scripte_PIH/PIH_DisplaySetGet.lua"/>
+        <sourceFile filename="scripte_PIH/PIH_Display_MouseKeyEventsBox.lua"/>
         <sourceFile filename="scripte_PIH/xml/PIH_Display_DrawBox.lua"/>
         <sourceFile filename="scripte_PIH/xml/PIH_Display_XmlBox.lua"/>
     </extraSourceFiles>

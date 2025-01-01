@@ -95,6 +95,25 @@ function PIH_Display_DrawBox.setBox(args)
             if nextPosY < y then return;end;
             local setWarningLine = false;
             local inIconArea = false;
+            --Text up--
+            if nextIconPosX+iconWidth < x+w then
+                overlay = overlayDefaultGroup[overlayDefaultByName["textUp"]];
+                tempOverlay = box.overlays.bgLine;
+                if overlay ~= nil and tempOverlay ~= nil then
+                    g_currentMission.hlUtils.setOverlay(overlay, nextIconPosX, nextPosY, iconWidth, iconHeight);
+                    inIconArea = overlay.mouseInArea();
+                    if inIconArea then g_currentMission.hlUtils.setBackgroundColor(overlay, g_currentMission.hlUtils.getColor(box.overlays.color.inArea, true));else g_currentMission.hlUtils.setBackgroundColor(overlay, g_currentMission.hlUtils.getColor(box.overlays.color.text, true));end;
+                    overlay:render();
+                    if inIconArea and box.isHelp then setInfoHelpText(string.format(box:getI18n("pih_infoDisplay_textSize"), string.format("%1.0f", box.screen.size.zoomOutIn.text[1]*1000)));end;
+                    if not g_currentMission.hlUtils:disableInArea() and inArea and inIconArea then box:setClickArea( {overlay.x, overlay.x+overlay.width, overlay.y, overlay.y+overlay.height, onClick=PIH_Display_MouseKeyEventsBox.onClickArea, whatClick="PIH_Display_Box", typPos=boxNumber, whereClick="settingTextSize_", ownTable={}} );end;
+                    nextIconPosX = nextIconPosX+iconWidth+difW;
+                end;
+            else
+                setWarningLine = true;
+            end;
+            --Text up--
+
+            --line distance--
             if nextIconPosX+iconWidth < x+w then
                 overlay = overlayDefaultGroup[overlayDefaultByName["lineHorizontalUpDown"]];
                 tempOverlay = box.overlays.bgLine;
@@ -110,12 +129,7 @@ function PIH_Display_DrawBox.setBox(args)
             else
                 setWarningLine = true;
             end;
-            if nextIconPosX+(iconWidth*3) < x+w then
-                setTextColor(1, 1, 1, 1);
-                renderText(nextIconPosX+difW, nextPosY, size-0.0015, tostring(" |S:"..string.format("%1.1f", size*1000)));
-            else
-                setWarningLine = true;
-            end;
+            --line distance--
 
             if setWarningLine then
                 setWarningLineIcon();
@@ -321,12 +335,10 @@ function PIH_Display_DrawBox.setBox(args)
 
                 ---Filltype---
                 if canNextView then
-                    if productionItem.isInput then
+                    if productionItem.productionPerHour < 0 then
                         overlay = overlayDefaultGroup[overlayDefaultByName["selling"]];
-                    elseif productionItem.isOutput then
-                        overlay = overlayDefaultGroup[overlayDefaultByName["bying"]];
                     else
-                        overlay = nil;
+                        overlay = overlayDefaultGroup[overlayDefaultByName["bying"]];
                     end
 --                     ProductionInfoHud.DebugTable("overlayDefaultByName", overlayDefaultByName)
 --                     ProductionInfoHud.DebugTable("overlayDefaultGroup", overlayDefaultGroup)

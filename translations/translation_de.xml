@@ -7,6 +7,8 @@
         <text name="Full" text="Voll"/>
         <text name="StorageMissing" text="Lager fehlt"/>
 
+        <text name="pih_infoDisplay_textSize" text="*TEXT GRÖSSE* %s (MauseKlick Links/Rechts)" />
+
         <!-- old stuff below -->
         <text name="input_TOGGLE_GUI" text="PIH: Anzeige umschalten"/>
         <text name="NearlyFull" text="Fast voll"/>
