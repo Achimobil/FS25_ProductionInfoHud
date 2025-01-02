@@ -1,9 +1,8 @@
 <pih_display>
-    <boxOtherIcons load="3">
-        <icon name="fermenting" type="2" color="orangeRed" placeB="95" />
-        <icon name="selling" type="2" color="orange" placeB="74" />
-        <icon name="bying" type="2" color="green" placeB="75" />
-    </boxOtherIcons>
+    <boxOther1Icons load="2">
+        <icon name="selling" type="2" color="orange" placeB="123" />
+        <icon name="bying" type="2" color="green" placeB="122" />
+    </boxOther1Icons>
     <boxIcons load="3">
         <icon name="textUp" type="2" color="white" setStateInArea="true" placeB="22" />
         <icon name="textDown" type="2" color="white" setStateInArea="true" placeB="23" />
