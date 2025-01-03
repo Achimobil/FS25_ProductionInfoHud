@@ -24,7 +24,8 @@ function PIH_Display_XmlBox:defaultValues(box)
         viewBales=false,
         viewAnimals=false,
         viewTypAnimals=1,
-        viewProductions=false
+        viewProductions=false,
+        dataViewMode=1
     }; --own values viewFillType=1(by Name), 2(by Icon), 3(by Icon/Name)
 end;
 

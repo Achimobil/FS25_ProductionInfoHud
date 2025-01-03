@@ -158,6 +158,8 @@ function PIH_Display_DrawBox.setBox(args)
                 nextIconPosX = nextIconPosX+iconWidth+difW;
                 iconColor = nil;
             end;
+
+
             if nextIconPosX+iconWidth < x+w then
                 overlay = overlayDefaultGroup[overlayDefaultByName["search"]];
                 if overlay ~= nil then
@@ -168,6 +170,8 @@ function PIH_Display_DrawBox.setBox(args)
             else
                 setWarningLine = true;
             end;
+
+
             if not setWarningLine and nextIconPosX+iconWidth < x+w then
                 overlay = overlayDefaultGroup[overlayDefaultByName["flip"]];
                 if overlay ~= nil then
@@ -363,19 +367,32 @@ function PIH_Display_DrawBox.setBox(args)
                 end;
                 ---Filltype---
 
-                ---Rest time---
+                ---data column---
                 if canNextView then
+                    local dataString = "";
+                    if box.ownTable.dataViewMode == 1 then
+                        -- mode 1 = Time left
+                        dataString = tostring(productionItem.TimeLeftString);
+                    elseif box.ownTable.dataViewMode == 2 then
+                        -- mode 2 = Capacity left
+                        dataString = string.format("%d", productionItem.capacityData);
+                    elseif box.ownTable.dataViewMode == 3 then
+                        -- mode 3 = production amount
+                        dataString = string.format("%1.1f", productionItem.productionPerHour);
+                    end
+
                     setTextColor(unpack(color));
                     setTextAlignment(2);
-                    renderText(nextRightPosX + box.ownTable.timeWidth, nextPosY, size, tostring(productionItem.TimeLeftString));
+                    renderText(nextRightPosX + box.ownTable.timeWidth, nextPosY, size, dataString);
                     setTextBold(false);
                     setTextColor(1, 1, 1, 1);
                     setTextAlignment(0);
+                    if not g_currentMission.hlUtils:disableInArea() and inArea then box:setClickArea( {nextRightPosX, nextRightPosX+box.ownTable.timeWidth, nextPosY, nextPosY+box.ownTable.lineHeight, onClick=PIH_Display_MouseKeyEventsBox.onClickArea, whatClick="PIH_Display_Box", typPos=boxNumber, whereClick="dataColumn_", ownTable={}} );end;
                     lineWidth = lineWidth+box.ownTable.timeWidth;
                     nextRightPosX = nextRightPosX+box.ownTable.timeWidth;
                     canNextView = lineWidth > iconWidth;
                 end;
-                ---Rest time---
+                ---data column---
 
                 nextPosY = nextPosY-box.ownTable.lineHeight;
                 nextRightPosX = nextPosX;

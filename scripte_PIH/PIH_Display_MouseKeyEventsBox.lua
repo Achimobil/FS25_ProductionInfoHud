@@ -10,6 +10,7 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
         if args.button == Input.MOUSE_BUTTON_LEFT then
             local box = args.box;
             if box ~= nil then
+--         print("onClickArea")
                 if box.viewExtraLine then
                     if args.clickAreaTable.whereClick == "settingLineDistance_" then
                         local maxDistance = box.screen.pixelH*8;
@@ -24,6 +25,14 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                         box:setUpdateState(true);
                         return;
                     end;
+                end;
+                if args.clickAreaTable.whereClick == "dataColumn_" then
+                    local newValue = box.ownTable.dataViewMode + 1;
+                    if newValue == 4 then
+                        newValue = 1;
+                    end
+                    box.ownTable.dataViewMode = newValue;
+                    return;
                 end;
             end;
         elseif args.button == Input.MOUSE_BUTTON_RIGHT then
