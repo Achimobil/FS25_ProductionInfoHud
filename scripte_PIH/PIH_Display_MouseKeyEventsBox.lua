@@ -30,8 +30,16 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                     local newValue = box.ownTable.dataViewMode + 1;
                     if newValue == 4 then
                         newValue = 1;
-                    end
+                    end;
                     box.ownTable.dataViewMode = newValue;
+                    return;
+                end;
+                if args.clickAreaTable.whereClick == "filTypeColumn_" then
+                    if box.ownTable.fillTypeFilter == nil then
+                        box.ownTable.fillTypeFilter = string.gsub(args.clickAreaTable.ownTable.fillType, "*", "");
+                    else
+                        box.ownTable.fillTypeFilter = nil;
+                    end;
                     return;
                 end;
             end;
