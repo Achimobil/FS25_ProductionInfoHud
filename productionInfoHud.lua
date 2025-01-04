@@ -131,11 +131,11 @@ function ProductionInfoHud:AddProductionItemToList(myProductionItems, production
         if productionItem.productionPerHour < 0 then
             -- wenn productionPerHour negativ, dann wird verbraucht, aber die Stunden sollten alle positiv sein
             productionItem.hoursLeft = productionItem.fillLevel / (productionItem.productionPerHour * timeFactor * -1);
-            productionItem.capacityData = productionItem.fillLevel;
+            productionItem.capacityData = (productionItem.capacity - productionItem.fillLevel);
         else
             -- wenn productionPerHour positiv, dann wird produziert, also Restzeit basiert auf bis lager voll ist
             productionItem.hoursLeft = (productionItem.capacity - productionItem.fillLevel) / (productionItem.productionPerHour * timeFactor);
-            productionItem.capacityData = (productionItem.capacity - productionItem.fillLevel);
+            productionItem.capacityData = productionItem.fillLevel;
         end
     end
 
