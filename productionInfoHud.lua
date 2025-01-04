@@ -164,7 +164,13 @@ function ProductionInfoHud:AddProductionItemToList(myProductionItems, production
             else
                 -- output but capacity 0 then target storage is missing
                 if productionItem.capacity == 0 then
-                    timeString = ProductionInfoHud.i18n:getText("StorageMissing");
+                    if productionItem.isPallet ~= nil and productionItem.isPallet then
+                        -- Palettengröße vom Spawnpaltz kann nicht ausgelesen werden und wenn kein Lager im Stall ist, dann nur Paletts als Zeit anzeigen
+                        timeString = ProductionInfoHud.i18n:getText("OnlyPallets");
+                        productionItem.hoursLeft = math.huge;
+                    else
+                        timeString = ProductionInfoHud.i18n:getText("StorageMissing");
+                    end
                 else
                     timeString = ProductionInfoHud.i18n:getText("Full");
                 end
@@ -413,6 +419,42 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
         productionItem.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(spec.fillType);
 
         self:AddProductionItemToList(myProductionItems, productionItem);
+    end
+
+    -- pallets sind da, also Item erstellen, wenn nicht automatisch
+    spec = husbandry.spec_husbandryPallets;
+    if spec ~= nil then
+        -- pallets hat eine liste von Filltypes, könnten also mehrere sein
+        for _, fillType in ipairs(spec.fillTypes) do
+            local litersPerHour = spec.litersPerHour[fillType]
+
+            -- item für produktionsliste erstellen.
+            local productionItem = {}
+            productionItem.name = husbandry:getName();
+            productionItem.fillTypeId = fillType;
+            -- negative when more used than produced. calculated on one day per month as giants always does
+            productionItem.productionPerHour = litersPerHour * husbandry.spec_husbandry.globalProductionFactor;
+             -- time until full or empty, nil when not changing
+            productionItem.hoursLeft = nil;
+            productionItem.fillLevel = spec:getHusbandryFillLevel(fillType)
+            productionItem.capacity = spec:getHusbandryCapacity(fillType)
+            productionItem.isInput = false;
+            productionItem.isOutput = true;
+            productionItem.isPallet = true;
+
+            productionItem.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillType);
+
+            if productionItem.capacity == 0 then
+                productionItem.capacityLevel = 0
+            elseif productionItem.capacity == nil then
+                productionItem.capacityLevel = 0
+                print("Error: No storage for '" .. productionItem.fillTypeTitle .. "' in productionPoint but defined to used. Has to be fixed in '" .. husbandry.owningPlaceable.customEnvironment .."'.")
+            else
+                productionItem.capacityLevel = productionItem.fillLevel / productionItem.capacity;
+            end
+
+            self:AddProductionItemToList(myProductionItems, productionItem);
+        end
     end
 end
 
