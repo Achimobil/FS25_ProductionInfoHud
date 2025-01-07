@@ -9,6 +9,7 @@ function PIH_Display_DrawBox.setBox(args)
 
     local currentProductionItems = {};
     if box.ownTable.fillTypeFilter ~= nil then
+        -- hier werden keine anderen Filter berücksichtigt und das soll so
         for _, productionItem in pairs(ProductionInfoHud.CurrentProductionItems) do
             if string.gsub(productionItem.fillTypeTitle, "*", "") == box.ownTable.fillTypeFilter then
                 table.insert(currentProductionItems, productionItem);
@@ -19,7 +20,17 @@ function PIH_Display_DrawBox.setBox(args)
             currentProductionItems = ProductionInfoHud.CurrentProductionItems;
         end
     else
-        currentProductionItems = ProductionInfoHud.CurrentProductionItems;
+        -- hier alle klickbaren Filter kombinieren
+        for _, productionItem in pairs(ProductionInfoHud.CurrentProductionItems) do
+            local skipItem = false;
+            if not skipItem and box.ownTable.ShowAnimal ~= nil and box.ownTable.ShowAnimal == false and productionItem.IsAnimal then
+                skipItem = true;
+            end
+
+            if not skipItem then
+                table.insert(currentProductionItems, productionItem);
+            end
+        end
     end
 
     local inArea = args.inArea
@@ -40,7 +51,6 @@ function PIH_Display_DrawBox.setBox(args)
     local overlayDefaultByName = box.overlays.icons.byName["defaultIcons"]["box"];
     local overlay = nil;
     local tempOverlay = nil;
---     local markerOpen = KeyboardHelper.getDisplayKeyName(273.0);
 
     function needsUpdate()
         if box.needsUpdate or box.ownTable.lineHeight == nil then
@@ -75,13 +85,9 @@ function PIH_Display_DrawBox.setBox(args)
     local nextLeftPosX = nextPosX+difW;
     local nextRightPosX = nextPosX;
     nextPosY = nextPosY+(h)-(box.ownTable.lineHeight)-difH;
---     local openGroup = PIH_DisplaySetGet:setViewFillTypes(box);
     box.screen.bounds[4] = #currentProductionItems+1; -- +1 for Imaginäre Line wenn untergruppe an ist (viewAmountStorages/viewBestPriceStations etc.
     if box.viewExtraLine then box.screen.bounds[4] = box.screen.bounds[4]+1;end;
 
-    --PIH_Display.testString[1] = "bounds1: ".. tostring(box.screen.bounds[1]);
-    --PIH_Display.testString[2] = "bounds2: ".. tostring(box.screen.bounds[2]);
-    --PIH_Display.testString[3] = "bounds4: ".. tostring(box.screen.bounds[4]);
 
     function setInfoHelpText(txt, maxLine, txtColor) --global or mod
         if box.isSetting and box.settingTyp == 1 and g_currentMission.hlHudSystem.infoDisplay.on then --insert more text
@@ -155,7 +161,6 @@ function PIH_Display_DrawBox.setBox(args)
         --viewExtraLine--
         function viewExtraLine()
             if nextPosY < y then return;end;
-            local onOffTxt = ProductionInfoHud.i18n:getText("ui_on").. "/".. ProductionInfoHud.i18n:getText("ui_off");
             local setWarningLine = false;
             local inIconArea = false;
             function setOverlay(whereClick, color, marked)
@@ -174,143 +179,19 @@ function PIH_Display_DrawBox.setBox(args)
                 iconColor = nil;
             end;
 
-
+            --animal filter--
             if nextIconPosX+iconWidth < x+w then
-                overlay = overlayDefaultGroup[overlayDefaultByName["search"]];
-                if overlay ~= nil then
-                    if box.searchFilter:len() > 0 then iconColor = box.overlays.color.on;end;
-                    setOverlay("search_", iconColor);
-                    if inIconArea and box.isHelp then setInfoHelpText(ProductionInfoHud.i18n:getText("box_searchFilterInfo"), 0);end;
-                end;
-            else
-                setWarningLine = true;
-            end;
-
-
-            if not setWarningLine and nextIconPosX+iconWidth < x+w then
-                overlay = overlayDefaultGroup[overlayDefaultByName["flip"]];
-                if overlay ~= nil then
-                    if box.ownTable.sortBy > 1 then iconColor = box.overlays.color.on;end;
-                    setOverlay("sortBy_", iconColor);
-                    local sortByWhat = ProductionInfoHud.i18n:getText("button_no");
-                    if box.ownTable.sortBy == 2 then sortByWhat = "NAME";elseif box.ownTable.sortBy == 3 then sortByWhat = ProductionInfoHud.i18n:getText("info_fillLevel");elseif box.ownTable.sortBy == 4 then sortByWhat = ProductionInfoHud.i18n:getText("ui_sellPrices");elseif box.ownTable.sortBy == 5 then sortByWhat = ProductionInfoHud.i18n:getText("ui_gameMode_seasonal").. "/".. ProductionInfoHud.i18n:getText("ui_month");elseif box.ownTable.sortBy == 6 then sortByWhat = ProductionInfoHud.i18n:getText("ui_buyPrices").. "=".. ProductionInfoHud.i18n:getText("highestPrice");end;
-                    if inIconArea then setInfoHelpText(ProductionInfoHud.i18n:getText("button_sortTable").. "... ".. ProductionInfoHud.i18n:getText("fieldJob_active").. ": ".. tostring(sortByWhat));end;
-                end;
-            else
-                setWarningLine = true;
-            end;
-            if not setWarningLine and nextIconPosX+iconWidth < x+w then
-                overlay = overlayDefaultGroup[overlayDefaultByName["priceTrend"]];
-                if overlay ~= nil then
-                    if box.ownTable.viewPriceTrend then iconColor = box.overlays.color.on;end;
-                    setOverlay("viewPriceTrend_", iconColor);
-                    local addText = ProductionInfoHud.i18n:getText("button_showFluctuations").. " ".. tostring(onOffTxt);
-                    if inIconArea and box.isHelp then setInfoHelpText(addText);end;
-                end;
-            else
-                setWarningLine = true;
-            end;
-            if not setWarningLine and nextIconPosX+iconWidth < x+w then
-                overlay = overlayDefaultGroup[overlayDefaultByName["moneyEuro"]];
-                if overlay ~= nil then
-                    if box.ownTable.viewPrice then iconColor = box.overlays.color.on;end;
-                    setOverlay("viewPrice_", iconColor);
-                    local addText = ProductionInfoHud.i18n:getText("button_showActualPrices").. " ".. tostring(onOffTxt).. "\n".. ProductionInfoHud.i18n:getText("box_viewPricesInfo").. "\n".. string.format(ProductionInfoHud.i18n:getText("updateTact"), box.ownTable.priceUpdateTimer).. "\n".. ProductionInfoHud.i18n:getText("object_maphotspot").. "\n".. ProductionInfoHud.i18n:getText("object_teleport");
-                    if inIconArea and box.isHelp then setInfoHelpText(addText, 0);end;
-                end;
-            else
-                setWarningLine = true;
-            end;
-            if not setWarningLine and nextIconPosX+iconWidth < x+w then
-                overlay = overlayDefaultGroup[overlayDefaultByName["fillAmount"]];
-                if overlay ~= nil then
-                    if box.searchFilter:len() > 0 then iconColor = box.overlays.color.warning;elseif box.ownTable.viewFillAmounts then iconColor = box.overlays.color.on;end;
-                    setOverlay("viewFillAmounts_", iconColor);
-                    local addText = ProductionInfoHud.i18n:getText("shop_fruitTypes").. "/".. ProductionInfoHud.i18n:getText("info_fillLevel").. " > 0 ".. tostring(onOffTxt).. "\n".. ProductionInfoHud.i18n:getText("box_viewFillEmptyAmountsInfo").. "\n".. string.format(ProductionInfoHud.i18n:getText("updateTact"), box.ownTable.amountUpdateTimer).. "\n".. ProductionInfoHud.i18n:getText("object_maphotspot").. "\n".. ProductionInfoHud.i18n:getText("object_teleport");
-                    if inIconArea and box.isHelp then setInfoHelpText(addText, 0);end;
-                end;
-            else
-                setWarningLine = true;
-            end;
-            if not setWarningLine and nextIconPosX+iconWidth < x+w then
-                overlay = overlayDefaultGroup[overlayDefaultByName["emptyAmount"]];
-                if overlay ~= nil then
-                    if box.searchFilter:len() > 0 then iconColor = box.overlays.color.warning;elseif box.ownTable.viewEmptyAmounts then iconColor = box.overlays.color.on;end;
-                    setOverlay("viewEmptyAmounts_", iconColor);
-                    local addText = ProductionInfoHud.i18n:getText("shop_fruitTypes").. "/".. ProductionInfoHud.i18n:getText("info_fillLevel").. " = 0 ".. tostring(onOffTxt).. "\n".. ProductionInfoHud.i18n:getText("box_viewFillEmptyAmountsInfo").. "\n".. string.format(ProductionInfoHud.i18n:getText("updateTact"), box.ownTable.amountUpdateTimer).. "\n".. ProductionInfoHud.i18n:getText("object_maphotspot").. "\n".. ProductionInfoHud.i18n:getText("object_teleport");
-                    if inIconArea and box.isHelp then setInfoHelpText(addText, 0);end;
-                end;
-            else
-                setWarningLine = true;
-            end;
-            if not setWarningLine and nextIconPosX+iconWidth < x+w then
-                overlay = overlayDefaultGroup[overlayDefaultByName["wheat"]];
-                if overlay ~= nil then
-                    local moreTxt = "";
-                    if box.ownTable.viewFillType == 2 then iconColor = box.overlays.color.on;moreTxt = "(Icon)";elseif box.ownTable.viewFillType == 3 then iconColor = box.overlays.color.warning;moreTxt = "(Icon + Name)";else moreTxt = "(Name)";end;
-                    if box.ownTable.viewShowOnPriceTable then moreTxt = moreTxt.. "\n".. string.format(ProductionInfoHud.i18n:getText("box_viewShowOnPriceTableInfo"), ProductionInfoHud.i18n:getText("ui_off"));else moreTxt = moreTxt.. "\n".. string.format(ProductionInfoHud.i18n:getText("box_viewShowOnPriceTableInfo"), ProductionInfoHud.i18n:getText("ui_on"));end;
-                    setOverlay("viewFillType_", iconColor, box.ownTable.viewShowOnPriceTable);
-                    local addText = ProductionInfoHud.i18n:getText("shop_fruitTypes").. "/Name,Icon,Icon + Name ".. moreTxt;
-                    if inIconArea and box.isHelp then setInfoHelpText(addText, 0);end;
-                end;
-            else
-                setWarningLine = true;
-            end;
-            if not setWarningLine and nextIconPosX+iconWidth < x+w then
-                overlay = overlayDefaultGroup[overlayDefaultByName["production"]];
-                if overlay ~= nil then
-                    if box.ownTable.viewProductions then iconColor = box.overlays.color.on;end;
-                    setOverlay("viewProductions_", iconColor);
-                    if inIconArea and box.isHelp then setInfoHelpText(ProductionInfoHud.i18n:getText("box_viewProductionsInfo").. "\n".. string.format(ProductionInfoHud.i18n:getText("updateTact"), box.ownTable.amountUpdateTimer).. "\n".. ProductionInfoHud.i18n:getText("object_maphotspot").. "\n".. ProductionInfoHud.i18n:getText("object_teleport"), 0);end;
-                end;
-            else
-                setWarningLine = true;
-            end;
-            if not setWarningLine and nextIconPosX+iconWidth < x+w then
                 overlay = overlayDefaultGroup[overlayDefaultByName["animals"]];
                 if overlay ~= nil then
-                    if box.ownTable.viewAnimals then iconColor = box.overlays.color.on;end;
-                    setOverlay("viewAnimals_", iconColor);
-                    local addText =    ProductionInfoHud.i18n:getText("ui_animalInformation").. "/".. ProductionInfoHud.i18n:getText("button_easy").. " ".. tostring(onOffTxt).. "\n".. string.format(ProductionInfoHud.i18n:getText("updateTact"), box.ownTable.animalsUpdateTimer).. "\n".. ProductionInfoHud.i18n:getText("object_maphotspot").. "\n".. ProductionInfoHud.i18n:getText("object_teleport"); --"\nKlicke auf ein Object für MapHotspot (Mittlere Maustaste)\nTeleport zu Object (Rechte Maustaste) *Wenn vorhanden*";
-                    if inIconArea and box.isHelp then setInfoHelpText(addText, 0);end;
+                    if box.ownTable.ShowAnimal then iconColor = box.overlays.color.on;end;
+                    setOverlay("animalFilter_", iconColor);
+                    if inIconArea and box.isHelp then setInfoHelpText(ProductionInfoHud.i18n:getText("pih_animalFilter"), 0);end;
                 end;
             else
                 setWarningLine = true;
             end;
-            if not setWarningLine and nextIconPosX+iconWidth < x+w then
-                overlay = overlayDefaultGroup[overlayDefaultByName["pallete"]];
-                if overlay ~= nil then
-                    if box.ownTable.viewPal then iconColor = box.overlays.color.on;end;
-                    setOverlay("viewPal_", iconColor);
-                    if inIconArea and box.isHelp then setInfoHelpText(ProductionInfoHud.i18n:getText("box_viewPalletsInfo").. "\n".. ProductionInfoHud.i18n:getText("performance_attention").. "\n".. string.format(ProductionInfoHud.i18n:getText("updateTact"), box.ownTable.palletsUpdateTimer).. "\n".. ProductionInfoHud.i18n:getText("object_maphotspot"), 0);end;
-                end;
-            else
-                setWarningLine = true;
-            end;
-            if not setWarningLine and nextIconPosX+iconWidth < x+w then
-                overlay = overlayDefaultGroup[overlayDefaultByName["bale"]];
-                if overlay ~= nil then
-                    if box.ownTable.viewBales then iconColor = box.overlays.color.on;end;
-                    setOverlay("viewBales_", iconColor);
-                    if inIconArea and box.isHelp then setInfoHelpText(ProductionInfoHud.i18n:getText("box_viewBalesInfo").. "\n".. ProductionInfoHud.i18n:getText("performance_attention").. "\n".. string.format(ProductionInfoHud.i18n:getText("updateTact"), box.ownTable.balesUpdateTimer).. "\n".. ProductionInfoHud.i18n:getText("object_maphotspot"), 0);end;
-                end;
-            else
-                setWarningLine = true;
-            end;
-            if not setWarningLine and nextIconPosX+iconWidth < x+w then
-                overlay = overlayDefaultGroup[overlayDefaultByName["closeLines"]];
-                if overlay ~= nil then
-                    if openGroup ~= nil and openGroup then iconColor = box.overlays.color.warning;end;
-                    if openGroup ~= nil and not openGroup then
-                        setOverlay(nil, iconColor);
-                    else
-                        setOverlay("closeAllGroupLines_", iconColor);
-                    end;
-                    if inIconArea and box.isHelp then setInfoHelpText(ProductionInfoHud.i18n:getText("box_closeGroupLines"));end;
-                end;
-            else
-                setWarningLine = true;
-            end;
+            --animal filter--
+
             if setWarningLine then
                 setWarningLineIcon();
             end;

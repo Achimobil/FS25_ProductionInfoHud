@@ -244,6 +244,7 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
         productionItem.capacity = husbandry:getFoodCapacity();
         productionItem.isInput = true;
         productionItem.isOutput = false;
+        productionItem.IsAnimal = true;
 
         if productionItem.capacity == 0 then
             productionItem.capacityLevel = 0
@@ -286,6 +287,7 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
         productionItem.capacity = spec:getHusbandryCapacity(spec.fillType)
         productionItem.isInput = false;
         productionItem.isOutput = true;
+        productionItem.IsAnimal = true;
 
         if productionItem.capacity == 0 then
             productionItem.capacityLevel = 0
@@ -320,6 +322,7 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
             productionItem.capacity = spec:getHusbandryCapacity(fillType)
             productionItem.isInput = false;
             productionItem.isOutput = true;
+            productionItem.IsAnimal = true;
 
             productionItem.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillType);
 
@@ -351,6 +354,7 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
         productionItem.capacity = spec:getHusbandryCapacity(spec.inputFillType)
         productionItem.isInput = true;
         productionItem.isOutput = false;
+        productionItem.IsAnimal = true;
 
         if productionItem.capacity == 0 then
             productionItem.capacityLevel = 0
@@ -377,6 +381,7 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
         productionItemOutput.capacity = spec:getHusbandryCapacity(spec.outputFillType)
         productionItemOutput.isInput = false;
         productionItemOutput.isOutput = true;
+        productionItemOutput.IsAnimal = true;
         productionItemOutput.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(spec.outputFillType);
 
         if productionItemOutput.capacity == 0 then
@@ -406,6 +411,7 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
         productionItem.capacity = spec:getHusbandryCapacity(spec.fillType)
         productionItem.isInput = true;
         productionItem.isOutput = false;
+        productionItem.IsAnimal = true;
 
         if productionItem.capacity == 0 then
             productionItem.capacityLevel = 0
@@ -441,6 +447,7 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
             productionItem.isInput = false;
             productionItem.isOutput = true;
             productionItem.isPallet = true;
+            productionItem.IsAnimal = true;
 
             productionItem.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillType);
 

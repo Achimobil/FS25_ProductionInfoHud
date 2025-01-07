@@ -8,7 +8,8 @@
         <text name="StorageMissing" text="Lager fehlt"/>
         <text name="OnlyPallets" text="Paletten"/>
 
-        <text name="pih_infoDisplay_textSize" text="*TEXT GRÖSSE* %s (MauseKlick Links/Rechts)" />
+        <text name="pih_infoDisplay_textSize" text="*TEXT GRÖSSE* %s (Mausklick Links/Rechts)" />
+        <text name="pih_animalFilter" text="Tiere Anzeigen (Linksklick zum umschalten)" />
 
         <!-- old stuff below -->
         <text name="input_TOGGLE_GUI" text="PIH: Anzeige umschalten"/>

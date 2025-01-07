@@ -14,6 +14,7 @@ end;
 function PIH_DisplaySetGet:loadBoxIcons(box)
     if box.overlays.icons == nil then box.overlays.icons = {byName={}};end;
 
+    g_currentMission.hlUtils.insertIcons( {xmlTagName="pih_display.otherIcons", modDir=ProductionInfoHud.modDir, iconFile="hlHudSystem/icons/otherIcons.dds", xmlFile="icons_PIH/icons.xml", modName="defaultIcons", groupName="box", fileFormat={32,256,512}, iconTable=box.overlays.icons} );
     g_currentMission.hlUtils.insertIcons( {xmlTagName="pih_display.boxOther1Icons", modDir=ProductionInfoHud.modDir, iconFile="hlHudSystem/icons/other1Icons.dds", xmlFile="icons_PIH/icons.xml", modName="defaultIcons", groupName="box", fileFormat={32,256,512}, iconTable=box.overlays.icons} );
     g_currentMission.hlUtils.insertIcons( {xmlTagName="pih_display.boxIcons", modDir=ProductionInfoHud.modDir, iconFile="hlHudSystem/icons/icons.dds", xmlFile="icons_PIH/icons.xml", modName="defaultIcons", groupName="box", fileFormat={64,512,1024}, iconTable=box.overlays.icons} );
 --     ProductionInfoHud.DebugText("firstIcon %s, lastIcon %s", firstIcon, lastIcon)

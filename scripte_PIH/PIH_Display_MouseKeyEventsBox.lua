@@ -25,6 +25,10 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                         box:setUpdateState(true);
                         return;
                     end;
+                    if args.clickAreaTable.whereClick == "animalFilter_" then
+                        box.ownTable.ShowAnimal = not box.ownTable.ShowAnimal;
+                        return;
+                    end;
                 end;
                 if args.clickAreaTable.whereClick == "dataColumn_" then
                     local newValue = box.ownTable.dataViewMode + 1;

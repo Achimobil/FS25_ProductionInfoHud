@@ -1,4 +1,7 @@
 <pih_display>
+    <otherIcons load="1">
+        <icon name="animals" type="2" setStateInArea="true" placeB="103"/>
+    </otherIcons>
     <boxOther1Icons load="2">
         <icon name="selling" type="2" color="orange" placeB="123" />
         <icon name="bying" type="2" color="green" placeB="122" />
