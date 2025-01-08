@@ -26,6 +26,9 @@ function PIH_Display_DrawBox.setBox(args)
             if not skipItem and box.ownTable.ShowAnimal ~= nil and box.ownTable.ShowAnimal == false and productionItem.IsAnimal then
                 skipItem = true;
             end
+            if not skipItem and box.ownTable.ShowProduction ~= nil and box.ownTable.ShowProduction == false and productionItem.IsProduction then
+                skipItem = true;
+            end
 
             if not skipItem then
                 table.insert(currentProductionItems, productionItem);
@@ -179,6 +182,19 @@ function PIH_Display_DrawBox.setBox(args)
                 iconColor = nil;
             end;
 
+            --production filter--
+            if nextIconPosX+iconWidth < x+w then
+                overlay = overlayDefaultGroup[overlayDefaultByName["production"]];
+                if overlay ~= nil then
+                    if box.ownTable.ShowProduction then iconColor = box.overlays.color.on;end;
+                    setOverlay("productionFilter_", iconColor);
+                    if inIconArea and box.isHelp then setInfoHelpText(ProductionInfoHud.i18n:getText("pih_productionFilter"), 0);end;
+                end;
+            else
+                setWarningLine = true;
+            end;
+            --production filter--
+
             --animal filter--
             if nextIconPosX+iconWidth < x+w then
                 overlay = overlayDefaultGroup[overlayDefaultByName["animals"]];
@@ -202,6 +218,7 @@ function PIH_Display_DrawBox.setBox(args)
         --viewExtraLine--
 
         local color = g_currentMission.hlUtils.getColor(box.overlays.color.text, true);
+        local colorOn = g_currentMission.hlUtils.getColor(box.overlays.color.on, true);
 --         local maxTxtWidth = w-(difW*2);
         local bounds1 = box.screen.bounds[1];
         local bounds2 = box.screen.bounds[2];
@@ -250,7 +267,11 @@ function PIH_Display_DrawBox.setBox(args)
 
                     nextRightPosX = nextRightPosX + iconSpace;
 
-                    setTextColor(unpack(color));
+                    if box.ownTable.fillTypeFilter ~= nil then
+                        setTextColor(unpack(colorOn));
+                    else
+                        setTextColor(unpack(color));
+                    end
                     setTextAlignment(0);
                     local text = g_currentMission.hlUtils.getTxtToWidth(tostring(productionItem.fillTypeTitle), size, box.ownTable.fillTypeWidth - iconSpace, false, ".");
                     renderText(nextRightPosX, nextPosY, size, tostring(text));

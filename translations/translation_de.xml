@@ -9,7 +9,8 @@
         <text name="OnlyPallets" text="Paletten"/>
 
         <text name="pih_infoDisplay_textSize" text="*TEXT GRÖSSE* %s (Mausklick Links/Rechts)" />
-        <text name="pih_animalFilter" text="Tiere Anzeigen (Linksklick zum umschalten)" />
+        <text name="pih_animalFilter" text="Tiere anzeigen/ausblenden (Linksklick zum umschalten)" />
+        <text name="pih_productionFilter" text="Produktionen anzeigen/ausblenden (Linksklick zum umschalten)" />
 
         <!-- old stuff below -->
         <text name="input_TOGGLE_GUI" text="PIH: Anzeige umschalten"/>

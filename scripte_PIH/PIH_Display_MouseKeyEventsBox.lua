@@ -29,6 +29,10 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                         box.ownTable.ShowAnimal = not box.ownTable.ShowAnimal;
                         return;
                     end;
+                    if args.clickAreaTable.whereClick == "productionFilter_" then
+                        box.ownTable.ShowProduction = not box.ownTable.ShowProduction;
+                        return;
+                    end;
                 end;
                 if args.clickAreaTable.whereClick == "dataColumn_" then
                     local newValue = box.ownTable.dataViewMode + 1;

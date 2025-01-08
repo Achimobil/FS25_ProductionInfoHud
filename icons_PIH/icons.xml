@@ -1,5 +1,6 @@
 <pih_display>
-    <otherIcons load="1">
+    <otherIcons load="2">
+        <icon name="production" type="2" setStateInArea="true" placeB="100"/>
         <icon name="animals" type="2" setStateInArea="true" placeB="103"/>
     </otherIcons>
     <boxOther1Icons load="2">

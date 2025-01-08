@@ -480,6 +480,7 @@ function ProductionInfoHud:AddFactory(myProductionItems, factory)
         productionItem.capacity = factory:getCapacity(fillTypeId);
         productionItem.isInput = true;
         productionItem.isOutput = false;
+        productionItem.IsProduction = true;
 
         if productionItem.capacity == 0 then
             productionItem.capacityLevel = 0
@@ -525,6 +526,7 @@ function ProductionInfoHud:AddProductionPoint(myProductionItems, productionPoint
         productionItem.capacity = productionPoint:getCapacity(fillTypeId);
         productionItem.isInput = false;
         productionItem.isOutput = false;
+        productionItem.IsProduction = true;
 
         -- replace the long leasing text
         if productionItem.name ~= nil then
