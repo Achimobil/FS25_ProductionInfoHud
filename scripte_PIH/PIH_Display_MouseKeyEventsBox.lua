@@ -33,6 +33,17 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                         box.ownTable.ShowProduction = not box.ownTable.ShowProduction;
                         return;
                     end;
+                    if args.clickAreaTable.whereClick == "timeFilter_" then
+                        box.ownTable.TimeFilter = box.ownTable.TimeFilter + 1;
+                        if box.ownTable.TimeFilter == 2 and g_currentMission.environment.daysPerPeriod == 1 then
+                            -- skip 24h setting when one day per month
+                            box.ownTable.TimeFilter = 3
+                        end
+                        if box.ownTable.TimeFilter == 4 then
+                            box.ownTable.TimeFilter = 1
+                        end
+                        return;
+                    end;
                 end;
                 if args.clickAreaTable.whereClick == "dataColumn_" then
                     local newValue = box.ownTable.dataViewMode + 1;

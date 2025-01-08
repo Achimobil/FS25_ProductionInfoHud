@@ -1,5 +1,6 @@
 <pih_display>
-    <otherIcons load="2">
+    <otherIcons load="3">
+        <icon name="clock" type="2" setStateInArea="true" placeB="99"/>
         <icon name="production" type="2" setStateInArea="true" placeB="100"/>
         <icon name="animals" type="2" setStateInArea="true" placeB="103"/>
     </otherIcons>

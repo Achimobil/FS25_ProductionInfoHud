@@ -29,6 +29,13 @@ function PIH_Display_DrawBox.setBox(args)
             if not skipItem and box.ownTable.ShowProduction ~= nil and box.ownTable.ShowProduction == false and productionItem.IsProduction then
                 skipItem = true;
             end
+            if not skipItem and box.ownTable.TimeFilter ~= nil and box.ownTable.TimeFilter ~= 1 then
+                if box.ownTable.TimeFilter == 2 and productionItem.hoursLeft > 24 then
+                    skipItem = true;
+                elseif box.ownTable.TimeFilter == 3 and productionItem.hoursLeft > (24 * g_currentMission.environment.daysPerPeriod) then
+                    skipItem = true;
+                end
+            end
 
             if not skipItem then
                 table.insert(currentProductionItems, productionItem);
@@ -87,6 +94,8 @@ function PIH_Display_DrawBox.setBox(args)
     local nextIconPosX = x+difW;
     local nextLeftPosX = nextPosX+difW;
     local nextRightPosX = nextPosX;
+    local timeFilterText = ProductionInfoHud.i18n:getText("pih_timeFilterOne");
+    if g_currentMission.environment.daysPerPeriod ~= 1 then timeFilterText = ProductionInfoHud.i18n:getText("pih_timeFilterTwo"); end
     nextPosY = nextPosY+(h)-(box.ownTable.lineHeight)-difH;
     box.screen.bounds[4] = #currentProductionItems+1; -- +1 for Imaginäre Line wenn untergruppe an ist (viewAmountStorages/viewBestPriceStations etc.
     if box.viewExtraLine then box.screen.bounds[4] = box.screen.bounds[4]+1;end;
@@ -208,6 +217,22 @@ function PIH_Display_DrawBox.setBox(args)
             end;
             --animal filter--
 
+            --time filter--
+            --etwas rüber rutschen damit von den anderen filtern getrennt
+            nextIconPosX = nextIconPosX+iconWidth+difW;
+            if nextIconPosX+iconWidth < x+w then
+                overlay = overlayDefaultGroup[overlayDefaultByName["clock"]];
+                if overlay ~= nil then
+                    if box.ownTable.TimeFilter == 1 then iconColor = box.overlays.color.on;end;
+                    if box.ownTable.TimeFilter == 2 then iconColor = box.overlays.color.warning;end;
+                    setOverlay("timeFilter_", iconColor);
+                    if inIconArea and box.isHelp then setInfoHelpText(timeFilterText, 0);end;
+                end;
+            else
+                setWarningLine = true;
+            end;
+            --time filter--
+
             if setWarningLine then
                 setWarningLineIcon();
             end;
@@ -257,9 +282,6 @@ function PIH_Display_DrawBox.setBox(args)
                     else
                         overlay = overlayDefaultGroup[overlayDefaultByName["bying"]];
                     end
---                     ProductionInfoHud.DebugTable("overlayDefaultByName", overlayDefaultByName)
---                     ProductionInfoHud.DebugTable("overlayDefaultGroup", overlayDefaultGroup)
---                     ProductionInfoHud.DebugText("overlay: %s", overlay);
                     if overlay ~= nil then
                         g_currentMission.hlUtils.setOverlay(overlay, nextRightPosX + difW, nextPosY, iconWidthS, iconHeightS);
                         overlay:render();

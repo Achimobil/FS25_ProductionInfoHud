@@ -27,8 +27,9 @@ function PIH_Display_XmlBox:defaultValues(box)
         viewProductions=false,
         dataViewMode=1,
         ShowAnimal=true,
-        ShowProduction=true
-    }; --own values viewFillType=1(by Name), 2(by Icon), 3(by Icon/Name)
+        ShowProduction=true,
+        TimeFilter = 1
+    }; --own values TimeFilter=1(no fitler), 2(less 24 hours), 3(lee 1 month)
 end;
 
 function PIH_Display_XmlBox:onLoadXml(box, Xml, xmlNameTag)
