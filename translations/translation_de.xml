@@ -7,6 +7,9 @@
         <text name="Full" text="Voll"/>
         <text name="StorageMissing" text="Lager fehlt"/>
         <text name="OnlyPallets" text="Paletten"/>
+        <text name="input_PIH_ONOFFDISPLAY" text="PIH: Anzeige umschalten"/>
+        <text name="input_TOGGLE_GUI_on" text="PIH einschalten"/>
+        <text name="input_TOGGLE_GUI_off" text="PIH ausschalten"/>
 
         <text name="pih_infoDisplay_textSize" text="*TEXT GRÖSSE* %s (Mausklick Links/Rechts)" />
         <text name="pih_animalFilter" text="Tiere anzeigen/ausblenden (Linksklick zum umschalten)" />
@@ -15,7 +18,6 @@
         <text name="pih_timeFilterTwo" text="Zeitfilter keiner / 24h / Monat (Linksklick zum umschalten)" />
 
         <!-- old stuff below -->
-        <text name="input_TOGGLE_GUI" text="PIH: Anzeige umschalten"/>
         <text name="NearlyFull" text="Fast voll"/>
         <text name="Overcrowded" text="Überbelegt"/>
         <text name="AllProductsOperativ" text="Alle Produktionen versorgt"/>

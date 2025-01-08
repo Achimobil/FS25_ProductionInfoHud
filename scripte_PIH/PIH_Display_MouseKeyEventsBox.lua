@@ -27,10 +27,12 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                     end;
                     if args.clickAreaTable.whereClick == "animalFilter_" then
                         box.ownTable.ShowAnimal = not box.ownTable.ShowAnimal;
+                        box:setUpdateState(true);
                         return;
                     end;
                     if args.clickAreaTable.whereClick == "productionFilter_" then
                         box.ownTable.ShowProduction = not box.ownTable.ShowProduction;
+                        box:setUpdateState(true);
                         return;
                     end;
                     if args.clickAreaTable.whereClick == "timeFilter_" then
@@ -42,6 +44,7 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                         if box.ownTable.TimeFilter == 4 then
                             box.ownTable.TimeFilter = 1
                         end
+                        box:setUpdateState(true);
                         return;
                     end;
                 end;

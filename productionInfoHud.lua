@@ -57,6 +57,46 @@ function ProductionInfoHud:loadMap(mapName)
     if not ProductionInfoHud:getDetiServer() then
         Mission00.onStartMission = Utils.appendedFunction(Mission00.onStartMission, ProductionInfoHud.RegisterDisplaySystem);
     end;
+    ProductionInfoHud:registerActionEvent();
+end;
+
+function ProductionInfoHud:registerActionEvent()
+    PlayerInputComponent.registerGlobalPlayerActionEvents = Utils.appendedFunction(
+        PlayerInputComponent.registerGlobalPlayerActionEvents,
+        function(self, controlling)
+            --if controlling ~= "VEHICLE" then
+                local inputAction = InputAction.PIH_ONOFFDISPLAY;
+                local callbackTarget = self;
+                local callbackFunc = self.pihSystemActionCallback;
+                local triggerUp = false;
+                local triggerDown = true;
+                local triggerAlways = false;
+                local startActive = true;
+
+                local _, eventId = g_inputBinding:registerActionEvent(inputAction, callbackTarget, callbackFunc, triggerUp, triggerDown, triggerAlways, startActive, nil, true);
+
+                g_inputBinding:setActionEventTextVisibility(eventId, false);
+                local action = g_inputBinding.nameActions[InputAction.PIH_ONOFFDISPLAY];
+                if action ~= nil then
+                    action.displayCategory = "HL Hud System";
+                    action.displayNamePositive = tostring(g_i18n:getText("input_TOGGLE_GUI_on"));
+                    action.displayNameNegative = tostring(g_i18n:getText("input_TOGGLE_GUI_off"));
+                end;
+            --end
+    end)
+    function PlayerInputComponent:pihSystemActionCallback(actionName, inputValue, callbackState, isAnalog, isMouse, deviceCategory)
+        if not g_currentMission.hlUtils.dragDrop.on then
+            if actionName == "PIH_ONOFFDISPLAY" then
+                if g_currentMission.hlHudSystem.hlBox ~= nil then
+                    local box = g_currentMission.hlHudSystem.hlBox:getData("PIH_Display_Box");
+                    if box.show ~= nil then
+                        box.show = not box.show;
+                        box:setUpdateState(true);
+                    end
+                end
+            end;
+        end;
+    end;
 end;
 
 --- here all what needs to be initialized on first call
@@ -105,14 +145,13 @@ function ProductionInfoHud:update(dt)
     if ProductionInfoHud.timePast >= 5000 then
         ProductionInfoHud.timePast = 0;
 
-        -- update all info tables for display
-        ProductionInfoHud:refreshProductionsTable();
-
-        -- temporär einfach sichtbar machen, wenn nicht sichtbar
+        -- update lists only when the system is visible
         if g_currentMission.hlHudSystem.hlBox ~= nil then
             local box = g_currentMission.hlHudSystem.hlBox:getData("PIH_Display_Box");
-            if box.show ~= nil then
-                box.show = true;
+            if box.show == true then
+
+                -- update all info tables for display
+                ProductionInfoHud:refreshProductionsTable();
             end
         end
     end

@@ -10,27 +10,31 @@ function PIH_Display_XmlBox:defaultValues(box)
 end;
 
 function PIH_Display_XmlBox:onLoadXml(box, Xml, xmlNameTag)
-    if box.ownTable.viewPrice == nil then PIH_Display_XmlBox:defaultValues(box);end;
+    if box.ownTable.ShowProduction == nil then PIH_Display_XmlBox:defaultValues(box);end;
     if Xml ~= nil and xmlNameTag ~= nil then
-        if getXMLBool(Xml, xmlNameTag.."#viewPrice") ~= nil then
-            box.ownTable.viewPrice = getXMLBool(Xml, xmlNameTag.. "#viewPrice");
+        if getXMLBool(Xml, xmlNameTag.."#ShowProduction") ~= nil then
+            box.ownTable.ShowProduction = getXMLBool(Xml, xmlNameTag.. "#ShowProduction");
         else
             return; --first config not found
         end;
-        if getXMLBool(Xml, xmlNameTag.."#viewShowOnPriceTable") ~= nil then
-            box.ownTable.viewShowOnPriceTable = getXMLBool(Xml, xmlNameTag.. "#viewShowOnPriceTable");
+        if getXMLBool(Xml, xmlNameTag.."#ShowAnimal") ~= nil then
+            box.ownTable.ShowAnimal = getXMLBool(Xml, xmlNameTag.. "#ShowAnimal");
         end;
-        if getXMLBool(Xml, xmlNameTag.."#viewFillAmounts") ~= nil then
-            box.ownTable.viewFillAmounts = getXMLBool(Xml, xmlNameTag.. "#viewFillAmounts");
+        if getXMLInt(Xml, xmlNameTag.."#dataViewMode") ~= nil then
+            box.ownTable.dataViewMode = getXMLInt(Xml, xmlNameTag.. "#dataViewMode");
+        end;
+        if getXMLInt(Xml, xmlNameTag.."#TimeFilter") ~= nil then
+            box.ownTable.TimeFilter = getXMLInt(Xml, xmlNameTag.. "#TimeFilter");
         end;
     end;
 end;
 
 function PIH_Display_XmlBox.onSaveXml(box, Xml, xmlNameTag)
     setXMLInt(Xml, xmlNameTag.."#version", ProductionInfoHud.metadata.xmlVersion);
-    setXMLBool(Xml, xmlNameTag.."#viewPrice", box.ownTable.viewPrice);
-    setXMLBool(Xml, xmlNameTag.."#viewShowOnPriceTable", box.ownTable.viewShowOnPriceTable);
-    setXMLBool(Xml, xmlNameTag.."#viewFillAmounts", box.ownTable.viewFillAmounts);
+    setXMLBool(Xml, xmlNameTag.."#ShowAnimal", box.ownTable.ShowAnimal);
+    setXMLBool(Xml, xmlNameTag.."#ShowProduction", box.ownTable.ShowProduction);
+    setXMLInt(Xml, xmlNameTag.."#dataViewMode", box.ownTable.dataViewMode);
+    setXMLInt(Xml, xmlNameTag.."#TimeFilter", box.ownTable.TimeFilter);
 end;
 
 function PIH_Display_XmlBox:loadBox(name, onSave)

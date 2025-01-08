@@ -2,7 +2,7 @@
 <modDesc descVersion="94">
     <author>Achimobil</author>
     <contributor>HappyLooser</contributor>
-    <version>0.0.0.17</version>
+    <version>0.0.0.18</version>
 
     <title>
         <de>Produktionen Info Hud</de>
@@ -30,11 +30,15 @@
 
     <actions>
         <action name="HL_ONOFFMOUSECURSOR" ignoreComboMask="false" axisType="HALF" category="ONFOOT VEHICLE" />
+        <action name="PIH_ONOFFDISPLAY" ignoreComboMask="false" axisType="HALF" category="ONFOOT VEHICLE" />
     </actions>
 
     <inputBinding>
         <actionBinding action="HL_ONOFFMOUSECURSOR">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_f9" axisComponent="+" neutralInput="0" index="1"/>
+        </actionBinding>
+        <actionBinding action="PIH_ONOFFDISPLAY">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_p" axisComponent="+" neutralInput="0" index="1"/>
         </actionBinding>
     </inputBinding>
 </modDesc>
