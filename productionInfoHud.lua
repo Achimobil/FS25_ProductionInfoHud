@@ -194,7 +194,10 @@ function ProductionInfoHud:AddProductionItemToList(myProductionItems, production
         if (days ~= 0) then
             timeString = ProductionInfoHud.i18n:formatNumDay(days) .. " ";
         end
-        timeString = timeString .. hoursString .. ":" .. minutesString;
+        if (days < 100) then
+            -- die Zeit nur einfügen wenn es weniger als 100 Tage sind
+            timeString = timeString .. hoursString .. ":" .. minutesString;
+        end
 
         -- wenn restzeit 0:00 ist, dann ist leer oder voll
         if days == 0 and hours == 0 and minutes <= 2 then
