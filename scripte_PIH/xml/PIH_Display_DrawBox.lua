@@ -19,6 +19,17 @@ function PIH_Display_DrawBox.setBox(args)
         if #currentProductionItems == 0 then
             currentProductionItems = ProductionInfoHud.CurrentProductionItems;
         end
+    elseif box.ownTable.nameFilter ~= nil then
+        -- hier werden keine anderen Filter berücksichtigt und das soll so
+        for _, productionItem in pairs(ProductionInfoHud.CurrentProductionItems) do
+            if productionItem.name == box.ownTable.nameFilter then
+                table.insert(currentProductionItems, productionItem);
+            end
+        end
+        -- fallback
+        if #currentProductionItems == 0 then
+            currentProductionItems = ProductionInfoHud.CurrentProductionItems;
+        end
     else
         -- hier alle klickbaren Filter kombinieren
         for _, productionItem in pairs(ProductionInfoHud.CurrentProductionItems) do
@@ -262,13 +273,19 @@ function PIH_Display_DrawBox.setBox(args)
                 ---Production place---
                 if canNextView then
                     setTextBold(true);
-                    setTextColor(unpack(color));
+
+                    if box.ownTable.nameFilter ~= nil then
+                        setTextColor(unpack(colorOn));
+                    else
+                        setTextColor(unpack(color));
+                    end
                     setTextAlignment(0);
                     local text = g_currentMission.hlUtils.getTxtToWidth(tostring(productionItem.name), size, box.ownTable.textWidth, false, ".");
                     renderText(nextRightPosX, nextPosY, size, tostring(text));
                     setTextBold(false);
                     setTextColor(1, 1, 1, 1);
                     setTextAlignment(0);
+                    if not g_currentMission.hlUtils:disableInArea() and inArea then box:setClickArea( {nextRightPosX, nextRightPosX+box.ownTable.timeWidth, nextPosY, nextPosY+box.ownTable.lineHeight, onClick=PIH_Display_MouseKeyEventsBox.onClickArea, whatClick="PIH_Display_Box", typPos=boxNumber, whereClick="nameColumn_", ownTable={ name = productionItem.name }} );end;
                     lineWidth = lineWidth+box.ownTable.textWidth;
                     nextRightPosX = nextRightPosX+box.ownTable.textWidth;
                     canNextView = lineWidth > iconWidth;
@@ -300,7 +317,7 @@ function PIH_Display_DrawBox.setBox(args)
                     setTextBold(false);
                     setTextColor(1, 1, 1, 1);
                     setTextAlignment(0);
-                    if not g_currentMission.hlUtils:disableInArea() and inArea then box:setClickArea( {nextRightPosX, nextRightPosX+box.ownTable.timeWidth, nextPosY, nextPosY+box.ownTable.lineHeight, onClick=PIH_Display_MouseKeyEventsBox.onClickArea, whatClick="PIH_Display_Box", typPos=boxNumber, whereClick="filTypeColumn_", ownTable={ fillType = productionItem.fillTypeTitle }} );end;
+                    if not g_currentMission.hlUtils:disableInArea() and inArea then box:setClickArea( {nextRightPosX, nextRightPosX+box.ownTable.timeWidth, nextPosY, nextPosY+box.ownTable.lineHeight, onClick=PIH_Display_MouseKeyEventsBox.onClickArea, whatClick="PIH_Display_Box", typPos=boxNumber, whereClick="fillTypeColumn_", ownTable={ fillType = productionItem.fillTypeTitle }} );end;
                     lineWidth = lineWidth+box.ownTable.fillTypeWidth;
                     nextRightPosX = nextRightPosX + box.ownTable.fillTypeWidth - iconSpace;
                     canNextView = lineWidth > iconWidth;
