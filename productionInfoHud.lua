@@ -287,6 +287,7 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
         productionItem.isInput = true;
         productionItem.isOutput = false;
         productionItem.IsAnimal = true;
+        productionItem.target = husbandry;
 
         if productionItem.capacity == 0 then
             productionItem.capacityLevel = 0
@@ -330,6 +331,7 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
         productionItem.isInput = false;
         productionItem.isOutput = true;
         productionItem.IsAnimal = true;
+        productionItem.target = husbandry;
 
         if productionItem.capacity == 0 then
             productionItem.capacityLevel = 0
@@ -365,6 +367,7 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
             productionItem.isInput = false;
             productionItem.isOutput = true;
             productionItem.IsAnimal = true;
+            productionItem.target = husbandry;
 
             productionItem.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillType);
 
@@ -397,6 +400,7 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
         productionItem.isInput = true;
         productionItem.isOutput = false;
         productionItem.IsAnimal = true;
+        productionItem.target = husbandry;
 
         if productionItem.capacity == 0 then
             productionItem.capacityLevel = 0
@@ -424,6 +428,7 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
         productionItemOutput.isInput = false;
         productionItemOutput.isOutput = true;
         productionItemOutput.IsAnimal = true;
+        productionItemOutput.target = husbandry;
         productionItemOutput.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(spec.outputFillType);
 
         if productionItemOutput.capacity == 0 then
@@ -454,6 +459,7 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
         productionItem.isInput = true;
         productionItem.isOutput = false;
         productionItem.IsAnimal = true;
+        productionItem.target = husbandry;
 
         if productionItem.capacity == 0 then
             productionItem.capacityLevel = 0
@@ -490,6 +496,7 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
             productionItem.isOutput = true;
             productionItem.isPallet = true;
             productionItem.IsAnimal = true;
+            productionItem.target = husbandry;
 
             productionItem.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillType);
 
@@ -523,6 +530,7 @@ function ProductionInfoHud:AddFactory(myProductionItems, factory)
         productionItem.isInput = true;
         productionItem.isOutput = false;
         productionItem.IsProduction = true;
+        productionItem.target = factory;
 
         if productionItem.capacity == 0 then
             productionItem.capacityLevel = 0
@@ -569,6 +577,7 @@ function ProductionInfoHud:AddProductionPoint(myProductionItems, productionPoint
         productionItem.isInput = false;
         productionItem.isOutput = false;
         productionItem.IsProduction = true;
+        productionItem.target = productionPoint;
 
         -- replace the long leasing text
         if productionItem.name ~= nil then

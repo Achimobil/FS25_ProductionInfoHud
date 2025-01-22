@@ -285,7 +285,7 @@ function PIH_Display_DrawBox.setBox(args)
                     setTextBold(false);
                     setTextColor(1, 1, 1, 1);
                     setTextAlignment(0);
-                    if not g_currentMission.hlUtils:disableInArea() and inArea then box:setClickArea( {nextRightPosX, nextRightPosX+box.ownTable.timeWidth, nextPosY, nextPosY+box.ownTable.lineHeight, onClick=PIH_Display_MouseKeyEventsBox.onClickArea, whatClick="PIH_Display_Box", typPos=boxNumber, whereClick="nameColumn_", ownTable={ name = productionItem.name }} );end;
+                    if not g_currentMission.hlUtils:disableInArea() and inArea then box:setClickArea( {nextRightPosX, nextRightPosX+box.ownTable.timeWidth, nextPosY, nextPosY+box.ownTable.lineHeight, onClick=PIH_Display_MouseKeyEventsBox.onClickArea, whatClick="PIH_Display_Box", typPos=boxNumber, whereClick="nameColumn_", ownTable={ name = productionItem.name, target = productionItem.target}} );end;
                     lineWidth = lineWidth+box.ownTable.textWidth;
                     nextRightPosX = nextRightPosX+box.ownTable.textWidth;
                     canNextView = lineWidth > iconWidth;

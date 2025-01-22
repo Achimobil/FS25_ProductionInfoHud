@@ -93,6 +93,22 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                         return;
                     end;
                 end;
+                if args.clickAreaTable.whereClick == "nameColumn_" then
+                    if args.clickAreaTable.ownTable.target ~= nil then
+                        if args.clickAreaTable.ownTable.target.openMenu ~= nil then
+                            args.clickAreaTable.ownTable.target:openMenu();
+                        else
+                            local spec = args.clickAreaTable.ownTable.target.spec_husbandryAnimals;
+                            if spec ~= nil then
+                                local trigger = spec.animalLoadingTrigger
+                                if trigger ~= nil and trigger.openAnimalMenu ~= nil then
+                                    trigger:openAnimalMenu();
+                                end
+                            end
+                        end
+                    end;
+                    return;
+                end;
             end;
         elseif args.button == Input.MOUSE_BUTTON_MIDDLE then
             local box = args.box;
