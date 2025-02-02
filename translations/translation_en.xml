@@ -3,9 +3,9 @@
     <translationContributors>Achimobil, deepl.com</translationContributors>
     <texts>
         <text name="input_HL_ONOFFMOUSECURSOR" text="HL Mouse on/off"/>
-        <text name="Empty" text="All used"/>
-        <text name="Full" text="Outputstorage full"/>
-        <text name="StorageMissing" text="Storage missing"/>
+        <text name="Empty" text="Empty"/>
+        <text name="Full" text="Full"/>
+        <text name="StorageMissing" text="Missing"/>
         <text name="OnlyPallets" text="Pallets"/>
         <text name="input_PIH_ONOFFDISPLAY" text="PIH: Switch display"/>
         <text name="input_TOGGLE_GUI_on" text="Show PIH"/>
