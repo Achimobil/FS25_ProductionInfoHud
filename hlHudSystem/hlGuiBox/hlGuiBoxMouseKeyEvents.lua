@@ -123,7 +123,12 @@ function hlGuiBoxMouseKeyEvents.onClickOwnGuiBox(args)
 							elseif guiBox.guiLines[args.clickAreaTable.line] == "saveInfo_" then
 								if guiBox.ownTable.autoSave[1] > 1 then
 									setValue("saveInfo", 1, true, guiBox.ownTable);
-								end;								
+								end;
+							elseif guiBox.guiLines[args.clickAreaTable.line] == "adEditModusMouseOff_" then
+								if not g_currentMission.hlHudSystem.ownData.autoDrive then return;end;
+								local state = setValue("adEditModusMouseOff", 1, true, guiBox.ownTable);
+								if state > 1 and g_currentMission.hlHudSystem:getAutoDriveState() then g_currentMission.hlHudSystem.setAllGuiBoxOff();end;
+								g_currentMission.hlHudSystem.isSave = false; --global
 							elseif guiBox.guiLines[args.clickAreaTable.line] == "textTicker_" then
 								if not g_currentMission.hlHudSystem.textTicker:isCorrectTimeScale() then setTextTickerWarningByTimeScale();return;end;
 								g_currentMission.hlHudSystem.textTicker:setOnOff();

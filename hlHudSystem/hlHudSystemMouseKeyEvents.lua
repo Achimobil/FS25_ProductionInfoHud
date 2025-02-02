@@ -11,6 +11,7 @@ function hlHudSystemMouseKeyEvents:setKeyMouse(unicode, sym, modifier, isDownKey
 		end;
 	else
 		if g_currentMission.hlUtils.isMouseCursor then
+			if g_currentMission.hlHudSystem:getAutoDriveState() then return;end;
 			if not g_currentMission.hlUtils.dragDrop.on then
 				hlHudSystemMouseKeyEvents:setMouse(posX, posY, isDown, isUp, button);
 			elseif g_currentMission.hlUtils.dragDrop.on then
@@ -20,7 +21,7 @@ function hlHudSystemMouseKeyEvents:setKeyMouse(unicode, sym, modifier, isDownKey
 	end;
 end;
 
-function hlHudSystemMouseKeyEvents:setMouse(posX, posY, isDown, isUp, button)
+function hlHudSystemMouseKeyEvents:setMouse(posX, posY, isDown, isUp, button)	
 	local acceptsWhatClick = {_hlHud_=true,_hlPda_=true,_hlBox_=true,_hlGuiBox_=true}; --dragDrop accepts
 	local isClickInArea = false;
 	if g_currentMission.hlHudSystem.areas ~= nil then		

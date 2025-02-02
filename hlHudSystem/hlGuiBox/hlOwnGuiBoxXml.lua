@@ -7,7 +7,8 @@ function hlOwnGuiBoxXml:defaultValues(guiBox)
 		infoDisplay = {2,1,2};
 		saveInfo = {2,1,2};
 		autoSave = {2,1,2};
-		autoSaveTimer = {600,200,1000,100,600}; --is,min,max,level,default (~ sec)		
+		autoSaveTimer = {600,200,1000,100,600}; --is,min,max,level,default (~ sec)
+		adEditModusMouseOff = {1,1,2};
 	};		
 end;
 
@@ -32,7 +33,8 @@ function hlOwnGuiBoxXml:onLoadXml(guiBox, Xml, xmlNameTag)
 		if getXMLInt(Xml, groupNameTag.."#autoSave") ~= nil then guiBox.ownTable.autoSave[1] = getXMLInt(Xml, groupNameTag.."#autoSave");end;
 		if getXMLInt(Xml, groupNameTag.."#autoSaveTimer") ~= nil then guiBox.ownTable.autoSaveTimer[1] = getXMLInt(Xml, groupNameTag.."#autoSaveTimer");end;
 		if guiBox.ownTable.autoSaveTimer[1] > guiBox.ownTable.autoSaveTimer[3] then guiBox.ownTable.autoSaveTimer[1] = guiBox.ownTable.autoSaveTimer[5];end;
-				
+		if getXMLInt(Xml, groupNameTag.."#adEditModusMouseOff") ~= nil then guiBox.ownTable.adEditModusMouseOff[1] = getXMLInt(Xml, groupNameTag.."#adEditModusMouseOff");end;
+		
 		local textTicker = g_currentMission.hlHudSystem.textTicker;		
 		if textTicker ~= nil then			
 			groupNameTag = (xmlNameTag.. ".textTicker(%d)"):format(0);
@@ -78,6 +80,7 @@ function hlOwnGuiBoxXml.onSaveXml(guiBox, Xml, xmlNameTag)
 	setXMLInt(Xml, groupNameTag.."#saveInfo", guiBox.ownTable.saveInfo[1]);
 	setXMLInt(Xml, groupNameTag.."#autoSave", guiBox.ownTable.autoSave[1]);
 	setXMLInt(Xml, groupNameTag.."#autoSaveTimer", guiBox.ownTable.autoSaveTimer[1]);
+	setXMLInt(Xml, groupNameTag.."#adEditModusMouseOff", guiBox.ownTable.adEditModusMouseOff[1]);
 	
 	local textTicker = g_currentMission.hlHudSystem.textTicker;		
 	if textTicker ~= nil then
@@ -110,9 +113,10 @@ function hlOwnGuiBoxXml:loadGuiBox()
 	g_currentMission.hlHudSystem.guiMenu = g_currentMission.hlHudSystem.hlGuiBox.generate( {name="HlHudSystem_GuiBox", title="Hl Hud System Settings"} );
 	g_currentMission.hlUtils.insertIcons( {xmlTagName="hlHudSystem.ownGuiBoxIcons", modDir=g_currentMission.hlHudSystem.modDir, iconFile="hlHudSystem/icons/icons.dds", xmlFile="hlHudSystem/icons/icons.xml", modName="defaultIcons", groupName="guiBox", fileFormat={64,512,1024}, iconTable=g_currentMission.hlHudSystem.guiMenu.overlays} );
 	g_currentMission.hlUtils.insertIcons( {xmlTagName="hlHudSystem.ownGuiBoxOtherIcons", modDir=g_currentMission.hlHudSystem.modDir, iconFile="hlHudSystem/icons/otherIcons.dds", xmlFile="hlHudSystem/icons/icons.xml", modName="defaultIcons", groupName="guiBox", fileFormat={32,256,512}, iconTable=g_currentMission.hlHudSystem.guiMenu.overlays} );
-	local linesSequence = {"globalHeadline_","drawIsIngameMapLarge_","infoDisplay_","autoSave_","saveInfo_","autoSaveTimer_",
+	local linesSequence = {"globalHeadline_","drawIsIngameMapLarge_","infoDisplay_","autoSave_","saveInfo_","autoSaveTimer_","adEditModusMouseOff_",
 		"textTickerHeadline_","textTicker_","position_","drawBg_","runTimer_","dropWidth_","setInfo_","setSound_",		
-	};				
+	};
+	if not g_currentMission.hlHudSystem.ownData.autoDrive then table.remove(linesSequence, 7);end;
 	g_currentMission.hlHudSystem.guiMenu.screen.canBounds.on = true;
 	g_currentMission.hlHudSystem.guiMenu.onClick = hlGuiBoxMouseKeyEvents.onClickOwnGuiBox;
 	g_currentMission.hlHudSystem.guiMenu.onSaveXml = hlOwnGuiBoxXml.onSaveXml;
@@ -228,7 +232,17 @@ function hlOwnGuiBoxXml.getLines(args)
 		else
 			return {typ="number", helpText=helpText, text={[1]={text=textL}, [2]={text=tostring(guiBox.ownTable.autoSaveTimer[1]).. "s"}} };
 		end;
-	end;
+	end;	
+	if guiBox.guiLines[line] == "adEditModusMouseOff_" then	
+		textL = "AD ".. g_i18n:getText("ui_aiSettingsMode");	
+		if g_currentMission.hlHudSystem.ownData.autoDrive and guiBox.ownTable.adEditModusMouseOff[1] > 1 then state = true;iconColor = onColor;else stateColor = textOffColor;end;
+		helpText = "AutoDrive Editor ".. g_i18n:getText("ui_aiSettingsMode").. ": ".. g_i18n:getText("ui_on").. "\nHL Hud System: ".. g_i18n:getText("ui_mouse").. " (".. g_i18n:getText("ui_action").. ") ".. g_i18n:getText("ui_paused");
+		if g_currentMission.hlHudSystem.ownData.autoDrive then
+			return {oneClick=true, typ="boolean", helpText=helpText, text={[1]={text=textL,color=stateColor}, [2]={color=stateColor,state=state}} };
+		else
+			return {oneClick=true, typ="string", helpText=helpText, text={[1]={text=textL,color=textOffColor}} };
+		end;
+	end;	
 	if guiBox.guiLines[line] == "textTickerHeadline_" then	
 		textL = g_currentMission.hlHudSystem.hlHud:getI18n("hl_guiBox_textTicker_headline");	
 		return {typ="headline", text={[1]={text=textL, color="ls25"}} };

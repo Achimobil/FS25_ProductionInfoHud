@@ -36,6 +36,7 @@ function hlHudSystemOverlays.new(args)
 	self.settingIcons.info = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, iconPos=30, setStateInArea=true} );
 	self.settingIcons.search = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, iconPos=59, setStateInArea=true} );
 	self.settingIcons.search.visible = false; --default hidden
+	self.settingIcons.mouse = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, color=hlHudSystemOverlays.color.warning, iconPos=126, setStateInArea=true} );
 	if args.typ == "pda" or args.typ == "box" then		
 		self.settingIcons.markerWidthHeight = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, iconPos=53, setStateInArea=true} );
 		self.settingIcons.autoClose = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.notActive, screen=args.screen, iconPos=42, setStateInArea=true} );
@@ -50,7 +51,13 @@ function hlHudSystemOverlays.new(args)
 		g_currentMission.hlUtils.insertIcons( {xmlTagName="hlHudSystem.loadIcons", modDir=g_currentMission.hlHudSystem.modDir, iconFile="hlHudSystem/icons/icons.dds", xmlFile="hlHudSystem/icons/icons.xml", modName="defaultIcons", groupName=tostring(args.typ), fileFormat={64,512,1024}, setStateInArea=true, iconTable=self.icons} );
 	end;
 	self.modIcons = {byName={}}; --optional insert Mods Icons here (with g_currentMission.hlUtils.insertIcons(....) ) or set new table ( !Attention! mod delete not new table)
-		
+	
+	if args.master ~= nil and args.master then
+		if self.icons == nil then self.icons = {byName={}};end;
+		g_currentMission.hlUtils.insertIcons( {xmlTagName="hlHudSystem.other1IconsTemp", modDir=g_currentMission.hlHudSystem.modDir, iconFile="hlHudSystem/icons/other1Icons.dds", xmlFile="hlHudSystem/icons/icons.xml", modName="hlHudSystem", groupName="tempIcons", fileFormat={64,512,1024}, iconTable=self.icons} );
+		g_currentMission.hlUtils.insertIcons( {xmlTagName="hlHudSystem.colorIconsTemp", modDir=g_currentMission.hlHudSystem.modDir, iconFile="hlHudSystem/icons/colorIcons.dds", xmlFile="hlHudSystem/icons/icons.xml", modName="hlHudSystem", groupName="tempIcons", fileFormat={32,128,256}, iconTable=self.icons} );
+	end;
+	
 	return self;
 end;
 

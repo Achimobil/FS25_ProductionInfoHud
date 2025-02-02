@@ -266,4 +266,10 @@
 	<other1Icons load="0">
 	
 	</other1Icons>
+	<other1IconsTemp load="1">
+		<icon name="other1Temp" type="1" placeB="1"/>
+	</other1IconsTemp>
+	<colorIconsTemp load="1">
+		<icon name="colorTemp" type="1" placeB="1"/>
+	</colorIconsTemp>
 </hlHudSystem>

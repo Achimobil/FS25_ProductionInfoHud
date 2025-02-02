@@ -124,6 +124,22 @@ function hlHudSystemDraw:showOwnIcons() --over ls weather hud
 					end;					
 				end;
 			end;
+			if g_currentMission.hlHudSystem:getAutoDriveState() then
+				local mouse = g_currentMission.hlHudSystem.overlays.settingIcons.mouse;
+				if mouse ~= nil then
+					local iconWidth = g_currentMission.hlHudSystem.ownData.iconWidth*1.5;
+					local iconHeight = g_currentMission.hlHudSystem.ownData.iconHeight*1.5;
+					g_currentMission.hlUtils.setOverlay(mouse, bg.x+(bg.width/2)-(iconWidth/2), bgY+(g_currentMission.hlHudSystem.screen.difHeight*2), iconWidth, iconHeight);
+					local inIconArea = mouse.mouseInArea();
+					if g_currentMission.hlUtils.runsTimer("1sec", true) then mouse:render();end;
+					if inIconArea then 
+						local text = "AutoDrive Editor ".. g_i18n:getText("ui_aiSettingsMode").. ": ".. g_i18n:getText("ui_on").. "\nHL Hud System: ".. g_i18n:getText("ui_mouse").. " (".. g_i18n:getText("ui_action").. ") ".. g_i18n:getText("ui_paused");
+						g_currentMission.hlHudSystem.showInfoBox( {text, 2000, g_currentMission.hlUtils.getColor("orangeRed", true)} );
+					end;					
+				end;
+			else
+				
+			end;
 		end;
 	end;
 end;

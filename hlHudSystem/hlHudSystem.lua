@@ -5,12 +5,12 @@ hlHudSystem.metadata = {
 	title = "HL Hud System",
 	notes = "Erstellt Hud/PDA und Box Anzeigen für Mods etc. zum selbst befüllen von Daten/Icons etc. um diese im Spiel anzuzeigen",
 	author = "(by HappyLooser)",
-	version = "v1.38 Beta",
-	systemVersion = 1.38,
+	version = "v1.39 Beta",
+	systemVersion = 1.39,
 	xmlVersion = 1,
 	languageVersion = 1;
 	datum = "21.05.2023",
-	update = "25.12.2024",
+	update = "30.12.2024",
 	web = "no",
 	info = "Link Freigabe und Änderungen ist ohne meine Zustimmung nicht erlaubt",
 	info1 = "Benutzung als HUD System in einem Mod (ohne Code Änderung) ist ohne Zustimmung erlaubt",
@@ -161,7 +161,7 @@ function hlHudSystem.new()
 	self.overlays = hlHudSystemOverlays.new( {loadDefaultIcons=false, screen=self.screen, typ="hud", master=true} );	
 	self.isSetting = {hud=false,pda=false,box=false,other=false,viewFrame=false};
 	self.infoDisplay = {on=true, firstStart=true};	
-	self.ownData = {textTickerSaveState=false, mpOff=false, isHidden=false, hiddenMods={}};	
+	self.ownData = {textTickerSaveState=false, mpOff=false, isHidden=false, hiddenMods={},autoDrive=g_modIsLoaded["FS25_AutoDrive"] and _G["FS25_AutoDrive"] ~= nil};	
 	self.autoAlign = hlHudSystemAutoAlign:getTables();
 	self.drawIsIngameMapLarge = true;
 	self.language = "_".. string.lower(g_languageShort);
@@ -226,6 +226,14 @@ end;
 
 function hlHudSystem:getIsMpOff() 
 	return g_currentMission.missionDynamicInfo.isMultiplayer and g_currentMission.hlHudSystem.ownData.mpOff;
+end;
+
+function hlHudSystem:getAutoDriveState() 
+	if not g_currentMission.hlHudSystem.ownData.autoDrive or g_currentMission.hlHudSystem.guiMenu.ownTable.adEditModusMouseOff[1] == 1 then return false;end;
+	if g_currentMission.hlUtils.isControlledVehicle() and FS25_AutoDrive.AutoDrive ~= nil then
+		return FS25_AutoDrive.AutoDrive.isEditorModeEnabled();
+	end;
+	return false;
 end;
 
 function hlHudSystem.autoSave()
