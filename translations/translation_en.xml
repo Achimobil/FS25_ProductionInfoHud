@@ -1,65 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <l10n>
-	<translationContributors>Achimobil, deepl.com</translationContributors>
-	<texts>
-		<text name="input_TOGGLE_GUI" text="PIH: Toggle display"/>
-		<text name="Empty" text="All used"/>
-		<text name="Full" text="Outputstorage full"/>
-		<text name="NearlyFull" text="Outputstorage nearly full"/>
-		<text name="AllProductsOperativ" text="All productions operative"/>
-		<text name="pih_Zeilen" text="lines"/>
-		<text name="MoreAvailable" text="more"/>
-		<text name="NothingToSell" text="Nothing to sell"/>
-		<text name="pih_ingameMenuProductionInfo" text="Production quantities per month (Active production lines only)"/>
-		<text name="pih_ingameMenuProductionInfoHour" text="Production quantities per hour (Active production lines only)"/>
-		<text name="pih_ingameMenuProductionInfoYear" text="Production quantities per year (Active production lines only)"/>
-		<text name="pih_header_sellPerMonth" text="Direct Sale"/>
-		<text name="pih_header_keepPerMonth" text="Keep"/>
-		<text name="pih_header_distributePerMonth" text="Distribute"/>
-		<text name="pih_header_usagePerMonth" text="Consume"/>
-		<text name="pih_header_neededFieldSize" text="Cultivation area"/>
-		<text name="ui_listHeader_1" text="Circulation"/>
-		<text name="ui_listHeader_2" text="No Production"/>
-		<text name="ui_listHeader_3" text="No Consumption"/>
-		<text name="pih_changeTimeToHour" text="Display per Hour"/>
-		<text name="pih_changeTimeToMonth" text="Display per Month"/>
-		<text name="pih_changeTimeToYear" text="Display per Year"/>
-		<!-- In neuen Einstellungen benutzt-->
-		<text name="pih_settings_title" text="Production Info Hud - Productions"/>
-		<text name="pihPositionElement_title" text="Position"/>
-		<text name="pih_tooltip_position" text="Please select the display position"/>
-		<text name="pih_possiblePosition_1" text="Top middle"/>
-		<text name="pih_possiblePosition_2" text="Below Help"/>
-		<text name="pih_possiblePosition_3" text="Below Vehicle Inspector"/>
-		<text name="pih_showFullAnimals_title" text="Show full animal stalls"/>
-		<text name="pih_tooltip_showFullAnimals" text="Display of full animal stalls in the list"/>
-		<text name="pih_MaxLinesElement_title" text="Visible lines"/>
-		<text name="pih_tooltip_maxLines" text="Max number of lines of productsion to show."/>
-		<text name="pih_showBooster_title" text="Show Booster"/>
-		<text name="pih_showBooster_tooltip" text="Should Revamp Booster be displayed"/>
-		<text name="pih_price_settings_title" text="Production Info Hud - Price view"/>
-		<text name="pih_MaxSellingLinesElement_title" text="Visible lines"/>
-		<text name="pih_tooltip_maxSellingLines" text="Maximum lines of outlets. If there are more, an info line is added."/>
-		<text name="pih_MinSellAmountElement_title" text="Minimum sales amount"/>
-		<text name="pih_tooltip_minSellAmount" text="This amount must be at least in stock to be displayed."/>
-		<text name="pih_textSize_title" text="Font size"/>
-		<text name="pih_textSize_tooltip" text="The size of the font."/>
-		<text name="pih_Days" text="Days"/>
-		<text name="pih_MaxDaysElement_title" text="Visible Days"/>
-		<text name="pih_tooltip_maxDays" text="Number of days the info is shown ahead"/>
-		<!-- In Produktionsmenü -->
-		<text name="pih_setFilltypeToIgnore" text="PIH: Hide Input"/>
-		<text name="pih_setFilltypeToNotIgnore" text="PIH: Show Input"/>
-		<!-- MultiOverlay V4 translations -->
-		<text name="pih_moh_headline" text="Production Info Hud"/>
-		<text name="pih_moh_infoTextDaysSetting" text="Day filter. Left click to decrease, right click to increase"/>
-		<text name="pih_moh_infoTextCapacitySetting" text="Capacity filter. Left click to decrease, right click to increase"/>
-		<text name="pih_moh_leftClickToOpenRightClickForFilterProduction" text="Left-click to open production or right-click to filter by production"/>
-		<text name="pih_moh_rightClickForFilterProduction" text="Right click to filter by production"/>
-		<text name="pih_moh_rightClickForFilterFillType" text="Right click to filter by Filltype"/>
-		<text name="pih_moh_rightClickForSwitchTimeAndFreeSpace" text="Right click to switch between remaining time and free space"/>
-		<text name="pih_moh_help_title" text="Production Info Hud Help"/>
-		<text name="pih_moh_help_text" text="Left click on Production Name or Filltype to filter the list. Press again to remove the filter\nRight click on the production name to open the production menu\nLeft click on the remaining time to toggle between the remaining time and the free available capacity."/>
-		<text name="pih_moh_colapseEntry" text="open/close"/>
-	</texts>
+    <translationContributors>Achimobil, deepl.com</translationContributors>
+    <texts>
+        <text name="input_HL_ONOFFMOUSECURSOR" text="HL Mouse on/off"/>
+        <text name="Empty" text="All used"/>
+        <text name="Full" text="Outputstorage full"/>
+        <text name="StorageMissing" text="Storage missing"/>
+        <text name="OnlyPallets" text="Pallets"/>
+        <text name="input_PIH_ONOFFDISPLAY" text="PIH: Switch display"/>
+        <text name="input_TOGGLE_GUI_on" text="Show PIH"/>
+        <text name="input_TOGGLE_GUI_off" text="Hide PIH"/>
+
+        <text name="pih_infoDisplay_textSize" text="*TEXT SIZE* %s (mouse click left/right)" />
+        <text name="pih_animalFilter" text="Show/hide animals (left-click to switch)" />
+        <text name="pih_productionFilter" text="Show/hide productions (left-click to switch)" />
+        <text name="pih_timeFilterOne" text="Time filter none / month (left-click to toggle)" />
+        <text name="pih_timeFilterTwo" text="Time filter none / 24h / month (left-click to toggle)" />
+    </texts>
 </l10n>

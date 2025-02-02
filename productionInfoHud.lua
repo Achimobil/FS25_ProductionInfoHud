@@ -14,7 +14,7 @@ Das verändern und wiederöffentlichen, auch in Teilen, ist untersagt und wird a
 ]]
 
 ProductionInfoHud = {}
-ProductionInfoHud.Debug = true;
+ProductionInfoHud.Debug = false;
 ProductionInfoHud.isInit = false;
 ProductionInfoHud.timePast = 0;
 ProductionInfoHud.longestFillTypeTitle = "";

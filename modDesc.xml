@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<modDesc descVersion="94">
+<modDesc descVersion="95">
     <author>Achimobil</author>
     <contributor>HappyLooser</contributor>
-    <version>0.0.0.22</version>
+    <version>0.0.0.23</version>
 
     <title>
         <de>Produktionen Info Hud</de>
@@ -10,7 +10,66 @@
     </title>
 
     <description>
-        <de><![CDATA[comming later]]></de>
+        <de><![CDATA[HUD Anzeige für Produktionen und Ställe die Aufmerksamkeit benötigen.
+
+In einer Liste werden die Produktionen und Ställe angezeigt.
+Die Liste ist nach Restlaufzeit sortiert.
+Sie zeigt sowohl die Zeit an, bis ein Rohstoff leer ist als auch bis ein Ausgangslager voll ist.
+Fütterungsroboter werden nicht unterstützt, nur die Ställe an sich.
+
+Generelle Bedienungshinweise mit der Maus
+- Fenster verschieben über Klick auf das Pfeilicon in der oberen linken Ecke
+- Filter Zeile öffnen über den Pfeil runter in der linken oberen Ecke.
+- Filterzeile umschalten auf Einstellungen über das Zahnrad in der unteren linken Ecke
+- In den Einstellungen können Schriftgröße sowie Zeilenabstand individuell eingestellt werden
+- Automatisch nur anzeigen, wenn Maus aktiviert ist, geht über das Schloss in der unteren linken ecke
+- Anpassung der Fenstergröße über Pfeilicon in der rechten unteren Ecke
+- Speichern der Änderungen über die Diskette in der oberen rechten Ecke
+- Links Klick auf einen Produktionsort oder einen Filltype filtert die liste nach diesem. Hierbei werden dann die Filter der Filterzeile ignorierte. Worauf gefiltert wird ist dann grün markiert. Erneutes klicken auf das Gefilterte entfernt den Filter wieder.
+- Rechtsklick auf den Produktionsort öffnet diesem im Menü
+- Linksklick auf die 3. Spalte schaltet die Anzeige um zwischen Restzeit, Kapazität (Bei Rohstoffen wie viel not rein geht, bei Hergestellten Gütern wieviel drin ist) und aktueller Stündlicher Produktionsmenge
+
+Hinweis: Einige der Icons werden nur angezeigt, wenn man mit der Maus über die entsprechende Stelle fährt.
+
+In der oberen Anzeige neben dem Aktuellen Vermögen kann man auf das Schraubenschlüssel Icon per Rechtsklick die Einstellungen des Anzeigesystems aufrufen
+Diese sind für alle Mods die dieses Anzeigesystem nutzen gleich. Hier kann man die Einstellungen Automatisch speichern und vieles mehr.
+Schaut einfach mal rein.
+
+Upload auf anderen Seiten außer dem ModHub ist verboten und somit illegal, Verlinkung nur mit Original-Downloadlink. KEIN Ersatzlink!
+Das Verändern oder erneutes Hochladen, ob ganz oder in Teilen, ist nicht gestattet!
+
+Fehler und Anregungen gerne auf <a href="https://github.com/Achimobil/FS25_ProductionInfoHud">GitHub</a>.
+]]></de>
+        <en><![CDATA[HUD display for productions and husbandries that require attention.
+
+The productions and husbandries are displayed in a list.
+The list is sorted by remaining time.
+It shows both the time until a raw material is empty and until an outgoing store is full.
+Feeding robots are not supported, only the husbandries themselves.
+
+General operating instructions with the mouse
+- Move window by clicking on the arrow icon in the top left corner
+- Open the filter line by clicking on the down arrow in the top left-hand corner.
+- Switch filter line to settings via the gear wheel in the bottom left-hand corner
+- The font size and line spacing can be set individually in the settings
+- Automatically display only when mouse is activated via the lock in the bottom left corner
+- Adjust the window size using the arrow icon in the bottom right-hand corner
+- Save changes via the disc in the top right-hand corner
+- Left-click on a production location or a fill type to filter the list according to this. The filters in the filter line are then ignored. What is filtered is then highlighted in green. Clicking on the filtered item again removes the filter.
+- Right-click on the production location to open it in the menu
+- Left-click on the 3rd column to switch the display between remaining time, capacity (for raw materials how much is not in, for manufactured goods how much is in) and current hourly production quantity.
+
+Note: Some of the icons are only displayed when you move the mouse over the corresponding position.
+
+In the upper display next to the current assets, you can right-click on the spanner icon to call up the display system settings
+These are the same for all mods that use this display system. Here you can save the settings automatically and much more.
+Just have a look.
+
+Uploading to sites other than ModHub is prohibited and therefore illegal, linking only with original download link. NO substitute link!
+Modifying and re-uploading in whole or in part is not allowed!
+
+Bugs and suggestions welcome on <a href="https://github.com/Achimobil/FS25_ProductionInfoHud">GitHub</a>.
+]]></en>
     </description>
 
     <multiplayer supported="true"/>
