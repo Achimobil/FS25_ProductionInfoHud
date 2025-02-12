@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+    <translationContributors>Aurelien2023, perplexity.ai</translationContributors>
+    <texts>
+        <text name="input_HL_ONOFFMOUSECURSOR" text="HL Souris activée/désactivée"/>
+        <text name="Empty" text="Vide"/>
+        <text name="Full" text="Plein"/>
+        <text name="StorageMissing" text="Manquant"/>
+        <text name="OnlyPallets" text="Palettes"/>
+        <text name="input_PIH_ONOFFDISPLAY" text="PIH : Activer/désactiver l'affichage"/>
+        <text name="input_TOGGLE_GUI_on" text="Afficher PIH"/>
+        <text name="input_TOGGLE_GUI_off" text="Masquer PIH"/>
+
+        <text name="pih_infoDisplay_textSize" text="*TAILLE DU TEXTE* %s (clic gauche/droit de la souris)" />
+        <text name="pih_animalFilter" text="Afficher/masquer les animaux (clic gauche pour basculer)" />
+        <text name="pih_productionFilter" text="Afficher/masquer les productions (clic gauche pour basculer)" />
+        <text name="pih_timeFilterOne" text="Filtre temporel aucun / mois (clic gauche pour basculer)" />
+        <text name="pih_timeFilterTwo" text="Filtre temporel aucun / 24h / mois (clic gauche pour basculer)" />
+    </texts>
+</l10n>
