@@ -7,6 +7,7 @@
     <title>
         <de>Produktionen Info Hud</de>
         <en>Production Info Hud</en>
+		<fr>Production Info Hud</fr>
     </title>
 
     <description>
@@ -70,6 +71,35 @@ Modifying and re-uploading in whole or in part is not allowed!
 
 Bugs and suggestions welcome on <a href="https://github.com/Achimobil/FS25_ProductionInfoHud">GitHub</a>.
 ]]></en>
+        <fr><![CDATA[Affichage HUD pour les productions et les élevages nécessitant une attention.
+
+Les productions et les élevages sont affichés dans une liste.
+La liste est triée par temps restant.
+Elle montre à la fois le temps jusqu'à ce qu'une matière première soit épuisée et jusqu'à ce qu'un stockage de sortie soit plein.
+Les robots d'alimentation ne sont pas pris en charge, seulement les élevages eux-mêmes. Instructions générales d'utilisation avec la souris
+
+    -Déplacer la fenêtre en cliquant sur l'icône flèche en haut à gauche
+    -Ouvrir la ligne de filtres en cliquant sur la flèche vers le bas en haut à gauche
+    -Basculer la ligne de filtres vers les paramètres via la roue dentée en bas à gauche
+    -La taille de la police et l'espacement des lignes peuvent être réglés individuellement dans les paramètres
+    -Affichage automatique uniquement lorsque la souris est activée via le cadenas en bas à gauche
+    -Ajuster la taille de la fenêtre à l'aide de l'icône flèche en bas à droite
+    -Sauvegarder les modifications via le disque en haut à droite
+    -Clic gauche sur un lieu de production ou un type de remplissage pour filtrer la liste en conséquence. Les filtres dans la ligne de filtres sont alors ignorés. Ce qui est filtré est ensuite mis en évidence en vert. Cliquer à nouveau sur l'élément filtré supprime le filtre.
+    -Clic droit sur le lieu de production pour l'ouvrir dans le menu
+    -Clic gauche sur la 3ème colonne pour basculer l'affichage entre le temps restant, la capacité (capacité disponible pour les matières premières et capacité utilisée pour les produits manufacturés) et la quantité de production horaire actuelle.
+
+Note : Certaines icônes ne s'affichent que lorsque vous passez la souris sur la position correspondante. 
+
+Dans l'affichage supérieur à côté des actifs actuels, vous pouvez faire un clic droit sur l'icône de la clé à molette pour accéder aux paramètres du système d'affichage
+Ceux-ci sont les mêmes pour tous les mods qui utilisent ce système d'affichage. Ici, vous pouvez sauvegarder automatiquement les paramètres et bien plus encore.
+Jetez-y un coup d'œil. 
+
+Le téléchargement sur des sites autres que ModHub est interdit et donc illégal, lien uniquement avec le lien de téléchargement original. PAS de lien de substitution !
+La modification et le re-téléchargement en tout ou en partie ne sont pas autorisés ! 
+
+Les bugs et suggestions sont les bienvenus sur <a href="https://github.com/Achimobil/FS25_ProductionInfoHud">GitHub</a>.
+]]></fr>
     </description>
 
     <multiplayer supported="true"/>
