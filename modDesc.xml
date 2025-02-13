@@ -2,7 +2,7 @@
 <modDesc descVersion="95">
     <author>Achimobil</author>
     <contributor>HappyLooser</contributor>
-    <version>0.0.0.25</version>
+    <version>0.0.0.26</version>
 
     <title>
         <de>Produktionen Info Hud</de>
@@ -38,7 +38,10 @@ Schaut einfach mal rein.
 Upload auf anderen Seiten außer dem ModHub ist verboten und somit illegal, Verlinkung nur mit Original-Downloadlink. KEIN Ersatzlink!
 Das Verändern oder erneutes Hochladen, ob ganz oder in Teilen, ist nicht gestattet!
 
-Fehler und Anregungen gerne auf <a href="https://github.com/Achimobil/FS25_ProductionInfoHud">GitHub</a>.
+Fehler und Anregungen gerne auf <a href="https://github.com/Achimobil/FS25_ProductionInfoHud">GitHub
+
+Changelog
+0.0.0.26 - Added FR translation</a>.
 ]]></de>
         <en><![CDATA[HUD display for productions and husbandries that require attention.
 
