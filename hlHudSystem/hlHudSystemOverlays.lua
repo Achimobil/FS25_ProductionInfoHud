@@ -9,42 +9,45 @@ function hlHudSystemOverlays.new(args)
 	setmetatable(self, hlHudSystemOverlays_mt);
 		
 	if args.screen == nil then args.screen = g_currentMission.hlHudSystem.screen;end;
-	self.bg = hlHudSystemOverlays:insertOverlay( {name="background", screen=args.screen, width=args.width, height=args.height, iconPos=120} );	
-	self.bgFrame = hlHudSystemOverlays:insertOverlay( {name="background", color=hlHudSystemOverlays.color.backgroundSetting, screen=args.screen, width=args.width, height=args.height, iconPos=120} );
-	self.state = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, color=hlHudSystemOverlays.color.backgroundState ,iconPos=114, setStateInArea=true} );
-	self.statePercent = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, color=hlHudSystemOverlays.color.backgroundState, iconPos=113, setStateInArea=true} );
-	self.bgLine = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, iconPos=127, setStateInArea=true} );	
+	self.bg = hlHudSystemOverlays:insertOverlay( {name="background", screen=args.screen, width=args.width, height=args.height, iconPosB=120} );	
+	self.bgFrame = hlHudSystemOverlays:insertOverlay( {name="background", color=hlHudSystemOverlays.color.backgroundSetting, screen=args.screen, width=args.width, height=args.height, iconPosB=120} );
+	self.state = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, color=hlHudSystemOverlays.color.backgroundState ,iconPosB=114, setStateInArea=true} );
+	self.statePercent = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, color=hlHudSystemOverlays.color.backgroundState, iconPosB=113, setStateInArea=true} );
+	self.bgLine = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, iconPosB=127, setStateInArea=true} );	
 	self.bgLine.visible = false; --hidden line for marker/select click areas or ....
 	if args.typ == "hud" then
-		self.separator = hlHudSystemOverlays:insertOverlay( {name="separator", screen=args.screen, iconPos=120} );		
-		self.inArea = hlHudSystemOverlays:insertOverlay( {name="inArea", screen=args.screen, width=args.width, iconPos=120} ); 
-		self.selectArea = hlHudSystemOverlays:insertOverlay( {name="selectArea", screen=args.screen, width=args.width, iconPos=120} );
+		self.separator = hlHudSystemOverlays:insertOverlay( {name="separator", screen=args.screen, iconPosB=120} );		
+		self.inArea = hlHudSystemOverlays:insertOverlay( {name="inArea", screen=args.screen, width=args.width, iconPosB=120} ); 
+		self.selectArea = hlHudSystemOverlays:insertOverlay( {name="selectArea", screen=args.screen, width=args.width, iconPosB=120} );
 	end;	
 	self.settingIcons = {};
-	self.settingIcons.bgBlack = hlHudSystemOverlays:insertOverlay( {name="backgroundSetting", color="black", screen=args.screen, iconPos=120, setStateInArea=true} );
+	self.settingIcons.bgBlack = hlHudSystemOverlays:insertOverlay( {name="backgroundSetting", color="black", screen=args.screen, iconPosB=120, setStateInArea=true} );
 	setOverlayColor(self.settingIcons.bgBlack.overlayId, 0, 0, 0, 1); --problem with default color option and black ? set here color
-	self.settingIcons.bgRoundBlack = hlHudSystemOverlays:insertOverlay( {name="backgroundSetting", color="black", screen=args.screen, iconPos=119, setStateInArea=true} );
+	self.settingIcons.bgRoundBlack = hlHudSystemOverlays:insertOverlay( {name="backgroundSetting", color="black", screen=args.screen, iconPosB=119, setStateInArea=true} );
 	setOverlayColor(self.settingIcons.bgRoundBlack.overlayId, 0, 0, 0, 1); --problem with default color option and black ? set here color
-	self.settingIcons.dragDrop = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, iconPos=55, setStateInArea=true} );	
-	self.settingIcons.sizeWidthHeight = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.on, screen=args.screen, iconPos=54, setStateInArea=true} );
-	self.settingIcons.setting = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.on, screen=args.screen, iconPos=20, setStateInArea=true} );	
-	self.settingIcons.settingO = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.on, screen=args.screen, iconPos=58, setStateInArea=true} );
-	self.settingIcons.leftRight = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.text, screen=args.screen, iconPos=56, setStateInArea=true} ); --speziale small		
-	self.settingIcons.view = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.on, screen=args.screen, iconPos=35, setStateInArea=true} );
-	self.settingIcons.save = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.on, screen=args.screen, iconPos=17, setStateInArea=true} );
-	self.settingIcons.help = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, iconPos=13, setStateInArea=true} );
-	self.settingIcons.info = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, iconPos=30, setStateInArea=true} );
-	self.settingIcons.search = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, iconPos=59, setStateInArea=true} );
+	self.settingIcons.dragDrop = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, iconPosB=55, setStateInArea=true} );	
+	self.settingIcons.sizeWidthHeight = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.on, screen=args.screen, iconPosB=54, setStateInArea=true} );
+	self.settingIcons.setting = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.on, screen=args.screen, iconPosB=20, setStateInArea=true} );	
+	self.settingIcons.settingO = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.on, screen=args.screen, iconPosB=58, setStateInArea=true} );
+	self.settingIcons.leftRight = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.text, screen=args.screen, iconPosB=56, setStateInArea=true} ); --speziale small		
+	self.settingIcons.view = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.on, screen=args.screen, iconPosB=35, setStateInArea=true} );
+	self.settingIcons.save = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.on, screen=args.screen, iconPosB=17, setStateInArea=true} );
+	self.settingIcons.help = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, iconPosB=13, setStateInArea=true} );
+	self.settingIcons.info = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, iconPosB=30, setStateInArea=true} );
+	self.settingIcons.search = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, iconPosB=59, setStateInArea=true} );
 	self.settingIcons.search.visible = false; --default hidden
-	self.settingIcons.mouse = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, color=hlHudSystemOverlays.color.warning, iconPos=126, setStateInArea=true} );
+	self.settingIcons.mouse = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, color=hlHudSystemOverlays.color.warning, iconPosB=126, setStateInArea=true} );
 	if args.typ == "pda" or args.typ == "box" then		
-		self.settingIcons.markerWidthHeight = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, iconPos=53, setStateInArea=true} );
-		self.settingIcons.autoClose = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.notActive, screen=args.screen, iconPos=42, setStateInArea=true} );
-		self.settingIcons.close = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.off, screen=args.screen, iconPos=50, setStateInArea=true} );
-		self.settingIcons.up = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.text, screen=args.screen, iconPos=3, setStateInArea=true} );
+		self.settingIcons.markerWidthHeight = hlHudSystemOverlays:insertOverlay( {name="icon", screen=args.screen, iconPosB=53, setStateInArea=true} );
+		self.settingIcons.autoClose = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.notActive, screen=args.screen, iconPosB=42, setStateInArea=true} );
+		self.settingIcons.close = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.off, screen=args.screen, iconPosB=50, setStateInArea=true} );
+		self.settingIcons.up = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.text, screen=args.screen, iconPosB=3, setStateInArea=true} );
 		self.settingIcons.up.visible = false; --default hidden
-		self.settingIcons.down = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.text, screen=args.screen, iconPos=2, setStateInArea=true} );
+		self.settingIcons.down = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.text, screen=args.screen, iconPosB=2, setStateInArea=true} );
 		self.settingIcons.down.visible = false; --default hidden
+		self.settingIcons.boundsUp = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.text, screen=args.screen, iconPosB=3} );
+		self.settingIcons.boundsDown = hlHudSystemOverlays:insertOverlay( {name="icon", color=hlHudSystemOverlays.color.text, screen=args.screen, iconPosB=2} );
+		self.settingIcons.bgOval = hlHudSystemOverlays:insertOverlay( {name="icon", color="blackDisabled", screen=args.screen, iconPosB=105, iconPosE=106, setStateInArea=true} );
 	end;
 	if args.loadDefaultIcons ~= nil and args.loadDefaultIcons then
 		self.icons = {byName={}};
@@ -90,16 +93,18 @@ function hlHudSystemOverlays:insertOverlay(args)
 	local formatO = 64;
 	local sW = 512;
 	local sH = 1024;
-	local iconPos = 1;
-	if args.iconPos ~= nil and type(args.iconPos) == "number" then
-		iconPos = args.iconPos or 1;
+	local iconPosB = 1;
+	local iconPosE = nil;
+	if args.iconPosB ~= nil and type(args.iconPosB) == "number" then
+		iconPosB = args.iconPosB or 1;
+		if args.iconPosE ~= nil and type(args.iconPosE) == "number" then iconPosE = args.iconPosE;end;
 		if args.fileFormat ~= nil then
 			formatO = args.fileFormat[1] or 0;
 			sW = args.fileFormat[2] or 0;
 			sH = args.fileFormat[3] or 0;
 		end;	
 	end;
-	g_currentMission.hlUtils.setOverlayUVsPx(overlay, unpack(g_currentMission.hlUtils.getNormalUVs(formatO, sW, sH, iconPos)));
+	g_currentMission.hlUtils.setOverlayUVsPx(overlay, unpack(g_currentMission.hlUtils.getNormalUVs(formatO, sW, sH, iconPosB, iconPosE)));
 	overlay.mouseInArea = false;
 	if args.setStateInArea ~= nil and args.setStateInArea then g_currentMission.hlUtils.setStateInArea(overlay);end;
 	

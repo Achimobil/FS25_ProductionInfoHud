@@ -9,6 +9,7 @@ function hlHudSystemScreen.new(args)
 	setmetatable(self, hlHudSystemScreen_mt);
 	
 	local uiScale = g_gameSettings:getValue("uiScale");
+	self.uiScale = uiScale;
 	self.pixelX = 1 / g_screenWidth;
 	self.pixelY = 1 / g_screenHeight;
 	self.refPixelX = 1 / g_referenceScreenWidth;
@@ -48,11 +49,25 @@ function hlHudSystemScreen.new(args)
 	self.bounds = {-1,0,0,0};
 	self.typ = args.typ;
 	if args.typ == "pda" then
-		self.canBounds = {on=false, typ="icon"};
+		self.canBounds = {on=false, typ="icon", setInfo=false};
 	else
-		self.canBounds = {on=false, typ="text"};
+		self.canBounds = {on=false, typ="text", setInfo=true};
 	end;
 	return self;
+end;
+
+function hlHudSystemScreen:resetUiScale()
+	local uiScale = g_gameSettings:getValue("uiScale");
+	self.uiScale = uiScale;
+	self.uiScaleW, self.uiScaleH = getNormalizedScreenValues(1 * uiScale, 1 * uiScale);
+end;
+
+function hlHudSystemScreen:getUiScale()
+	return self.uiScale, self.uiScaleW, self.uiScaleH;
+end;
+
+function hlHudSystemScreen:isNewUiScale()
+	return g_gameSettings:getValue("uiScale") ~= self.uiScale;	
 end;
 
 function hlHudSystemScreen:getScreen()

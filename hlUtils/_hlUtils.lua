@@ -18,10 +18,10 @@ hlUtils.metadata = {
 	title = "HL Utils", --löst das alte _hl System ab was ich seit LS15 benutzt habe und in fast allen meinen Mods vorhanden war
 	notes = "Nützliche Utils die man in Mods (meine fast alle) immer wieder mal braucht, incl. Maussteuerung (Default F9)",
 	author = "(by HappyLooser)",
-	version = "v0.97 Beta",
-	systemVersion = 0.97,
+	version = "v0.99 Beta",
+	systemVersion = 0.99,
 	datum = "21.05.2023",
-	update = "08.12.2024",
+	update = "27.02.2025",
 	web = "no",
 	info = "Link Freigabe und Änderungen ist ohne meine Zustimmung nicht erlaubt (Freeware)",
 	info1 = "Benutzung als HL Utils in einem Mod (ohne Code Änderung) ist ohne Zustimmung erlaubt",
@@ -42,7 +42,7 @@ function hlUtils:loadMap()
 		g_currentMission.hlUtils.version = hlUtils.metadata.systemVersion;
 		g_currentMission.hlUtils.modDir = hlUtils.modDir;
 		g_currentMission.hlUtils.playerFrozen = false;
-		g_currentMission.hlUtils.binding = {isCombi=false,isKeyboard=false,isMouse=false,inputString={}};
+		g_currentMission.hlUtils.binding = {isCombi=false,isKeyboard=false,isMouse=false,inputString={}};		
 		hlUtils:setFunction();
 		hlUtils:registerActionEvent();
 	else
@@ -51,7 +51,7 @@ function hlUtils:loadMap()
 			g_currentMission.hlUtils.version = hlUtils.metadata.systemVersion;
 			g_currentMission.hlUtils.modDir = hlUtils.modDir;
 			g_currentMission.hlUtils.playerFrozen = false;
-			g_currentMission.hlUtils.binding = {isCombi=false,isKeyboard=false,isMouse=false,inputString={}};
+			g_currentMission.hlUtils.binding = {isCombi=false,isKeyboard=false,isMouse=false,inputString={}};			
 			hlUtils:setFunction();
 			hlUtils:registerActionEvent();
 		else
@@ -108,7 +108,7 @@ function hlUtils.onStartMission()
 		print("---loading ".. tostring(hlUtils.metadata.title).. " ".. tostring(hlUtils.metadata.version).. " ".. tostring(hlUtils.metadata.author).. "---")
 		g_currentMission.hlUtils.addTimer( {true} );
 		g_currentMission.hlUtils.addSwitchTimer( {true} );
-		g_currentMission.hlUtils.helpMenuData = {};
+		g_currentMission.hlUtils.helpMenuData = {};		
 		hlUtils:addOverlays();
 		hlUtils:loadSaveXml();
 		---
@@ -229,6 +229,16 @@ function hlUtils:loadInputHelpDisplay() --update 0.97
 			eventHelpElements = inputDisplayManager:getEventHelpElements(0, useGamepadButtons);
 		end;
 		
+		table.sort(self.helpExtensions, function(a, b)
+			return a.priority < b.priority
+		end)
+
+		table.sort(self.infoExtensions, function(a, b)
+			return a.priority < b.priority
+		end)
+		
+		local difHeight = 0;
+		local actionNames = {};
 		local comboHeight = 0;
 		local eventHelpElementTotalHeight = 0;
 		local helpExtensionTotalHeight = 0;
@@ -246,9 +256,13 @@ function hlUtils:loadInputHelpDisplay() --update 0.97
 						else
 							eventHelpElementTotalHeight = eventHelpElementTotalHeight + self.lineBg.height + self.lineOffsetY;
 						end;
+						if actionNames[helpElement.actionName] == nil then 
+							actionNames[helpElement.actionName] = true;
+							--eventHelpElementTotalHeight = eventHelpElementTotalHeight + self.lineBg.height + self.lineOffsetY;
+						end;
 						numElements = numElements + 1;
 						local maxNumElements = helpElement.priority <= GS_PRIO_HIGH and InputHelpDisplay.MAX_NUM_ELEMENTS_HIGH_PRIORITY or InputHelpDisplay.MAX_NUM_ELEMENTS;
-						if numElements > maxNumElements then
+						if numElements > maxNumElements then							
 							break;
 						end;
 					end;
@@ -258,6 +272,7 @@ function hlUtils:loadInputHelpDisplay() --update 0.97
 		function setHelpExtensionTotalHeight()		
 			if self.helpExtensions ~= nil and #self.helpExtensions > 0 then 
 				for i=#self.helpExtensions, 1, -1 do
+					local hasEvent = false;
 					local helpExtension = self.helpExtensions[i];				
 					if helpExtension.setEventHelpElements ~= nil then
 						hasEventElement = true;
@@ -266,7 +281,8 @@ function hlUtils:loadInputHelpDisplay() --update 0.97
 					if numElements < maxNumElements then				
 						local height = helpExtension:getHeight();
 						if height > 0 then
-							helpExtensionTotalHeight = helpExtensionTotalHeight + height + self.lineOffsetY;			
+							helpExtensionTotalHeight = helpExtensionTotalHeight + height + self.lineOffsetY;
+							
 						end;
 					end;
 				end;
@@ -300,6 +316,9 @@ function hlUtils:loadInputHelpDisplay() --update 0.97
 		setHelpExtensionTotalHeight();
 		setInfoExtensionTotalHeight();
 		setExtraHelpTextTotalHeight();
+		if difHeight > 0 then
+			helpExtensionTotalHeight = helpExtensionTotalHeight - difHeight;
+		end;
 		g_currentMission.hlUtils.helpMenuData.eventHelpElementHeight = eventHelpElementTotalHeight;
 		g_currentMission.hlUtils.helpMenuData.helpExtensionHeight = helpExtensionTotalHeight;
 		g_currentMission.hlUtils.helpMenuData.infoExtensionHeight = infoExtensionTotalHeight;
@@ -1040,11 +1059,13 @@ g_currentMission.hlUtils.colorIntern = {   --RGB
 	ls22 =  			{  0.0003,  0.5647,  0.9822, 1.00 };
 	ls22Disabled =  	{  0.0003,  0.5647,  0.9822, 0.75 };
 	ls22Inactive =  	{  0.0003,  0.5647,  0.9822, 0.50 };
-	ls25 =  			{  0.2384,	0.4621,  0.0015, 1.00 };
+	ls25 =  			{  0.2384,	0.4621,  0.0015, 1.00 }; 
 	ls25Disabled =  	{  0.2384,	0.4621,  0.0015, 0.75 };
 	ls25Inactive =  	{  0.2384,	0.4621,  0.0015, 0.50 };
 	ls25active 	 =  	{ 118/255, 185/255,   0/255, 1.00 };
-	ls25bg 	 	 =  	{ 	0/255, 	0/255,    0/255, 0.65 };
+	ls25bg 	 	 =  	{ 	0/255, 	 0/255,   0/255, 0.65 };
+	ad	 	 	 =  	{  16/255, 190/255, 107/255, 1.00 };
+	cp	 	 	 =  	{ 205/255, 206/255,   0/255, 1.00 };
 };
 
 g_currentMission.hlUtils.colorDefault = {	--RGB	
@@ -1108,6 +1129,8 @@ g_currentMission.hlUtils.colorDefault = {	--RGB
 	ls25Inactive =  	{  0.2384,	0.4621,  0.0015, 0.50 };
 	ls25active 	 =  	{ 118/255, 185/255,   0/255, 1.00 };
 	ls25bg 	 	 =  	{ 	0/255, 	0/255,    0/255, 0.65 };
+	ad	 	 	 =  	{  16/255, 190/255, 107/255, 1.00 };
+	cp	 	 	 =  	{ 205/255, 206/255,   0/255, 1.00 };
 };
 
 g_currentMission.hlUtils.colorProzent = {[1]="white", [2]="green", [3]="yellowGreen", [4]="yellow", [5]="orange", [6]="orangeRed", [7]="red"}; --1 default return hl_ 
@@ -2043,7 +2066,7 @@ function()
 	return farmId;
 end;end;
 
-if g_currentMission.hlUtils.teleportPlayerToObject==nil then g_currentMission.hlUtils.teleportPlayerToObject= --update 0.97
+if g_currentMission.hlUtils.teleportPlayerToObject==nil then g_currentMission.hlUtils.teleportPlayerToObject= --update 0.97 + 0.98
 function(object, forceMouse)
 	local isTeleport = false;
 	if object == nil then return isTeleport;end;
@@ -2053,7 +2076,7 @@ function(object, forceMouse)
 			if hotspot ~= nil and hotspot.teleportWorldX ~= nil and hotspot.teleportWorldY ~= nil and hotspot.teleportWorldZ ~= nil then
 				if g_localPlayer ~= nil then
 					if g_localPlayer:getIsInVehicle() then
-						g_localPlayer:onLeaveVehicle(); --later new, g_localPlayer:onLeaveVehicle(hotspot.teleportWorldX, hotspot.teleportWorldY, hotspot.teleportWorldZ, true, false); --passenger !
+						g_localPlayer:leaveVehicle();						
 						g_localPlayer:teleportTo(hotspot.teleportWorldX, hotspot.teleportWorldY, hotspot.teleportWorldZ, false, false);	
 					else
 						g_localPlayer:teleportTo(hotspot.teleportWorldX, hotspot.teleportWorldY, hotspot.teleportWorldZ, false, false);							
@@ -2074,7 +2097,7 @@ function(object, forceMouse)
 				y = terrainHeight + y;
 				if g_localPlayer ~= nil then
 					if g_localPlayer:getIsInVehicle() then
-						g_localPlayer:onLeaveVehicle(); --later new, g_localPlayer:onLeaveVehicle(x, y, z, true, false); passenger !
+						g_localPlayer:leaveVehicle();						
 						g_localPlayer:teleportTo(x, y, z, false, false);
 					else		
 						g_localPlayer:teleportTo(x, y, z, false, false);					
@@ -2135,4 +2158,45 @@ function(isControlled)
 	return nil;
 end;end;
 --update 0.97
+--update 0.98
+if g_currentMission.hlUtils.getObjectDistance==nil then g_currentMission.hlUtils.getObjectDistance=
+function(object1, object2)
+	if object2 == nil or object1 == nil or object2.x == nil or object2.y == nil or object2.z == nil or object1.x == nil or object1.y == nil or object1.z == nil then return -1;end;
+	return MathUtil.vector3Length(object2.x-object1.x, object2.y-object1.y, object2.z-object1.z);
+end;end;
+
+if g_currentMission.hlUtils.getDistance==nil then g_currentMission.hlUtils.getDistance=
+function(currentPosition, targetPosition, searchCurrentPosition)
+	local cPos, tPos = currentPosition, targetPosition;
+	local distance = -1;
+	if tPos == nil then return distance;end;
+	if currentPosition == nil and searchCurrentPosition ~= nil and searchCurrentPosition:lower() == "vehicle" or searchCurrentPosition:lower() == "player" then	
+		local currentTyp = searchCurrentPosition:lower();
+		local cX, cY, cZ = 0,0,0;
+		if currentTyp == "vehicle" then 
+			if not g_currentMission.hlUtils.isControlledVehicle() then return distance;end;
+			local vehicle = g_currentMission.hlUtils.getControlledVehicle();
+			if vehicle == nil or vehicle.steeringAxleNode == nil then return distance;end;
+			cX, cY, cZ = getWorldTranslation(vehicle.steeringAxleNode);			
+		else
+			cX, cY, cZ = g_localPlayer:getPosition();
+		end;
+		if cX ~= nil and cY ~= nil and cZ ~= nil then cPos = {x=cX,y=cY,z=cZ};end;
+	else
+		return distance;
+	end;
+	return g_currentMission.hlUtils.getObjectDistance(cPos, tPos);
+end;end;
+--update 0.98
+--update 0.99
+if g_currentMission.hlUtils.getUiScale==nil then g_currentMission.hlUtils.getUiScale=
+function()
+	return g_gameSettings:getValue("uiScale");
+end;end;
+if g_currentMission.hlUtils.isNewUiScale==nil then g_currentMission.hlUtils.isNewUiScale=
+function(uiScale)	
+	if uiScale == nil then return false;end;
+	return g_currentMission.hlUtils.getUiScale() ~= uiScale;
+end;end;	
+--update 0.99
 end;

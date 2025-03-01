@@ -31,6 +31,7 @@ function hlTextTicker.new(args)
 	self.pos = { 
 		[1] = {x=0,y=0,width=0,height=0,size=0.025,boldSize=0.025,textHeight=0,boldTextHeight=0,drawBg=false,ownTable={}}; 
 	};
+	self.uiScale = g_gameSettings:getValue("uiScale");
 	self.overlays = {};
 	self.mergeOrgData = {};
 	self.msg = {};
@@ -55,6 +56,14 @@ function hlTextTicker.new(args)
 	return self;
 end;
 
+function hlTextTicker:isNewUiScale()
+	return g_gameSettings:getValue("uiScale") ~= self.uiScale;	
+end;
+
+function hlTextTicker:resetUiScale()
+	self.uiScale = g_gameSettings:getValue("uiScale");
+end;
+
 function hlTextTicker:setBackgroundData()
 	if self.overlays["bgTextTicker"] ~= nil then
 		local posData = self:getPositionData();
@@ -67,7 +76,7 @@ function hlTextTicker:getPositionData()
 end;
 
 function hlTextTicker.checkPositionData() --start over self:update or ... replace or set here check x,y,w,h ?
-
+	--if self:isNewUiScale() then self:resetUiScale();end;
 end;
 
 function hlTextTicker:addMsg(args)

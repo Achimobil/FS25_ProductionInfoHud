@@ -3,7 +3,7 @@
 	<translationContributors>Cert</translationContributors>
 	<texts>
 		<text name="hl_notImplement" text="*Připravuje se*" />
-		<text name="hl_infoDisplay_settingHlHudSystem" text="*Nastavení Hl Hud Systému* ZAP/VYP (pravým kliknutím myši))" />
+		<text name="hl_infoDisplay_settingHlHudSystem" text="*Nastavení HL Hud Systému* ZAP/VYP (pravým kliknutím myši))" />
 		<text name="hl_infoDisplay_notFoundHud" text="! Nenalezeno žádné HUD nastavení !" />
 		<text name="hl_infoDisplay_viewMpOff" text="*HLAVNÍ HUD/PDA/BOX* Přehledy ZAP/VYP/n/Vypne VŠECHNY přehledy (pouze pro Multiplayer)" />
 		<text name="hl_infoDisplay_viewNotAllIcons" text="! Pozor nelze zobrazit všechny ikony !/n/Změnit %s šířku (vpravo dole)" />

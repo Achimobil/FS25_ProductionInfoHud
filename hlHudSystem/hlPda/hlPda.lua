@@ -158,6 +158,18 @@ function hlPda:getScreen()
 	return self.screen:getScreen();
 end;
 
+function hlPda:isNewUiScale()
+	return self.screen:isNewUiScale();
+end;
+
+function hlPda:getUiScale()
+	return self.screen:getUiScale();
+end;
+
+function hlPda:resetUiScale()
+	self.screen:resetUiScale();
+end;
+
 function hlPda:getSize(args)
 	return self.screen:getSize(args);
 end;

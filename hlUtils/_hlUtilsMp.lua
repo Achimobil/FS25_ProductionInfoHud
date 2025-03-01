@@ -3,10 +3,10 @@ hlUtilsMp = {};
 hlUtilsMp.metadata = {	
 	title = "HL MP Utils",
 	author = "(by HappyLooser)",
-	version ="v0.2 Beta",
-	systemVersion = 0.2,
+	version ="v0.3 Beta",
+	systemVersion = 0.3,
 	datum = "22.10.2024",
-	update = "05.12.2024",	
+	update = "30.01.2025",	
 };
 
 hlUtilsMp.modDir = g_currentModDirectory;
@@ -38,7 +38,8 @@ function hlUtilsMp.onStartMission()
 		if g_server ~= nil and g_currentMission.missionDynamicInfo.isMultiplayer then print("---loading ".. tostring(hlUtilsMp.metadata.title).. " ".. tostring(hlUtilsMp.metadata.version).. " ".. tostring(hlUtilsMp.metadata.author).. "---");end;		
 		if g_dedicatedServer ~= nil or (g_server ~= nil and g_client ~= nil) or (g_currentMission.missionDynamicInfo.isMultiplayer and g_server ~= nil) then
 			hlUtilsMp:loadXml();			
-			FSBaseMission.saveSavegame = Utils.appendedFunction(FSBaseMission.saveSavegame, hlUtilsMp.saveSavegame);
+			--FSBaseMission.saveSavegame = Utils.appendedFunction(FSBaseMission.saveSavegame, hlUtilsMp.saveSavegame);
+			ItemSystem.save = Utils.prependedFunction(ItemSystem.save, hlUtilsMp.saveSavegame); --patch 1.5.0.1
 		end;
 		FSBaseMission.onConnectionFinishedLoading = Utils.appendedFunction(FSBaseMission.onConnectionFinishedLoading, hlUtilsMp.onClientJoined)
 	end;

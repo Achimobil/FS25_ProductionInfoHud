@@ -37,6 +37,7 @@ function hlPdaDraw.show()
 								setPdaClickArea = true;											
 							end;
 							if pda.onDraw ~= nil and type(pda.onDraw) == "function" then pda.onDraw( {inArea=inArea, typPos=pos} );end;					
+							hlHudSystemDraw:showBoundsInfo( {typ=pda, typName="pda"} );
 							if g_currentMission.hlUtils.isMouseCursor then
 								setPdaClickArea = hlHudSystemDraw:showSettingIcons( {typ=pda, typName="pda", typPos=pos, inArea=inArea} );			
 								---hud creator/scrollUpDown Info---

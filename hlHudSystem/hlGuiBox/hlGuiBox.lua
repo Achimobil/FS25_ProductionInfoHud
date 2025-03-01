@@ -108,6 +108,18 @@ function hlGuiBox:getScreen()
 	return self.screen:getScreen();
 end;
 
+function hlGuiBox:isNewUiScale()
+	return self.screen:isNewUiScale();
+end;
+
+function hlGuiBox:getUiScale()
+	return self.screen:getUiScale();
+end;
+
+function hlGuiBox:resetUiScale()
+	self.screen:resetUiScale();
+end;
+
 function hlGuiBox:getSize(args)
 	return self.screen:getSize(args);
 end;

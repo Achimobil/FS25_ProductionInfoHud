@@ -1,5 +1,5 @@
 ﻿<hlHudSystem>	
-	<guiBoxIcons load="12">
+	<guiBoxIcons load="15">
 		<icon name="bg" type="2" setStateInArea="true" color="blackDisabled" placeB="120"/>
 		<icon name="bgLine" type="2" setStateInArea="true" color="blackDisabled" placeB="120"/>		
 		<icon name="bgFrame" type="2" setStateInArea="true" color="blackDisabled" placeB="120"/>
@@ -12,10 +12,13 @@
 		<icon name="close" type="2" setStateInArea="true" color="red" placeB="50"/>
 		<icon name="sizeWidthHeight" type="2" setStateInArea="true" color="red" placeB="54"/>
 		<icon name="dragDrop" type="2" setStateInArea="true" color="red" placeB="55"/>
+		<icon name="bgOval" type="2" color="blackDisabled" placeB="105" placeE="106"/>
+		<icon name="boundsUp" type="2" placeB="3"/>
+		<icon name="boundsDown" type="2" placeB="2"/>
 	</guiBoxIcons>
 	<ownGuiBoxIcons load="2">
 		<icon name="save" type="2" color="darkGray" placeB="17"/>
-		<icon name="setInfo" type="2" color="darkGray" placeB="30"/>	
+		<icon name="setInfo" type="2" color="darkGray" placeB="30"/>		
 	</ownGuiBoxIcons>
 	<ownGuiBoxOtherIcons load="2">
 		<icon name="setSound" type="2" color="darkGray" placeB="96"/>
@@ -24,7 +27,7 @@
 	<background load="1">
 		<icon name="bg" type="2" color="blackDisabled" placeB="120"/>
 	</background>
-	<backgroundIcons load="7">
+	<backgroundIcons load="8">
 		<icon name="blank" type="1" placeB="127"/>
 		<icon name="bg" type="2" color="blackDisabled" placeB="120"/>		
 		<icon name="bgRound" type="2" color="blackDisabled" placeB="119"/>
@@ -32,6 +35,7 @@
 		<icon name="bgHalfRoundDown" type="2" color="blackDisabled" placeB="117"/>
 		<icon name="bgHalfRoundRight" type="2" color="blackDisabled" placeB="116"/>
 		<icon name="bgHalfRoundLeft" type="2" color="blackDisabled" placeB="115"/>
+		<icon name="bgOval" type="2" color="blackDisabled" placeB="105" placeE="106"/>
 	</backgroundIcons>
 	<mouseIcons load="6">
 		<icon name="mouse" type="2" color="khaki" placeB="126"/>
