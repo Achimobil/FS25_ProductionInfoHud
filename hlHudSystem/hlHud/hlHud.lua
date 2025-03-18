@@ -299,7 +299,7 @@ function hlHud:getAllShowHuds()
 	local showHuds = {};
 	if #g_currentMission.hlHudSystem.hud > 0 then	
 		for pos=1, #g_currentMission.hlHudSystem.hud do
-			if g_currentMission.hlHudSystem.hud[pos].show then
+			if g_currentMission.hlHudSystem.hud[pos].show and not g_currentMission.hlHudSystem.hud[pos].isHidden()then
 				local values = {hud=pos};
 				table.insert(showHuds, values);
 			end;
@@ -331,6 +331,18 @@ end;
 
 function hlHud:getScreen()
 	return self.screen:getScreen();
+end;
+
+function hlHud:isNewUiScale()
+	return self.screen:isNewUiScale();
+end;
+
+function hlHud:getUiScale()
+	return self.screen:getUiScale();
+end;
+
+function hlHud:resetUiScale()
+	self.screen:resetUiScale();
 end;
 
 function hlHud:getSize(args)

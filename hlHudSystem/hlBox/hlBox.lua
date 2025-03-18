@@ -161,6 +161,18 @@ function hlBox:getScreen()
 	return self.screen:getScreen();
 end;
 
+function hlBox:isNewUiScale()
+	return self.screen:isNewUiScale();
+end;
+
+function hlBox:getUiScale()
+	return self.screen:getUiScale();
+end;
+
+function hlBox:resetUiScale()
+	self.screen:resetUiScale();
+end;
+
 function hlBox:getSize(args)
 	return self.screen:getSize(args);
 end;

@@ -108,7 +108,7 @@ function PIH_Display_DrawBox.setBox(args)
     local timeFilterText = ProductionInfoHud.i18n:getText("pih_timeFilterOne");
     if g_currentMission.environment.daysPerPeriod ~= 1 then timeFilterText = ProductionInfoHud.i18n:getText("pih_timeFilterTwo"); end
     nextPosY = nextPosY+(h)-(box.ownTable.lineHeight)-difH;
-    box.screen.bounds[4] = #currentProductionItems+1; -- +1 for Imaginäre Line wenn untergruppe an ist (viewAmountStorages/viewBestPriceStations etc.
+    box.screen.bounds[4] = #currentProductionItems; -- +1 for Imaginäre Line wenn untergruppe an ist (viewAmountStorages/viewBestPriceStations etc.
     if box.viewExtraLine then box.screen.bounds[4] = box.screen.bounds[4]+1;end;
 
 

@@ -17,6 +17,7 @@ end;
 
 function hlOwnTextTicker:checkPositionData()
 	if g_currentMission.hlHudSystem.textTicker.position[1] == 1 then		
+		if g_currentMission.hlHudSystem.textTicker:isNewUiScale() then g_currentMission.hlHudSystem.textTicker:resetUiScale();hlOwnTextTicker:setPositionData(1, false);g_currentMission.hlHudSystem.textTicker:resetAllMsg();end;
 		local x, _, _, _ = g_currentMission.hlUtils.getOverlay(g_currentMission.hud.gameInfoDisplay.infoBgLeft);
 		if g_currentMission.hlHudSystem.textTicker.pos[1].width ~= g_hudAnchorRight-x then 
 			hlOwnTextTicker:setPositionData(1, true);

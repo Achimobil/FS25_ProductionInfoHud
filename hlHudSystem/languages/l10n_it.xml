@@ -3,7 +3,7 @@
 	<translationContributors>Roby</translationContributors>
 	<texts>
 		<text name="hl_notImplement" text="*Non ancora attivo*" />
-		<text name="hl_infoDisplay_settingHlHudSystem" text="*Impostazione del sistema Hl Hud* ACCESO/SPENTO (Clic destro del mouse))" />
+		<text name="hl_infoDisplay_settingHlHudSystem" text="*Impostazione del sistema HL Hud* ACCESO/SPENTO (Clic destro del mouse))" />
 		<text name="hl_infoDisplay_notFoundHud" text="! Nessuna impostazione HUD trovata !" />
 		<text name="hl_infoDisplay_viewMpOff" text="*GLOBALE HUD/PDA/BOX* Mostra ACCESO/SPENTO/n/Disabilita TUTTI gli annunci (Attivo solo in multiplayer)" />
 		<text name="hl_infoDisplay_viewNotAllIcons" text="! Attenzione, non tutte le icone vengono visualizzate !/n/Modificare la larghezza %s (in basso a destra)" />

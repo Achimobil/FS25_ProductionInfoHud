@@ -35,8 +35,9 @@ function hlBoxDraw:show()
 								setPdaClickArea = true;											
 							end;
 							if box.onDraw ~= nil and type(box.onDraw) == "function" then box.onDraw( {inArea=inArea, typPos=pos} );end;					
+							hlHudSystemDraw:showBoundsInfo( {typ=box, typName="box"} );
 							if g_currentMission.hlUtils.isMouseCursor then
-								setBoxClickArea = hlHudSystemDraw:showSettingIcons( {typ=box, typName="box", typPos=pos, inArea=inArea} );						
+								setBoxClickArea = hlHudSystemDraw:showSettingIcons( {typ=box, typName="box", typPos=pos, inArea=inArea} );								
 								---hud creator/scrollUpDown Info---
 								if setBoxClickArea and box.isSetting and box.settingTyp == 1 and inArea and g_currentMission.hlHudSystem.infoDisplay.on then
 									local zoomOutInInfo = "";

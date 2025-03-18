@@ -262,7 +262,7 @@ function hlGuiBoxDraw:show()
 					end;
 					setTitle();
 					posY = posY-guiBox.lineHeight+distance.textHeight;
-					if guiBox.screen.bounds[1] > 0 then setLines();end;
+					if guiBox.screen.bounds[1] > 0 then setLines();hlHudSystemDraw:showBoundsInfo( {typ=guiBox, typName="guiBox"} );end;
 				end;
 				hlGuiBoxDraw:checkCorrectBounds(guiBox);
 			end;

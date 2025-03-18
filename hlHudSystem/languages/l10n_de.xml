@@ -3,8 +3,8 @@
 	<translationContributors>HappyLooser</translationContributors>
 	<texts>
 		<text name="hl_notImplement" text="*Noch nicht freigeschaltet*" />
-		<text name="hl_infoDisplay_settingHlHudSystem" text="*Hl Hud System Setting* AN/AUS (MauseKlick Rechts))" />
-		<text name="hl_infoDisplay_notFoundHud" text="! Kein setting HUD gefunden !" />
+		<text name="hl_infoDisplay_settingHlHudSystem" text="*HL Hud System Setting* AN/AUS (MauseKlick Rechts))" />
+		<text name="hl_infoDisplay_notFoundHud" text="! Kein Setting HUD gefunden !" />
 		<text name="hl_infoDisplay_viewMpOff" text="*GLOBAL HUD/PDA/BOX* Anzeigen AN/AUS/n/Deaktiviert ALLE Anzeigen (nur im Multiplayer Aktiv)" />
 		<text name="hl_infoDisplay_viewNotAllIcons" text="! Achtung es werden nicht alle Icons angezeigt !/n/Ändere die %s Breite (rechts unten)" />
 		<text name="hl_infoDisplay_displayTypSwitch" text="%s Anzeige Typ umschalten (MauseKlick Links)" />

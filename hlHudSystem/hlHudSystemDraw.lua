@@ -47,7 +47,9 @@ function hlHudSystemDraw:showOwnIcons() --over ls weather hud
 		bgH = g_currentMission.hud.gameInfoDisplay.infoBgScale.height;
 	end;
 	setFirstIconPos();	
-	if g_currentMission.hlHudSystem.ownData.iconWidth == nil then
+	local newUiScale = g_currentMission.hlHudSystem.screen:isNewUiScale();
+	if newUiScale then g_currentMission.hlHudSystem.screen:resetUiScale();end;
+	if g_currentMission.hlHudSystem.ownData.iconWidth == nil or newUiScale then
 		g_currentMission.hlHudSystem.ownData.iconWidth, g_currentMission.hlHudSystem.ownData.iconHeight = g_currentMission.hlHudSystem.screen:getOptiWidthHeight( {typ="icon", height=bgH/4.3, width=bgW} ); --max 8 icons		
 	end;	
 	if g_currentMission.hlHudSystem.overlays.settingIcons ~= nil then
@@ -342,7 +344,7 @@ function hlHudSystemDraw:showSettingIcons(args) --Pda,Box
 					if inIconArea and not g_currentMission.hlUtils:disableInArea() then whichAreaClick:clickAreas( {bgSetting.x, bgSetting.x+bgSetting.width, bgSetting.y, bgSetting.y+bgSetting.height, whatClick=whatClick, whereClick=whereClick, areaClick="autoCloseIcon_", typPos=args.typPos} );end;
 				end;	
 			end;
-			---autoClose---
+			---autoClose---			
 			---dragDropWH---
 			local sizeWidthHeight = typ.overlays.settingIcons.sizeWidthHeight;							
 			if sizeWidthHeight ~= nil and sizeWidthHeight.visible then
@@ -420,4 +422,71 @@ function hlHudSystemDraw:showGuiBoxIcons(args) --GuiBox
 		end;
 	end;
 	return setClickArea;
+end;
+
+function hlHudSystemDraw:showBoundsInfo(args) --version 1.40 (no area clicks)
+	if args == nil or type(args) ~= "table" or args.typ == nil or args.typName == nil then return;end;
+	local typ = args.typ;
+	local typName = args.typName;
+	---canBounds up down info---
+	function canSetBoundsInfo()
+		if typName == "guiBox" then return typ.screen.canBounds.setInfo and typ.screen.bounds[1] > 0 and typ.screen.bounds[4] > 0;else return typ.screen.canBounds.setInfo and typ.screen.bounds[1] > 0 and typ.screen.bounds[4] > 0 and (not typ.isSetting or (typ.isSetting and typ.settingTyp > 1));end;
+	end;
+	function getTypColor(color)
+		if typName == "guiBox" then return g_currentMission.hlHudSystem.overlays.color[color];else return typ.overlays.color[color];end;
+	end;
+	function getIconPath(icon)
+		if typName == "guiBox" then 
+			if icon == nil then return typ.overlays.defaultIcons.guiBox ~= nil and typ.overlays.byName.defaultIcons.guiBox ~= nil;end;
+			if typ.overlays.defaultIcons.guiBox ~= nil and typ.overlays.byName.defaultIcons.guiBox ~= nil then
+				local overlayGroup = typ.overlays.defaultIcons.guiBox;
+				local overlayByName = typ.overlays.byName.defaultIcons.guiBox;				
+				return overlayGroup[overlayByName[icon]];
+			end;
+		else 
+			if icon == nil then return typ.overlays.settingIcons;end;
+			return typ.overlays.settingIcons[icon];
+		end;
+	end;
+	function getOptiWidthHeight()
+		if typName == "guiBox" then	return typ.iconWidth/1.3, typ.iconHeight/1.3;else return typ:getOptiWidthHeight( {typ=typName, height=typ.screen.size.settingIcon[2]} );end;
+	end;
+	if getIconPath() ~= nil then
+		local boundsUp = getIconPath("boundsUp");
+		local boundsDown = getIconPath("boundsDown");		
+		local dropBoundsInfo = canSetBoundsInfo() and (typ.screen.bounds[1]+typ.screen.bounds[2] < typ.screen.bounds[4] or typ.screen.bounds[3] < typ.screen.bounds[4] or typ.screen.bounds[1] > 1 or typ.screen.bounds[2] < typ.screen.bounds[4]);
+		if dropBoundsInfo and boundsUp ~= nil and boundsUp.visible and boundsDown ~= nil and boundsDown.visible then
+			local x, y, w, h = typ:getScreen();
+			local bgSettingW, bgSettingH = getOptiWidthHeight();
+			local iconWidth = bgSettingW-(typ.screen.pixelW*0.5);
+			local iconHeight = bgSettingH-(typ.screen.pixelH*0.5);		
+			bgSettingW = bgSettingW*2.2;
+			local bgSetting = getIconPath("bgOval");
+			if bgSetting ~= nil then		
+				local mX = x+(w/2);
+				if x+w > bgSettingW*3 then --min width for drop icons
+					--bounds üp/left--
+					if typName == "guiBox" then
+						g_currentMission.hlUtils.setOverlay(bgSetting, mX-(bgSettingW/2), y, bgSettingW, bgSettingH);
+					else
+						g_currentMission.hlUtils.setOverlay(bgSetting, mX-(bgSettingW/2), y+h-(bgSettingH/1.5), bgSettingW, bgSettingH);
+					end;
+					g_currentMission.hlUtils.setOverlay(boundsUp, bgSetting.x+(bgSettingW/2)-(iconWidth), bgSetting.y+(bgSettingH/2)-(iconHeight/2), iconWidth, iconHeight);
+					
+					if typ.screen.bounds[1] > 1 then g_currentMission.hlUtils.setBackgroundColor(boundsUp, g_currentMission.hlUtils.getColor(getTypColor("on"), true));else g_currentMission.hlUtils.setBackgroundColor(boundsUp, g_currentMission.hlUtils.getColor(getTypColor("notActive"), true));end;
+					if bgSetting.visible then bgSetting:render();end;
+					boundsUp:render();
+					--bounds üp/left--
+					--bounds down/right--					
+					g_currentMission.hlUtils.setOverlay(boundsDown, bgSetting.x+(bgSettingW/2), bgSetting.y+(bgSettingH/2)-(iconHeight/2), iconWidth, iconHeight);
+					
+					if typ.screen.bounds[2] < typ.screen.bounds[4] then g_currentMission.hlUtils.setBackgroundColor(boundsDown, g_currentMission.hlUtils.getColor(getTypColor("on"), true));else g_currentMission.hlUtils.setBackgroundColor(boundsDown, g_currentMission.hlUtils.getColor(getTypColor("notActive"), true));end;
+					--if bgSetting.visible then bgSetting:render();end;
+					boundsDown:render();
+					--bounds down/right--
+				end;
+			end;
+		end;	
+	end;
+	---canBounds up down info---
 end;
