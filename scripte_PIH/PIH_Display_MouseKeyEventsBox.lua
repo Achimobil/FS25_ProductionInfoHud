@@ -35,6 +35,11 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                         box:setUpdateState(true);
                         return;
                     end;
+                    if args.clickAreaTable.whereClick == "autoDeliverFilter_" then
+                        box.ownTable.AutoDeliverFilter = not box.ownTable.AutoDeliverFilter;
+                        box:setUpdateState(true);
+                        return;
+                    end;
                     if args.clickAreaTable.whereClick == "timeFilter_" then
                         box.ownTable.TimeFilter = box.ownTable.TimeFilter + 1;
                         if box.ownTable.TimeFilter == 2 and g_currentMission.environment.daysPerPeriod == 1 then

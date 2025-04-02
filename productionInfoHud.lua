@@ -578,6 +578,7 @@ function ProductionInfoHud:AddProductionPoint(myProductionItems, productionPoint
         productionItem.isOutput = false;
         productionItem.IsProduction = true;
         productionItem.target = productionPoint;
+        productionItem.isAutoDeliver = productionPoint.outputFillTypeIdsAutoDeliver[fillTypeId];
 
         -- replace the long leasing text
         if productionItem.name ~= nil then

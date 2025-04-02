@@ -40,6 +40,9 @@ function PIH_Display_DrawBox.setBox(args)
             if not skipItem and box.ownTable.ShowProduction ~= nil and box.ownTable.ShowProduction == false and productionItem.IsProduction then
                 skipItem = true;
             end
+            if not skipItem and box.ownTable.AutoDeliverFilter ~= nil and box.ownTable.AutoDeliverFilter == false and productionItem.isAutoDeliver == true then
+                skipItem = true;
+            end
             if not skipItem and box.ownTable.TimeFilter ~= nil and box.ownTable.TimeFilter ~= 1 then
                 if box.ownTable.TimeFilter == 2 and productionItem.hoursLeft > 24 then
                     skipItem = true;
@@ -243,6 +246,21 @@ function PIH_Display_DrawBox.setBox(args)
                 setWarningLine = true;
             end;
             --time filter--
+
+            --AutoDeliverFilter filter--
+            --etwas rüber rutschen damit von den anderen filtern getrennt
+            nextIconPosX = nextIconPosX+iconWidth+difW;
+            if nextIconPosX+iconWidth < x+w then
+                overlay = overlayDefaultGroup[overlayDefaultByName["production_directdeliver"]];
+                if overlay ~= nil then
+                    if box.ownTable.AutoDeliverFilter then iconColor = box.overlays.color.on;end;
+                    setOverlay("autoDeliverFilter_", iconColor);
+                    if inIconArea and box.isHelp then setInfoHelpText(ProductionInfoHud.i18n:getText("pih_autoDeliverFilter"), 0);end;
+                end;
+            else
+                setWarningLine = true;
+            end;
+            --AutoDeliverFilter filter--
 
             if setWarningLine then
                 setWarningLineIcon();

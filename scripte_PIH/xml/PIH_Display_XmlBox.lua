@@ -5,7 +5,9 @@ function PIH_Display_XmlBox:defaultValues(box)
         dataViewMode=1,
         ShowAnimal=true,
         ShowProduction=true,
-        TimeFilter = 1
+        TimeFilter = 1,
+        AutoDeliverFilter=true
+
     }; --own values TimeFilter=1(no fitler), 2(less 24 hours), 3(lee 1 month)
 end;
 
@@ -25,6 +27,9 @@ function PIH_Display_XmlBox:onLoadXml(box, Xml, xmlNameTag)
         end;
         if getXMLInt(Xml, xmlNameTag.."#TimeFilter") ~= nil then
             box.ownTable.TimeFilter = getXMLInt(Xml, xmlNameTag.. "#TimeFilter");
+        end;
+        if getXMLInt(Xml, xmlNameTag.."#AutoDeliverFilter") ~= nil then
+            box.ownTable.AutoDeliverFilter = getXMLBool(Xml, xmlNameTag.. "#AutoDeliverFilter");
         end;
     end;
 end;
