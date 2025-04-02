@@ -527,7 +527,7 @@ function ProductionInfoHud:AddFactory(myProductionItems, factory)
         productionItem.hoursLeft = nil; -- time until full or empty, nil when not changing
         productionItem.fillLevel = factory:getFillLevel(fillTypeId);
         productionItem.capacity = factory:getCapacity(fillTypeId);
-        productionItem.isInput = true;
+        productionItem.isInput = false;
         productionItem.isOutput = false;
         productionItem.IsProduction = true;
         productionItem.target = factory;
@@ -617,7 +617,7 @@ function ProductionInfoHud:AddProductionPoint(myProductionItems, productionPoint
             if production.status ~= ProductionPoint.PROD_STATUS.MISSING_INPUTS and productionPoint.outputFillTypeIdsDirectSell[fillTypeId] == nil then
                 for _, fillTypeId2 in pairs(production.outputs) do
                     if fillTypeId2.type == fillTypeId then
-                        productionItem.isInput = true;
+                        productionItem.isOutput = true;
                         productionItem.productionPerHour = productionItem.productionPerHour + (production.cyclesPerHour * fillTypeId2.amount * productionPointMultiplicator);
                     end
                 end

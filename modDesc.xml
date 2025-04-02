@@ -2,7 +2,7 @@
 <modDesc descVersion="96">
     <author>Achimobil</author>
     <contributor>HappyLooser</contributor>
-    <version>1.0.0.0</version>
+    <version>1.0.0.1</version>
 
     <title>
         <de>Produktionen Info Hud</de>
@@ -43,6 +43,7 @@ Fehler und Anregungen gerne auf <a href="https://github.com/Achimobil/FS25_Produ
 Changelog
 0.0.0.26 - Added FR translation</a>.
 0.0.0.29 - Correct Arrows for more lines available</a>.
+1.0.0.1 - Volle werden jetzt nicht mehr als leer angezeigt
 ]]></de>
         <en><![CDATA[HUD display for productions and husbandries that require attention.
 
