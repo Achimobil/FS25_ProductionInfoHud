@@ -176,6 +176,8 @@ function ProductionInfoHud:AddProductionItemToList(myProductionItems, production
             productionItem.hoursLeft = (productionItem.capacity - productionItem.fillLevel) / (productionItem.productionPerHour * timeFactor);
             productionItem.capacityData = productionItem.fillLevel;
         end
+        -- pro stunde noch umrechnen anhand des timefactor
+        productionItem.productionPerHour = productionItem.productionPerHour * timeFactor;
     end
 
     if productionItem.hoursLeft ~= nil then
