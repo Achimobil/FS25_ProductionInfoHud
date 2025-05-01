@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+    <translationContributors>Ziuta</translationContributors>
+    <texts>
+        <text name="input_HL_ONOFFMOUSECURSOR" text="Pokaż/Ukryj kursor"/>
+        <text name="Empty" text="Pusto"/>
+        <text name="Full" text="Pełno"/>
+        <text name="StorageMissing" text="Brakujące"/>
+        <text name="OnlyPallets" text="Palety"/>
+        <text name="input_PIH_ONOFFDISPLAY" text="Pokaż/Ukryj HUD Informacji Produkcji"/>
+        <text name="input_TOGGLE_GUI_on" text="Pokaż HUD Informacji Produkcji"/>
+        <text name="input_TOGGLE_GUI_off" text="Ukryj HUD Informacji Produkcji"/>
+
+        <text name="pih_infoDisplay_textSize" text="*ROZMIAR TEKSTU* %s (prawy/lewy przycisk myszki)" />
+        <text name="pih_animalFilter" text="Pokaż/Ukryj zwierzęta (lewy przycisk myszki)" />
+        <text name="pih_productionFilter" text="Pokaż/Ukryj produkcje (lewy przycisk myszki)" />
+        <text name="pih_timeFilterOne" text="Filtr czasu brak / miesiąc (lewy przycisk myszki)" />
+        <text name="pih_timeFilterTwo" text="Filtr czasu brak / 24h / miesiąc (lewy przycisk myszki)" />
+    </texts>
+</l10n>
