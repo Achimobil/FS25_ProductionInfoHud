@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<modDesc descVersion="96">
+<modDesc descVersion="97">
     <author>Achimobil</author>
     <contributor>HappyLooser</contributor>
-    <version>1.0.0.4</version>
+    <version>1.0.0.5</version>
 
     <title>
         <de>Produktionen Info Hud</de>
@@ -38,15 +38,16 @@ Schaut einfach mal rein.
 Upload auf anderen Seiten außer dem ModHub ist verboten und somit illegal, Verlinkung nur mit Original-Downloadlink. KEIN Ersatzlink!
 Das Verändern oder erneutes Hochladen, ob ganz oder in Teilen, ist nicht gestattet!
 
-Fehler und Anregungen gerne auf <a href="https://github.com/Achimobil/FS25_ProductionInfoHud">GitHub
+Fehler und Anregungen gerne auf <a href="https://github.com/Achimobil/FS25_ProductionInfoHud">GitHub</a>
 
 Changelog
-0.0.0.26 - Added FR translation</a>.
+0.0.0.26 - Added FR translation.
 0.0.0.29 - Correct Arrows for more lines available</a>.
 1.0.0.1 - Volle werden jetzt nicht mehr als leer angezeigt
 1.0.0.2 - Filter zum entfernen von Outputs die auf Verteilen stehen
 1.0.0.3 - Verteilen Filter wird nun auch gespeichert
 1.0.0.4 - Produktion pro Stunde in der Anzeige korrigiert bei mehr als 1 Tag pro Monat
+1.0.0.5 - Added PL translation
 ]]></de>
         <en><![CDATA[HUD display for productions and husbandries that require attention.
 
