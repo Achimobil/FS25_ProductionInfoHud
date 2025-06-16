@@ -16,5 +16,6 @@
         <text name="pih_productionFilter" text="Pokaż/Ukryj produkcje (lewy przycisk myszki)" />
         <text name="pih_timeFilterOne" text="Filtr czasu brak / miesiąc (lewy przycisk myszki)" />
         <text name="pih_timeFilterTwo" text="Filtr czasu brak / 24h / miesiąc (lewy przycisk myszki)" />
+        <text name="pih_autoDeliverFilter" text="Show/hide distributed products (left-click to toggle)" />
     </texts>
 </l10n>

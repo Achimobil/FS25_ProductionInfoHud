@@ -16,5 +16,6 @@
         <text name="pih_productionFilter" text="Show/hide productions (left-click to switch)" />
         <text name="pih_timeFilterOne" text="Time filter none / month (left-click to toggle)" />
         <text name="pih_timeFilterTwo" text="Time filter none / 24h / month (left-click to toggle)" />
+        <text name="pih_autoDeliverFilter" text="Show/hide distributed products (left-click to toggle)" />
     </texts>
 </l10n>

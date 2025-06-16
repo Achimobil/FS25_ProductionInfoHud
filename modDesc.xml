@@ -2,7 +2,7 @@
 <modDesc descVersion="99">
     <author>Achimobil</author>
     <contributor>HappyLooser</contributor>
-    <version>1.0.0.6</version>
+    <version>1.0.0.7</version>
 
     <title>
         <de>Produktionen Info Hud</de>
@@ -49,6 +49,7 @@ Changelog
 1.0.0.4 - Produktion pro Stunde in der Anzeige korrigiert bei mehr als 1 Tag pro Monat
 1.0.0.5 - Added PL translation
 1.0.0.6 - Volle Produkte die Input und Output sind werden jetzt nicht mehr als leer angezeigt
+1.0.0.7 - Fehlende Übersetzungen für Verteilen Filter hinzugefügt
 ]]></de>
         <en><![CDATA[HUD display for productions and husbandries that require attention.
 

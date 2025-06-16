@@ -16,5 +16,6 @@
         <text name="pih_productionFilter" text="Afficher/masquer les productions (clic gauche pour basculer)" />
         <text name="pih_timeFilterOne" text="Filtre temporel aucun / mois (clic gauche pour basculer)" />
         <text name="pih_timeFilterTwo" text="Filtre temporel aucun / 24h / mois (clic gauche pour basculer)" />
+        <text name="pih_autoDeliverFilter" text="Show/hide distributed products (left-click to toggle)" />
     </texts>
 </l10n>
