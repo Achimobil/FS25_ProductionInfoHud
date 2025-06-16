@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<modDesc descVersion="97">
+<modDesc descVersion="99">
     <author>Achimobil</author>
     <contributor>HappyLooser</contributor>
-    <version>1.0.0.5</version>
+    <version>1.0.0.6</version>
 
     <title>
         <de>Produktionen Info Hud</de>
@@ -48,6 +48,7 @@ Changelog
 1.0.0.3 - Verteilen Filter wird nun auch gespeichert
 1.0.0.4 - Produktion pro Stunde in der Anzeige korrigiert bei mehr als 1 Tag pro Monat
 1.0.0.5 - Added PL translation
+1.0.0.6 - Volle Produkte die Input und Output sind werden jetzt nicht mehr als leer angezeigt
 ]]></de>
         <en><![CDATA[HUD display for productions and husbandries that require attention.
 

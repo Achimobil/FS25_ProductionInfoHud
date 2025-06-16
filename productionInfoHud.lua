@@ -204,7 +204,13 @@ function ProductionInfoHud:AddProductionItemToList(myProductionItems, production
         -- wenn restzeit 0:00 ist, dann ist leer oder voll
         if days == 0 and hours == 0 and minutes <= 2 then
             if productionItem.isInput then
-                timeString = ProductionInfoHud.i18n:getText("Empty");
+--                 ProductionInfoHud.DebugTable("productionItem", productionItem)
+                if productionItem.isOutput and productionItem.capacityLevel >= 0.05 then
+                    -- Wenn es input und output ist, kann es voll oder leer sein, wenn es mehr als 5% level hat, ist es wohl voll
+                    timeString = ProductionInfoHud.i18n:getText("Full");
+                else
+                    timeString = ProductionInfoHud.i18n:getText("Empty");
+                end
             else
                 -- output but capacity 0 then target storage is missing
                 if productionItem.capacity == 0 then
