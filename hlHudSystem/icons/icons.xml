@@ -20,10 +20,14 @@
 		<icon name="save" type="2" color="darkGray" placeB="17"/>
 		<icon name="setInfo" type="2" color="darkGray" placeB="30"/>		
 	</ownGuiBoxIcons>
-	<ownGuiBoxOtherIcons load="2">
+	<ownGuiBoxOtherIcons load="3">
 		<icon name="setSound" type="2" color="darkGray" placeB="96"/>
+		<icon name="setVolume" type="2" color="darkGray" placeB="105"/>
 		<icon name="textTicker" type="2" color="darkGray" placeB="112"/>
 	</ownGuiBoxOtherIcons>
+	<ownGuiBoxOther1Icons load="1">
+		<icon name="sayings" type="2" color="darkGray" placeB="45"/>		
+	</ownGuiBoxOther1Icons>
 	<background load="1">
 		<icon name="bg" type="2" color="blackDisabled" placeB="120"/>
 	</background>
@@ -37,13 +41,15 @@
 		<icon name="bgHalfRoundLeft" type="2" color="blackDisabled" placeB="115"/>
 		<icon name="bgOval" type="2" color="blackDisabled" placeB="105" placeE="106"/>
 	</backgroundIcons>
-	<mouseIcons load="6">
-		<icon name="mouse" type="2" color="khaki" placeB="126"/>
-		<icon name="mouseClickRight" type="2" color="khaki" placeB="125"/>
-		<icon name="mouseClickMiddle" type="2" color="khaki" placeB="124"/>
-		<icon name="mouseClickLeft" type="2" color="khaki" placeB="123"/>
-		<icon name="mouseClickSideRight" type="2" color="khaki" placeB="122"/>
-		<icon name="mouseClickSideLeft" type="2" color="khaki" placeB="121"/>		
+	<mouseIcons load="8">
+		<icon name="unknownMouse" type="2" color="khaki" placeB="126"/>
+		<icon name="rightMouse" type="2" color="khaki" placeB="125"/>
+		<icon name="middleMouse" type="2" color="khaki" placeB="124"/>
+		<icon name="leftMouse" type="2" color="khaki" placeB="123"/>
+		<icon name="rightButtonMouse" type="2" color="khaki" placeB="122"/>
+		<icon name="leftButtonMouse" type="2" color="khaki" placeB="121"/>
+		<icon name="scrollUpDownMouse" type="2" color="khaki" placeB="112"/>
+		<icon name="bg" type="2" color="black" transparent="0.90" placeB="120"/>
 	</mouseIcons>	
 	<loadIcons load="59">
 		<icon name="left" type="2" color="white"/>
@@ -272,8 +278,5 @@
 	</other1Icons>
 	<other1IconsTemp load="1">
 		<icon name="other1Temp" type="1" placeB="1"/>
-	</other1IconsTemp>
-	<colorIconsTemp load="1">
-		<icon name="colorTemp" type="1" placeB="1"/>
-	</colorIconsTemp>
+	</other1IconsTemp>	
 </hlHudSystem>

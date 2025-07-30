@@ -7,8 +7,13 @@ function hlCamBox:generateNew(box)
 	if g_currentMission.hlHudSystem.camera.active and g_currentMission.hlHudSystem.camera.node == 0 then
 		g_currentMission.hlHudSystem.camera.node = createCamera("hlHudSystem_CameraBox", math.rad(60), 0.15, 6000); --1.0471975511965976, 1, 10000
 		
-		--g_currentMission.hlHudSystem.camera.baseNode = createTransformGroup("hlHudSystem_CameraBoxBaseNode");
+		g_currentMission.hlHudSystem.camera.baseNode = createTransformGroup("hlHudSystem_CameraBoxBaseNode");
 		link(getRootNode(), g_currentMission.hlHudSystem.camera.node);
+		link(g_currentMission.hlHudSystem.camera.baseNode, g_currentMission.hlHudSystem.camera.node)
+		
+		setRotation(g_currentMission.hlHudSystem.camera.node, 0, math.rad(180), 0)
+        setTranslation(g_currentMission.hlHudSystem.camera.node, 0, 2.5, 0.06)
+		
 		--local camera = CameraPath.createFromI3D("data/vehicles/fendt/vario900/vario900.i3d", 0, g_currentMission.hlHudSystem.camera.node)
 		
 		--g_currentMission.hlHudSystem.camera.cam = camera;

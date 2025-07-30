@@ -40,6 +40,7 @@
 		<text name="hl_guiBox_global_headline" text="*Global Settings*" />
 		<text name="hl_guiBox_global_infoDisplay" text="Standard Infos" />
 		<text name="hl_guiBox_global_help_infoDisplay" text="*HUD/PDA/BOX STANDARD INFOS AN/AUS* alle/n/Kann einige nützliche Infos anzeigen, wenn man mit dem Mauszeiger in einem bereich ist./n/Hat keinen Einfluss auf die Infos der Mods." />
+		<text name="hl_guiBox_global_mouseAcceptsInfo" text="MauseKlick Infos" />
 		<text name="hl_guiBox_global_autoSave" text="Automatisch Speichern" />
 		<text name="hl_guiBox_global_help_autoSave" text="Speichert Automatisch alle Daten im eingestellten Speicher Intervall./n/Speichert nur Daten von HUD/PDA/BOX die vom Creator Mod dafür freigegeben wurden./n/Du kannst trotzdem jeder Zeit auch manuell speichern wenn du mit dem Mauszeiger auf das Speicher Icon klickst." />
 		<text name="hl_guiBox_global_saveInfo" text="Speicher Info" />
@@ -63,6 +64,11 @@
 		<text name="hl_guiBox_textTicker_setSound" text="Start Sound" />
 		<text name="hl_guiBox_textTicker_help_setSound" text="Status: %s/n/Einen Sound abspielen der dich auf eine kommende Nachricht Hinweisst./n/Dieser wird nur abgespielt wenn vorher keine anderen Nachrichten aktiv waren." />
 		<text name="hl_guiBox_textTicker_help_sample" text="Einen Sound auswählen (1-%s)" />
+		<text name="hl_guiBox_textTicker_sayings" text="Sprüche anzeigen" />
+		<text name="hl_guiBox_textTicker_help_sayings" text="Zeigt dir lustige Texte/Sprüche oder ... an. (Aktuell gibt es %s Texte)/n/Tip: Text Ticker Position 2" />
+		<text name="hl_guiBox_textTicker_sayingsTimer" text="Sprüche Intervall" />		
+		<text name="hl_guiBox_textTicker_help_sayingsTimer" text="Alle %s min. lustige Texte/Sprüche oder ... anzeigen./n/Tip: Text Ticker Position 2" />
+		
 		<text name="hl_guiBox_modHidder_headline" text="Mod Hidder(HL Hud System)" />
 		<text name="hl_guiBox_modHidder_help" text="Mods die mit dem *HL Hud System* laufen An/Aus schalten/n/! Die Mods müssen diese Funktion auch Unterstützen !/n/Was deaktiviert ist, wird vom Modder bestimmt" />
 		<text name="hl_guiBox_otherMods_headline" text="Andere Mods Settings" />

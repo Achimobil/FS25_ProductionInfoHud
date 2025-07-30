@@ -40,6 +40,7 @@
 		<text name="hl_guiBox_global_headline" text="*Hlavní nastavení*" />
 		<text name="hl_guiBox_global_infoDisplay" text="Standartní info" />
 		<text name="hl_guiBox_global_help_infoDisplay" text="*HUD/PDA/BOX STANDARTNÍ INFO ZAP/VYP* vše/n/Může zobrazit užitečné informace, když pohybujete kurzorem v zadané oblasti./n/Nemá žádný vliv na info o modech." />
+		<text name="hl_guiBox_global_mouseAcceptsInfo" text="Informace o kliknutí myší" />
 		<text name="hl_guiBox_global_autoSave" text="Automatické ukládání" />
 		<text name="hl_guiBox_global_help_autoSave" text="Automatické ukládání všech dat v nastaveném intervalu./n/Ukládá pouze data z HUD/PDA/BOX, která byla schválena autorem modu./n/Ruční uložení je možné provést kdykoliv kliknutím na ikonu uložení pomocí myši." />
 		<text name="hl_guiBox_global_saveInfo" text="Info o ukládání" />
@@ -63,6 +64,11 @@
 		<text name="hl_guiBox_textTicker_setSound" text="Nastavit zvuk" />
 		<text name="hl_guiBox_textTicker_help_setSound" text="Status: %s/n/Přehrání zvuku v při nové zprávě./n/Přehraje se pouze pokud není aktivní žadná jiná zpráva." />
 		<text name="hl_guiBox_textTicker_help_sample" text="Výběr zvuku (1-%s)" />
+		<text name="hl_guiBox_textTicker_sayings" text="Zobrazit hlášky" />
+		<text name="hl_guiBox_textTicker_help_sayings" text="Zobrazí vtipné texty/hlášky... (Právě je kdispozici %s hlášek)/n/Tip: Pozice rolujícího textu 2" />
+		<text name="hl_guiBox_textTicker_sayingsTimer" text="Interval hlášek" />
+		<text name="hl_guiBox_textTicker_help_sayingsTimer" text="Zobrazí vtipné texty/hlášky každých %s min./n/Tip: Pozice rolujícího textu 2" />
+		
 		<text name="hl_guiBox_modHidder_headline" text="Skrytí modu(HL Hud System)" />
 		<text name="hl_guiBox_modHidder_help" text="ZAP/VYP modu spuštěných pomoci *HL Hud System*/n/! Mod musí tuto fukci podporovat !/n/Co je v modu vypnuto nastavuje autor modu" />
 		<text name="hl_guiBox_otherMods_headline" text="Další nastavení modu" />

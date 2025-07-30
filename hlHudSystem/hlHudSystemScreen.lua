@@ -46,7 +46,7 @@ function hlHudSystemScreen.new(args)
 		self.size.background[2] = self.height;
 	end;
 	
-	self.bounds = {-1,0,0,0};
+	self.bounds = {-1,0,0,0,1}; --last value optional diffBoundsDown by Mod
 	self.typ = args.typ;
 	if args.typ == "pda" then
 		self.canBounds = {on=false, typ="icon", setInfo=false};
@@ -168,7 +168,7 @@ function hlHudSystemScreen:checkCorrectBounds()
 end;
 
 function hlHudSystemScreen:resetBounds()
-	self.bounds = {-1,0,0,0};
+	self.bounds = {-1,0,0,0,1};
 	self:generateBounds();
 end;
 

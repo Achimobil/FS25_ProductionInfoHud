@@ -40,6 +40,7 @@
 		<text name="hl_guiBox_global_headline" text="*Global Settings*" />
 		<text name="hl_guiBox_global_infoDisplay" text="Default Infos" />
 		<text name="hl_guiBox_global_help_infoDisplay" text="*HUD/PDA/BOX STANDARD INFOS ON/OFF* all/n/Can show useful help infos if mouse cursor is in appropriate area./n/Has no effect to MOD infos." />
+		<text name="hl_guiBox_global_mouseAcceptsInfo" text="Mouse accept Infos" />
 		<text name="hl_guiBox_global_autoSave" text="Auto Save" />
 		<text name="hl_guiBox_global_help_autoSave" text="Saves automatically all data in preset saving interval./n/Only Mod creator released data of HUD/PDA/BOX will be saved./n/Manually save by clicking the disk icon." />
 		<text name="hl_guiBox_global_saveInfo" text="Save Info" />
@@ -63,6 +64,11 @@
 		<text name="hl_guiBox_textTicker_setSound" text="Start Sound" />
 		<text name="hl_guiBox_textTicker_help_setSound" text="Status: %s/n/Information sound will be played by incoming messages./n/Only played if no previos messages have been activated." />
 		<text name="hl_guiBox_textTicker_help_sample" text="Choose Sound (1-%s)" />
+		<text name="hl_guiBox_textTicker_sayings" text="Show sayings" />
+		<text name="hl_guiBox_textTicker_help_sayings" text="Shows you funny texts/sayings or... (Currently there are %s texts)/n/Tip: Text Ticker Position 2" />
+		<text name="hl_guiBox_textTicker_sayingsTimer" text="Sayings Interval" />		
+		<text name="hl_guiBox_textTicker_help_sayingsTimer" text="Show all %s min. funny texts/sayings or .../n/Tip: Text Ticker Position 2" />
+		
 		<text name="hl_guiBox_modHidder_headline" text="Mod Hidder(HL Hud System)" />
 		<text name="hl_guiBox_modHidder_help" text="Mods running with *HL Hud System switch On/Off /n/! Mods must support this function!/n/ What is deactivated in a mod is set by the modder" />
 		<text name="hl_guiBox_otherMods_headline" text="Other Mods Settings" />

@@ -32,7 +32,7 @@ function hlBoxDraw:show()
 							end;
 						elseif not thisDragDrop then
 							if inArea then						
-								setPdaClickArea = true;											
+								setBoxClickArea = true;											
 							end;
 							if box.onDraw ~= nil and type(box.onDraw) == "function" then box.onDraw( {inArea=inArea, typPos=pos} );end;					
 							hlHudSystemDraw:showBoundsInfo( {typ=box, typName="box"} );

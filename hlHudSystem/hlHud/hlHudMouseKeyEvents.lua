@@ -74,7 +74,8 @@ function hlHudMouseKeyEvents:settingAllHud(args) --all Hud default Setting
 		if args.button == Input.MOUSE_BUTTON_LEFT then
 			if args.clickAreaTable.areaClick == "settingIcon_" then
 				local showHuds = g_currentMission.hlHudSystem.hlHud:getAllShowHuds();
-				if #g_currentMission.hlHudSystem.hud == 0 then 
+				if #g_currentMission.hlHudSystem.hud == 0 or #showHuds == 0 then 
+					g_currentMission.hlHudSystem.isSetting.hud = false;
 					local guiBox = g_currentMission.hlHudSystem.hlGuiBox:getData("HlHudSystem_GuiBox");							
 					if guiBox ~= nil then					
 						if not guiBox.show then guiBox:setShow(true);else guiBox:setShow();end;					
@@ -82,10 +83,8 @@ function hlHudMouseKeyEvents:settingAllHud(args) --all Hud default Setting
 						g_currentMission.hlHudSystem.showInfoBox( {g_currentMission.hlHudSystem.hlHud:getI18n("hl_infoDisplay_notFoundHud"), 2500, g_currentMission.hlUtils.getColor("orangeRed", true)} );					
 					end;
 					return;
-				elseif #showHuds == 0 then
-					g_currentMission.hlHudSystem.showInfoBox( {g_currentMission.hlHudSystem.hlHud:getI18n("hl_infoDisplay_notFoundHud"), 2500, g_currentMission.hlUtils.getColor("orangeRed", true)} );
-				end;
-				g_currentMission.hlHudSystem.isSetting.hud = not g_currentMission.hlHudSystem.isSetting.hud;
+				end;				
+				g_currentMission.hlHudSystem.isSetting.hud = not g_currentMission.hlHudSystem.isSetting.hud;								
 				g_currentMission.hlUtils.deleteTextDisplay(); --delete Hud Creator Info
 				if not g_currentMission.hlHudSystem.isSetting.hud then
 					g_currentMission.hlHudSystem.isSetting.viewFrame = false;

@@ -40,6 +40,7 @@
 		<text name="hl_guiBox_global_headline" text="*Impostazioni globali*" />
 		<text name="hl_guiBox_global_infoDisplay" text="Informazioni standard" />
 		<text name="hl_guiBox_global_help_infoDisplay" text="*HUD/PDA/BOX Informazioni standard ACCESO/SPENTO* tutto/n/Può visualizzare alcune informazioni utili quando si passa sopra un'area./n/Non ha alcuna influenza sulle informazioni della mod." />
+		<text name="hl_guiBox_global_mouseAcceptsInfo" text="Clic del mouse Informazioni" />
 		<text name="hl_guiBox_global_autoSave" text="Salva automaticamente" />
 		<text name="hl_guiBox_global_help_autoSave" text="Salva automaticamente tutti i dati all'intervallo di memorizzazione impostato./n/Salva solo i dati da HUD/PDA/BOX che sono stati approvati dal Creator Mod./n/Puoi comunque salvare manualmente in qualsiasi momento facendo clic sull'icona di salvataggio con il cursore del mouse." />
 		<text name="hl_guiBox_global_saveInfo" text="Informazioni sull'archiviazione" />
@@ -63,6 +64,11 @@
 		<text name="hl_guiBox_textTicker_setSound" text="Avvia il suono" />
 		<text name="hl_guiBox_textTicker_help_setSound" text="Stato: %s/n/Riproduci un suono per avvisarti di un messaggio in arrivo./n/Questo verrà riprodotto solo se nessun altro messaggio era attivo in precedenza." />
 		<text name="hl_guiBox_textTicker_help_sample" text="Seleziona un suono (1-%s)" />
+		<text name="hl_guiBox_textTicker_sayings" text="Mostra detti" />
+		<text name="hl_guiBox_textTicker_help_sayings" text="Ti mostra testi/detti divertenti o .... (Attualmente ci sono %s Testi)/n/Sugg.: Posizione del testo scorrevole 2" />
+		<text name="hl_guiBox_textTicker_sayingsTimer" text="Intervallo detti" />
+		<text name="hl_guiBox_textTicker_help_sayingsTimer" text="Tutti i %s min. testi divertenti/Detti oppure ... mostra./n/Sugg.: Posizione del testo scorrevole 2" />
+		
 		<text name="hl_guiBox_modHidder_headline" text="Mod Nascosto (sistema Hud HL)" />
 		<text name="hl_guiBox_modHidder_help" text="Mod che funzionano con *HL Hud System* ACCESO/SPENTO interruttore/n/! Anche le mod devono supportare questa funzione !/n/Ciò che viene disattivato in una mod viene impostato dal modder" />
 		<text name="hl_guiBox_otherMods_headline" text="Altre impostazioni delle mod" />

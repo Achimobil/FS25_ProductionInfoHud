@@ -18,16 +18,17 @@ hlUtils.metadata = {
 	title = "HL Utils", --löst das alte _hl System ab was ich seit LS15 benutzt habe und in fast allen meinen Mods vorhanden war
 	notes = "Nützliche Utils die man in Mods (meine fast alle) immer wieder mal braucht, incl. Maussteuerung (Default F9)",
 	author = "(by HappyLooser)",
-	version = "v0.99 Beta",
-	systemVersion = 0.99,
+	version = "v1.02 Beta",
+	systemVersion = 1.02,
 	datum = "21.05.2023",
-	update = "27.02.2025",
+	update = "04.06.2025",
 	web = "no",
 	info = "Link Freigabe und Änderungen ist ohne meine Zustimmung nicht erlaubt (Freeware)",
 	info1 = "Benutzung als HL Utils in einem Mod (ohne Code Änderung) ist ohne Zustimmung erlaubt",
 	"##Orginal Link Freigabe:"
 };
 
+--print(DebugUtil.printTableRecursively(lineTable, "fillTypes ", 0, 5))	
 hlUtils.modDir = g_currentModDirectory;
 source(hlUtils.modDir.."hlUtils/_hlUtilsMp.lua");
 
@@ -43,6 +44,7 @@ function hlUtils:loadMap()
 		g_currentMission.hlUtils.modDir = hlUtils.modDir;
 		g_currentMission.hlUtils.playerFrozen = false;
 		g_currentMission.hlUtils.binding = {isCombi=false,isKeyboard=false,isMouse=false,inputString={}};		
+		g_currentMission.hlUtils.precisionFarming = false;
 		hlUtils:setFunction();
 		hlUtils:registerActionEvent();
 	else
@@ -52,6 +54,7 @@ function hlUtils:loadMap()
 			g_currentMission.hlUtils.modDir = hlUtils.modDir;
 			g_currentMission.hlUtils.playerFrozen = false;
 			g_currentMission.hlUtils.binding = {isCombi=false,isKeyboard=false,isMouse=false,inputString={}};			
+			g_currentMission.hlUtils.precisionFarming = false; --update 1.01
 			hlUtils:setFunction();
 			hlUtils:registerActionEvent();
 		else
@@ -121,7 +124,11 @@ end;
 
 function hlUtils.startMission()
 	if g_currentMission ~= nil and g_currentMission.hlUtils ~= nil and g_currentMission.hlUtils.modDir == hlUtils.modDir then		
-		
+		if g_modIsLoaded["FS25_precisionFarming"] and FS25_precisionFarming ~= nil and FS25_precisionFarming.g_precisionFarming ~= nil then --update 1.01
+			g_currentMission.hlUtils.precisionFarming = true;
+		else
+			g_currentMission.hlUtils.precisionFarming = false;
+		end;
 	end;
 end;
 
@@ -213,6 +220,8 @@ function hlUtils:loadInputHelpDisplay() --update 0.97
 	
 	function hlUtils.preInputHelpDisplayDraw(self, offsetX, offsetY)
 		
+		local pf25 = g_modIsLoaded["FS25_precisionFarming"] and FS25_precisionFarming ~= nil and FS25_precisionFarming.g_precisionFarming ~= nil and FS25_precisionFarming.g_precisionFarming.inputHelpDisplayExtension ~= nil and FS25_precisionFarming.g_precisionFarming.inputHelpDisplayExtension.isEnabled; --update 1.01				
+				
 		local inputBinding = g_inputBinding;
 		local inputDisplayManager = g_inputDisplayManager;
 
@@ -341,6 +350,7 @@ function hlUtils:loadInputHelpDisplay() --update 0.97
 		g_currentMission.hlUtils.helpMenuData.lineComboHeight = self.comboBg.height;
 		g_currentMission.hlUtils.helpMenuData.lineOffsetY = self.lineOffsetY;
 		g_currentMission.hlUtils.helpMenuData.isVisible = self:getVisible();
+		g_currentMission.hlUtils.helpMenuData.isPF = not g_currentMission.hlUtils.helpMenuData.isVisible and pf25; --update 1.01
 	end;
 	
 	InputHelpDisplay.draw = Utils.prependedFunction(InputHelpDisplay.draw, hlUtils.preInputHelpDisplayDraw);
@@ -837,11 +847,11 @@ function(args)
 		if iconPlace ~= nil then iconPlaceB = iconPlace;end;
 		local iconPlaceEnd = getXMLInt(Xml, xmlNameTag.."#placeE");
 		if iconPlaceEnd ~= nil then iconPlaceE = iconPlaceEnd;end;
-		local iconPlaceDifWH = getXMLInt(Xml, xmlNameTag.."#placeDifWH");
+		local iconPlaceDifWH = getXMLFloat(Xml, xmlNameTag.."#placeDifWH"); --update 1.00
 		if iconPlaceDifWH ~= nil then iconDifWH = iconPlaceDifWH;end;
 		iconPlaceFormatO = getXMLInt(Xml, xmlNameTag.."#placeFormatO");
 		if iconPlaceFormatO ~= nil then  iconFormatO = iconPlaceFormatO;else iconFormatO = formatO;end;		
-		g_currentMission.hlUtils.setOverlayUVsPx(overlay, unpack(g_currentMission.hlUtils.getNormalUVs(iconFormatO, sW, sH, iconPlaceB, iconPlaceE, iconPlaceDifWH)));
+		g_currentMission.hlUtils.setOverlayUVsPx(overlay, unpack(g_currentMission.hlUtils.getNormalUVs(iconFormatO, sW, sH, iconPlaceB, iconPlaceE, iconDifWH))); --update 1.00
 		local iconName = getXMLString(Xml, xmlNameTag.."#name");
 		if args.iconTable == nil then
 			g_currentMission.hlUtils.overlays.byName[args.modName][args.groupName][iconName] = #iconOverlayTable;
@@ -1644,11 +1654,11 @@ function(on,args)
 	return true;
 end;end;
 
-if g_currentMission.hlUtils.isMouseCursor==nil then g_currentMission.hlUtils.isMouseCursor=false;end;
-if g_currentMission.hlUtils.mouseOnOff==nil then g_currentMission.hlUtils.mouseOnOff=
-function(on,frozen)	
+if g_currentMission.hlUtils.isMouseCursor==nil then g_currentMission.hlUtils.isMouseCursor=false;end; 
+if g_currentMission.hlUtils.mouseOnOff==nil then g_currentMission.hlUtils.mouseOnOff= --update 1.02/save last pos
+function(on,frozen,saveLastPos)	
 	if on == nil or frozen == nil then return nil;end;	
-	if on then g_inputBinding:setShowMouseCursor(true);g_currentMission.hlUtils.isMouseCursor=true;else g_inputBinding:setShowMouseCursor(false);g_currentMission.hlUtils.isMouseCursor=false;g_currentMission.hlUtils.setDragDrop(false);end;
+	if on then g_inputBinding:setShowMouseCursor(true,saveLastPos);g_currentMission.hlUtils.isMouseCursor=true;else g_inputBinding:setShowMouseCursor(false,saveLastPos);g_currentMission.hlUtils.isMouseCursor=false;g_currentMission.hlUtils.setDragDrop(false);end;
 	if frozen and not g_currentMission.isPlayerFrozen then
 		g_currentMission.isFrozen = true;			
 		g_currentMission.isPlayerFrozen = true;
@@ -1934,21 +1944,29 @@ function(args)
 	end;
 end;end;
 
-if g_currentMission.hlUtils.checkFilePath==nil then g_currentMission.hlUtils.checkFilePath=
+if g_currentMission.hlUtils.checkFilePath==nil then g_currentMission.hlUtils.checkFilePath= --update 1.02/textureFileExists,audioFileExists
 function(file, xmlFile, modDir)	
 	local filePath = Utils.getFilename(tostring(file), modDir);
 	local xmlFilePath = Utils.getFilename(tostring(xmlFile), modDir);
-	if not fileExists(filePath) or not fileExists(xmlFilePath) then		
-		return nil;		
+	if string.endsWith(file, ".dds") or string.endsWith(file, ".png") then
+		if not textureFileExists(filePath) or not fileExists(xmlFilePath) then return nil;end;
+	elseif string.endsWith(filePath, ".ogg") or (string.endsWith(filePath, ".wav") or string.endsWith(filePath, ".gls")) then
+		if not audioFileExists(filePath) or not fileExists(xmlFilePath) then return nil;end;
+	else
+		if not fileExists(filePath) or not fileExists(xmlFilePath) then	return nil;end;
 	end;
 	return filePath, xmlFilePath;
 end;end;
 
-if g_currentMission.hlUtils.checkFile==nil then g_currentMission.hlUtils.checkFile=
+if g_currentMission.hlUtils.checkFile==nil then g_currentMission.hlUtils.checkFile= --update 1.02/textureFileExists,audioFileExists
 function(file, modDir)	
 	local filePath = Utils.getFilename(tostring(file), modDir);	
-	if not fileExists(filePath) then		
-		return nil;		
+	if string.endsWith(file, ".dds") or string.endsWith(file, ".png") then
+		if not textureFileExists(filePath) then return nil;end;
+	elseif string.endsWith(filePath, ".ogg") or (string.endsWith(filePath, ".wav") or string.endsWith(filePath, ".gls")) then
+		if not audioFileExists(filePath) then return nil;end;
+	else
+		if not fileExists(filePath) then return nil;end;
 	end;
 	return filePath;
 end;end;
@@ -2135,9 +2153,10 @@ function()
 		local pX = vehicleSchema.lineBgScale.x;
 		local pY = vehicleSchema.lineBgScale.y + vehicleSchema.comboTextOffsetY;		
 		local endPosX = vehicleSchema.lineBgRight.x + vehicleSchema.lineBgRight.width;
+		local leftWidth = vehicleSchema.lineBgLeft.width;
 		-- + (offsetY or 0);-- + (offsetX or 0);		
 		if vehicleSchema:getVisible() then posY = posY-comboHeight;else posY = posY - height;end;		
-		g_currentMission.hlUtils.vehicleSchemaData = {posX=posX, posY=posY, width=width, height=height, endPosX=endPosX, scaleX=pX, scaleTextY=pY, scaleWidth=w, maxWidth=maxWidth, isVisible=vehicleSchema:getVisible()};
+		g_currentMission.hlUtils.vehicleSchemaData = {posX=posX, posY=posY, width=width, height=height, endPosX=endPosX, scaleX=pX, scaleTextY=pY, scaleWidth=w, leftWidth=leftWidth, maxWidth=maxWidth, isVisible=vehicleSchema:getVisible()};
 		return g_currentMission.hlUtils.vehicleSchemaData;
 	end;
 	return nil;	
@@ -2199,4 +2218,19 @@ function(uiScale)
 	return g_currentMission.hlUtils.getUiScale() ~= uiScale;
 end;end;	
 --update 0.99
+--update 1.00
+if g_currentMission.hlUtils.getRandomByKey==nil then g_currentMission.hlUtils.getRandomByKey=
+function(tab)
+	if tab == nil or type(tab) ~= "table" then return "";end;
+	local sum = 0;
+	for _, chance in pairs(tab) do
+		sum = sum + chance;
+	end;
+	local select = math.random() * sum;
+	for key, chance in pairs(tab) do
+		select = select - chance;
+		if select < 0 then return key end;
+	end;
+end;end;
+--update 1.00
 end;

@@ -3,6 +3,7 @@ source(hlHudSystem.modDir.."hlHudSystem/hlHud/hlHudMouseKeyEvents.lua");
 source(hlHudSystem.modDir.."hlHudSystem/hlPda/hlPdaMouseKeyEvents.lua");
 source(hlHudSystem.modDir.."hlHudSystem/hlBox/hlBoxMouseKeyEvents.lua");
 source(hlHudSystem.modDir.."hlHudSystem/hlGuiBox/hlGuiBoxMouseKeyEvents.lua");
+source(hlHudSystem.modDir.."hlHudSystem/hlHudSystemMouseKeyEventsForce.lua");
 
 function hlHudSystemMouseKeyEvents:setKeyMouse(unicode, sym, modifier, isDownKey, posX, posY, isDown, isUp, button)
 	if unicode ~= nil then
@@ -21,7 +22,7 @@ function hlHudSystemMouseKeyEvents:setKeyMouse(unicode, sym, modifier, isDownKey
 	end;
 end;
 
-function hlHudSystemMouseKeyEvents:setMouse(posX, posY, isDown, isUp, button)	
+function hlHudSystemMouseKeyEvents:setMouse(posX, posY, isDown, isUp, button, force)	
 	local acceptsWhatClick = {_hlHud_=true,_hlPda_=true,_hlBox_=true,_hlGuiBox_=true}; --dragDrop accepts
 	local isClickInArea = false;
 	if g_currentMission.hlHudSystem.areas ~= nil then		
@@ -46,8 +47,8 @@ function hlHudSystemMouseKeyEvents:setMouse(posX, posY, isDown, isUp, button)
 							isClickInArea = hlGuiBoxMouseKeyEvents:setMouse( {isDown=isDown, isUp=isUp, button=button, clickAreaTable=value[area], trigged="gui box click total area"} ); --in a Gui Box Area Total and Click somewhere						
 						elseif value[area].whatClick == "_hlTextTicker_" then
 							isClickInArea = hlTextTickerMouseKeyEvents:setMouse( {isDown=isDown, isUp=isUp, button=button, clickAreaTable=value[area], trigged="text ticker box click total area"} ); --in a Text Ticker Area Total and Click somewhere
-							if isClickInArea then break;end;
-						end;						
+						end;
+						if isClickInArea then break;end;
 					end;
 				end;
 			end;
@@ -61,12 +62,14 @@ function hlHudSystemMouseKeyEvents:setMouse(posX, posY, isDown, isUp, button)
 						if value[area].onClick ~= nil and type(value[area].onClick) == "function" then
 							value[area].onClick( {isDown=isDown, isUp=isUp, button=button, clickAreaTable=value[area]} );								
 						end;
+						isClickInArea = true;
 						return;
 					end;
 				end;
 			end;
 		end;					
-	end;	
+	end;
+	g_currentMission.hlHudSystem.isInClickArea = isClickInArea;
 end;
 
 function hlHudSystemMouseKeyEvents:setKey(unicode, sym, modifier, isDown)
@@ -82,8 +85,9 @@ function hlHudSystemMouseKeyEvents:setDragDropMouse(posX, posY, isDown, isUp, bu
 	end;
 end;
 
-function hlHudSystemMouseKeyEvents.isInArea(typ)	
-	if g_currentMission.hlHudSystem:getDetiServer() or g_currentMission.hlUtils:getFullSize() or g_currentMission.hlUtils:disableInArea() then return false;end;
+function hlHudSystemMouseKeyEvents.isInArea(typ, force)	
+	if g_currentMission.hlHudSystem:getDetiServer() or g_currentMission.hlUtils:disableInArea() then return false;end;
+	if force == nil and g_currentMission.hlUtils:getFullSize() then return false;end;
 	if typ == nil then return false;end;
 	if not typ.show then return;end;
 	local value = {typ.screen.posX,typ.screen.posX+typ.screen.width,typ.screen.posY,typ.screen.posY+typ.screen.height};

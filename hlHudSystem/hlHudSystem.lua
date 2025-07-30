@@ -5,19 +5,21 @@ hlHudSystem.metadata = {
 	title = "HL Hud System",
 	notes = "Erstellt Hud/PDA und Box Anzeigen für Mods etc. zum selbst befüllen von Daten/Icons etc. um diese im Spiel anzuzeigen",
 	author = "(by HappyLooser)",
-	version = "v1.40 Beta",
-	systemVersion = 1.40,
+	version = "v1.43 Beta",
+	systemVersion = 1.43,
 	xmlVersion = 1,
 	languageVersion = 1;
 	datum = "21.05.2023",
-	update = "25.02.2025",
-	web = "no",
+	update = "05.06.2025",
+	web = "",
+	discord = "HappyLooser Modding https://discord.gg/FwktJh4FZ2",
 	info = "Link Freigabe und Änderungen ist ohne meine Zustimmung nicht erlaubt",
 	info1 = "Benutzung als HUD System in einem Mod (ohne Code Änderung) ist ohne Zustimmung erlaubt",
 	"##Orginal Link Freigabe:"
 };
 
 hlHudSystem.modDir = g_currentModDirectory;
+hlHudSystem.modName = g_currentModName;
 function hlHudSystem:loadMap()
 	if hlHudSystem:getDetiServer() then return;end;
 	Mission00.onStartMission = Utils.prependedFunction(Mission00.onStartMission, hlHudSystem.onStartMission);
@@ -26,6 +28,7 @@ function hlHudSystem:loadMap()
 		g_currentMission.hlHudSystem.version = hlHudSystem.metadata.systemVersion;
 		g_currentMission.hlHudSystem.xmlVersion = hlHudSystem.metadata.xmlVersion;
 		g_currentMission.hlHudSystem.modDir = hlHudSystem.modDir;
+		g_currentMission.hlHudSystem.modName = hlHudSystem.modName;
 		g_currentMission.hlHudSystem.meta = hlHudSystem.metadata;
 	else
 		if g_currentMission.hlHudSystem.version < hlHudSystem.metadata.systemVersion then
@@ -33,10 +36,11 @@ function hlHudSystem:loadMap()
 			g_currentMission.hlHudSystem.version = hlHudSystem.metadata.systemVersion;
 			g_currentMission.hlHudSystem.xmlVersion = hlHudSystem.metadata.xmlVersion;
 			g_currentMission.hlHudSystem.modDir = hlHudSystem.modDir;
+			g_currentMission.hlHudSystem.modName = hlHudSystem.modName;
 			g_currentMission.hlHudSystem.meta = hlHudSystem.metadata;
 		else
 			if g_currentMission.hlHudSystem.version > hlHudSystem.metadata.systemVersion then
-				print("---Info: Not loading ".. tostring(hlHudSystem.metadata.title).. " over Mod, found newer Version (".. tostring(g_currentMission.hlHudSystem.meta.version).. ")")
+				--print("---Info: Not loading ".. tostring(hlHudSystem.metadata.title).. " over Mod, found newer Version (".. tostring(g_currentMission.hlHudSystem.meta.version).. ")")
 			end;
 		end;		
 	end;	
@@ -84,27 +88,26 @@ function hlHudSystem:delete()
 end;
 
 function hlHudSystem:deleteMap()
-	if g_currentMission == nil then return;end;
-	if hlHudSystem:getDetiServer() then return;end;
+	if g_currentMission == nil or hlHudSystem:getDetiServer() then return;end;
 	hlHudSystemXml:save(); --save all Hud/Pda/Box
 	hlHudSystemOverlays:deleteAllOverlays();	
 end;
 
 function hlHudSystem:mouseEvent(posX, posY, isDown, isUp, button)
-	if g_currentMission == nil then return;end;
-	if hlHudSystem:getDetiServer() or not hlHudSystem:getHudIsVisible() or g_currentMission.hlUtils:getFullSize(true, true) then return;end;	
+	if g_currentMission == nil or hlHudSystem:getDetiServer() then return;end;
+	if not hlHudSystem:getHudIsVisible() or g_currentMission.hlUtils:getFullSize(true, true) then return;end;	
 	hlHudSystemMouseKeyEvents:setKeyMouse(nil, nil, nil, nil, posX, posY, isDown, isUp, button);
 end;
 
 function hlHudSystem:keyEvent(unicode, sym, modifier, isDown)	
-	if g_currentMission == nil then return;end;
-	if hlHudSystem:getDetiServer() or not hlHudSystem:getHudIsVisible() or g_currentMission.hlUtils:getFullSize(true, true) then return;end;
+	if g_currentMission == nil or hlHudSystem:getDetiServer() then return;end;
+	if not hlHudSystem:getHudIsVisible() or g_currentMission.hlUtils:getFullSize(true, true) then return;end;
 	hlHudSystemMouseKeyEvents:setKeyMouse(unicode, sym, modifier, isDown, nil, nil, nil, nil, nil);
 end;
 
 function hlHudSystem:update(dt)	
-	if g_currentMission == nil then return;end;
-	if hlHudSystem:getDetiServer() or not hlHudSystem:getHudIsVisible() or g_currentMission.hlUtils:getFullSize(true, true) then return;end;
+	if g_currentMission == nil or hlHudSystem:getDetiServer() then return;end;
+	if not hlHudSystem:getHudIsVisible() or g_currentMission.hlUtils:getFullSize(true, true) then return;end;
 	if not g_currentMission.hlUtils.isMouseCursor then g_currentMission.hlHudSystem.clickAreas = {};end;
 	if g_currentMission.hlHudSystem.infoDisplay.firstStart and g_currentMission.hlUtils.isMouseCursor then hlHudSystem.firstInfo();end;
 	if g_currentMission.hlHudSystem.guiMenu.ownTable ~= nil and g_currentMission.hlHudSystem.guiMenu.ownTable.modHiddenLinesLoaded ~= nil and not g_currentMission.hlHudSystem.guiMenu.ownTable.modHiddenLinesLoaded then hlOwnGuiBoxXml:setModHiddenLines();end;
@@ -112,8 +115,8 @@ function hlHudSystem:update(dt)
 end;
 
 function hlHudSystem:draw()	
-	if g_currentMission == nil then return;end;
-	if hlHudSystem:getDetiServer() or not hlHudSystem:getHudIsVisible() or g_currentMission.hlUtils:getFullSize(true, true) then return;end;
+	if g_currentMission == nil or hlHudSystem:getDetiServer() then return;end;
+	if not hlHudSystem:getHudIsVisible() or g_currentMission.hlUtils:getFullSize(true, true) then return;end;
 	--respect settings for other mods (not every mod) that's why
 	setTextAlignment(0);
 	setTextLineBounds(0, 0);
@@ -160,7 +163,7 @@ function hlHudSystem.new()
 	self.screen = hlHudSystemScreen.new( {typ="hud", master=true} );
 	self.overlays = hlHudSystemOverlays.new( {loadDefaultIcons=false, screen=self.screen, typ="hud", master=true} );	
 	self.isSetting = {hud=false,pda=false,box=false,other=false,viewFrame=false};
-	self.infoDisplay = {on=true, firstStart=true};	
+	self.infoDisplay = {on=true, firstStart=true, mouseAccepts=true};	
 	self.ownData = {textTickerSaveState=false, mpOff=false, isHidden=false, hiddenMods={},autoDrive=g_modIsLoaded["FS25_AutoDrive"] and _G["FS25_AutoDrive"] ~= nil};	
 	self.autoAlign = hlHudSystemAutoAlign:getTables();
 	self.drawIsIngameMapLarge = true;
@@ -191,11 +194,19 @@ function hlHudSystem.new()
 	return self;
 end;
 
-function hlHudSystem:addTextDisplay(args)
+function hlHudSystem:addTextDisplay(args, drawForce)
 	if args == nil or type(args) ~= "table" then return;end;
+	if drawForce ~= nil and drawForce == true then return;end;
 	if args.txtSize == nil then args.txtSize = 0.013;end; --default
 	if args.posY == nil then args.posY = 0.12;end; --default
 	g_currentMission.hlUtils.addTextDisplay(args);
+end;
+
+function hlHudSystem:addMouseAcceptsInfo(args, guiBox)
+	if args == nil or type(args) ~= "table" or args.acceptsMouse == nil then return;end;
+	if (guiBox == nil or not guiBox) and not g_currentMission.hlHudSystem.infoDisplay.mouseAccepts then return;end;
+	if g_currentMission.hlHudSystem.infoDisplay.mouseAcceptsBox == nil then hlHudSystemOverlays:generateMouseAcceptsBox();end;
+	hlHudSystemDraw:showMouseAcceptsInfo(args)
 end;
 
 function loadScripts()		

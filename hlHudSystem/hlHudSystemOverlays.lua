@@ -56,9 +56,11 @@ function hlHudSystemOverlays.new(args)
 	self.modIcons = {byName={}}; --optional insert Mods Icons here (with g_currentMission.hlUtils.insertIcons(....) ) or set new table ( !Attention! mod delete not new table)
 	
 	if args.master ~= nil and args.master then
-		if self.icons == nil then self.icons = {byName={}};end;
-		g_currentMission.hlUtils.insertIcons( {xmlTagName="hlHudSystem.other1IconsTemp", modDir=g_currentMission.hlHudSystem.modDir, iconFile="hlHudSystem/icons/other1Icons.dds", xmlFile="hlHudSystem/icons/icons.xml", modName="hlHudSystem", groupName="tempIcons", fileFormat={64,512,1024}, iconTable=self.icons} );
-		g_currentMission.hlUtils.insertIcons( {xmlTagName="hlHudSystem.colorIconsTemp", modDir=g_currentMission.hlHudSystem.modDir, iconFile="hlHudSystem/icons/colorIcons.dds", xmlFile="hlHudSystem/icons/icons.xml", modName="hlHudSystem", groupName="tempIcons", fileFormat={32,128,256}, iconTable=self.icons} );
+		if self.icons == nil then self.icons = {byName={}};end;		
+		g_currentMission.hlUtils.insertIcons( {xmlTagName="hlHudSystem.other1IconsTemp", modDir=g_currentMission.hlHudSystem.modDir, iconFile="hlHudSystem/icons/other1Icons.dds", xmlFile="hlHudSystem/icons/icons.xml", modName="hlHudSystem", groupName="tempIcons", fileFormat={32,512,1024}, iconTable=self.icons} );
+		g_currentMission.hlUtils.insertIcons( {xmlTagName="hlHudSystem.mouseIcons", modDir=g_currentMission.hlHudSystem.modDir, iconFile="hlHudSystem/icons/icons.dds", xmlFile="hlHudSystem/icons/icons.xml", modName="hlHudSystem", groupName="infoIcons", fileFormat={64,512,1024}, iconTable=self.icons} );
+		g_currentMission.hlUtils.insertIcons( {xmlTagName="hlHudSystem.jokeIcons", modDir=g_currentMission.hlHudSystem.modDir, iconFile="hlHudSystem/icons/icons.dds", xmlFile="hlHudSystem/icons/icons.xml", modName="hlHudSystem", groupName="jokeIcons", fileFormat={64,512,1024}, iconTable=self.icons} );
+		g_currentMission.hlUtils.insertIcons( {xmlTagName="hlHudSystem.jokeColorIcons", modDir=g_currentMission.hlHudSystem.modDir, iconFile="hlHudSystem/icons/colorIcons.dds", xmlFile="hlHudSystem/icons/icons.xml", modName="hlHudSystem", groupName="jokeIcons", fileFormat={32,128,256}, iconTable=self.icons} );
 	end;
 	
 	return self;
@@ -276,7 +278,7 @@ function hlHudSystemOverlays:generateGuiBoxIcons()
 end;
 
 function hlHudSystemOverlays:generateInfoBox()
-	local uiScale = g_gameSettings:getValue(GameSettings.SETTING.UI_SCALE)
+	local uiScale = g_gameSettings:getValue(GameSettings.SETTING.UI_SCALE);
 	local infoBox = WarningDisplay.new();
 	infoBox:setScale(uiScale);
 	infoBox:setVisible(false);
@@ -285,4 +287,15 @@ function hlHudSystemOverlays:generateInfoBox()
 	end;
 	hlInfoBox:storeScaledValues(infoBox);
 	return infoBox
+end;
+
+function hlHudSystemOverlays:generateMouseAcceptsBox()
+	local acceptsBox = {};
+	acceptsBox.height = getTextHeight(0.025, utf8Substr("M", 0));
+	acceptsBox.iconWidth, acceptsBox.iconHeight = g_currentMission.hlUtils.getOptiIconWidthHeight(acceptsBox.height, g_currentMission.hlHudSystem.screen.pixelW, g_currentMission.hlHudSystem.screen.pixelH);
+	acceptsBox.dropIconWidth = acceptsBox.iconWidth*0.95;
+	acceptsBox.dropIconHeight = acceptsBox.iconHeight*0.95;
+	acceptsBox.posX = 0.5;
+	acceptsBox.posY = 0.12 - acceptsBox.height - 0.001;
+	g_currentMission.hlHudSystem.infoDisplay.mouseAcceptsBox = acceptsBox;	
 end;

@@ -54,6 +54,7 @@ function hlBox.generate(args)
 	if self.xml.viewSettingIcons ~= nil then self.viewSettingIcons = Utils.getNoNil(self.xml.viewSettingIcons, true);end;	
 	self.viewExtraLine = Utils.getNoNil(self.xml.viewExtraLine, false); --only true or false, is true set optional a line with !!!! button top left
 	self.canDraw = function() return true;end;
+	self.canDrawForce = false;
 	self.clickAreas = {};	
 	self.canSave = true;
 	self.canClose = true;

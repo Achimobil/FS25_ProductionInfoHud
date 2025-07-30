@@ -2,6 +2,7 @@ hlHudSystemDraw = {};
 source(hlHudSystem.modDir.."hlHudSystem/hlHud/hlHudDraw.lua");
 source(hlHudSystem.modDir.."hlHudSystem/hlPda/hlPdaDraw.lua");
 source(hlHudSystem.modDir.."hlHudSystem/hlBox/hlBoxDraw.lua");
+source(hlHudSystem.modDir.."hlHudSystem/hlBox/hlBoxDrawForce.lua");
 source(hlHudSystem.modDir.."hlHudSystem/hlGuiBox/hlGuiBoxDraw.lua");
 
 source(hlHudSystem.modDir.."hlHudSystem/hlHud/hlHudOwnDraw.lua");
@@ -81,7 +82,10 @@ function hlHudSystemDraw:showOwnIcons() --over ls weather hud
 					
 					g_currentMission.hlHudSystem:addTextDisplay( {txt=tostring(txt).. tostring(moreTxt), maxLine=0 } );
 				end;				
-				if inIconArea and not g_currentMission.hlUtils:disableInArea() then hlHudDraw:clickAreas( {setting.x, setting.x+setting.width, setting.y, setting.y+setting.height, whatClick="_hlHud_", whereClick="settingAllHud_", areaClick="settingIcon_"} );end;								
+				if inIconArea and not g_currentMission.hlUtils:disableInArea() then 
+					g_currentMission.hlHudSystem:addMouseAcceptsInfo( {acceptsMouse={"left","right"}}, true )
+					hlHudDraw:clickAreas( {setting.x, setting.x+setting.width, setting.y, setting.y+setting.height, whatClick="_hlHud_", whereClick="settingAllHud_", areaClick="settingIcon_"} );
+				end;								
 			end;		
 			local save = g_currentMission.hlHudSystem.overlays.settingIcons.save;						
 			if save ~= nil and (not mpOff or not g_currentMission.hlHudSystem.isSave) then
@@ -146,7 +150,7 @@ function hlHudSystemDraw:showOwnIcons() --over ls weather hud
 	end;
 end;
 
-function hlHudSystemDraw:showSettingIcons(args) --Pda,Box
+function hlHudSystemDraw:showSettingIcons(args, drawForce) --Pda,Box
 	local setClickArea = true;
 	local typ = args.typ;
 	local typName = args.typName;
@@ -191,7 +195,7 @@ function hlHudSystemDraw:showSettingIcons(args) --Pda,Box
 						moreTxt = " *".. g_i18n:getText("ui_off").. "*";
 					end;
 					dragDrop:render();
-					if g_currentMission.hlHudSystem.infoDisplay.on and inIconArea then g_currentMission.hlHudSystem:addTextDisplay( {txt=string.format(typ:getI18n("hl_infoDisplay_dragDrop"), typName:upper(), typName:upper()).. moreTxt, maxLine=0} );end;
+					if g_currentMission.hlHudSystem.infoDisplay.on and inIconArea then g_currentMission.hlHudSystem:addTextDisplay( {txt=string.format(typ:getI18n("hl_infoDisplay_dragDrop"), typName:upper(), typName:upper()).. moreTxt, maxLine=0}, drawForce );end;
 				end;
 				if typ.canDragDrop and inIconArea and not g_currentMission.hlUtils:disableInArea() then whichAreaClick:clickAreas( {bgSetting.x, bgSetting.x+bgSetting.width, bgSetting.y, bgSetting.y+bgSetting.height, whatClick=whatClick, whereClick="dragDrop_", areaClick="dragDropIcon_", typPos=args.typPos, overlay=dragDrop} );end;
 			end;
@@ -209,7 +213,7 @@ function hlHudSystemDraw:showSettingIcons(args) --Pda,Box
 					if inIconArea then									
 						if bgSetting.visible then bgSetting:render();end;
 						closeTyp:render();
-						if g_currentMission.hlHudSystem.infoDisplay.on and inIconArea then g_currentMission.hlHudSystem:addTextDisplay( {txt=string.format(typ:getI18n("hl_infoDisplay_close"), typName:upper())} );end;
+						if g_currentMission.hlHudSystem.infoDisplay.on and inIconArea then g_currentMission.hlHudSystem:addTextDisplay( {txt=string.format(typ:getI18n("hl_infoDisplay_close"), typName:upper())}, drawForce );end;
 					end;
 					if inIconArea and not g_currentMission.hlUtils:disableInArea() then whichAreaClick:clickAreas( {bgSetting.x, bgSetting.x+bgSetting.width, bgSetting.y, bgSetting.y+bgSetting.height, whatClick=whatClick, whereClick=whereClick, areaClick="closeIcon_", typPos=args.typPos} );end;
 				end;
@@ -243,7 +247,7 @@ function hlHudSystemDraw:showSettingIcons(args) --Pda,Box
 						else
 							autoSaveText = "\n".. typ:getI18n("hl_infoDisplay_autoSaveOff");
 						end;
-						if g_currentMission.hlHudSystem.infoDisplay.on and inIconArea then g_currentMission.hlHudSystem:addTextDisplay( {txt=string.format(typ:getI18n("hl_infoDisplay_save"), typName:upper()).. autoSaveText, maxLine=0} );end;
+						if g_currentMission.hlHudSystem.infoDisplay.on and inIconArea then g_currentMission.hlHudSystem:addTextDisplay( {txt=string.format(typ:getI18n("hl_infoDisplay_save"), typName:upper()).. autoSaveText, maxLine=0}, drawForce );end;
 					end;	
 					if inIconArea and not g_currentMission.hlUtils:disableInArea() then whichAreaClick:clickAreas( {bgSetting.x, bgSetting.x+bgSetting.width, bgSetting.y, bgSetting.y+bgSetting.height, whatClick=whatClick, whereClick=whereClick, areaClick="saveIcon_", typPos=args.typPos} );end;
 				end;
@@ -271,7 +275,7 @@ function hlHudSystemDraw:showSettingIcons(args) --Pda,Box
 					else
 						down:render();
 					end;
-					if g_currentMission.hlHudSystem.infoDisplay.on and inIconArea then g_currentMission.hlHudSystem:addTextDisplay( {txt=string.format(typ:getI18n("hl_infoDisplay_extraLine"), typName:upper()), maxLine=0} );end;
+					if g_currentMission.hlHudSystem.infoDisplay.on and inIconArea then g_currentMission.hlHudSystem:addTextDisplay( {txt=string.format(typ:getI18n("hl_infoDisplay_extraLine"), typName:upper()), maxLine=0}, drawForce );end;
 				end;
 				if inIconArea and not g_currentMission.hlUtils:disableInArea() then whichAreaClick:clickAreas( {bgSetting.x, bgSetting.x+bgSetting.width, bgSetting.y, bgSetting.y+bgSetting.height, whatClick=whatClick, whereClick=whereClick, areaClick="viewExtraLine_", typPos=args.typPos} );end;
 			end;			
@@ -298,7 +302,7 @@ function hlHudSystemDraw:showSettingIcons(args) --Pda,Box
 				if inIconArea or (typ.isHelp and args.inArea) then
 					if bgSetting.visible then bgSetting:render();end;
 					help:render();
-					if g_currentMission.hlHudSystem.infoDisplay.on and inIconArea then g_currentMission.hlHudSystem:addTextDisplay( {txt=string.format(typ:getI18n("hl_infoDisplay_help"), typName:upper()), maxLine=0} );end;
+					if g_currentMission.hlHudSystem.infoDisplay.on and inIconArea then g_currentMission.hlHudSystem:addTextDisplay( {txt=string.format(typ:getI18n("hl_infoDisplay_help"), typName:upper()), maxLine=0}, drawForce );end;
 				end;
 				if inIconArea and not g_currentMission.hlUtils:disableInArea() then whichAreaClick:clickAreas( {bgSetting.x, bgSetting.x+bgSetting.width, bgSetting.y, bgSetting.y+bgSetting.height, whatClick=whatClick, whereClick=whereClick, areaClick="helpIcon_", typPos=args.typPos} );end;
 			end;
@@ -308,7 +312,7 @@ function hlHudSystemDraw:showSettingIcons(args) --Pda,Box
 			---position down Setting Icons---
 			---setting---
 			local setting = typ.overlays.settingIcons.setting;
-			if setting ~= nil and setting.visible then								
+			if setting ~= nil and setting.visible and (drawForce == nil or not drawForce) then								
 				viewIcon.setting = true;
 				g_currentMission.hlUtils.setOverlay(bgSetting, x-(bgSettingW/3), y-(bgSettingH/3), bgSettingW, bgSettingH);
 				g_currentMission.hlUtils.setOverlay(setting, bgSetting.x+(bgSettingW/2)-(iconWidth/2), bgSetting.y+(bgSettingH/2)-(iconHeight/2), iconWidth, iconHeight);								
@@ -319,7 +323,7 @@ function hlHudSystemDraw:showSettingIcons(args) --Pda,Box
 					if bgSetting.visible then bgSetting:render();end;
 					setting:render();					
 					if inIconArea then
-						g_currentMission.hlHudSystem:addTextDisplay( {txt=string.format(typ:getI18n("hl_infoDisplay_setting"), typName:upper()), maxLine=0} );
+						g_currentMission.hlHudSystem:addTextDisplay( {txt=string.format(typ:getI18n("hl_infoDisplay_setting"), typName:upper()), maxLine=0}, drawForce );
 					end;
 				end;
 				if inIconArea and not g_currentMission.hlUtils:disableInArea() then whichAreaClick:clickAreas( {bgSetting.x, bgSetting.x+bgSetting.width, bgSetting.y, bgSetting.y+bgSetting.height, whatClick=whatClick, whereClick=whereClick, areaClick="settingIcon_", typPos=args.typPos} );end;
@@ -340,7 +344,7 @@ function hlHudSystemDraw:showSettingIcons(args) --Pda,Box
 				if inIconArea then									
 					if bgSetting.visible then bgSetting:render();end;
 					autoClose:render();
-					if g_currentMission.hlHudSystem.infoDisplay.on and inIconArea then g_currentMission.hlHudSystem:addTextDisplay( {txt=typ:getI18n("hl_infoDisplay_autoClose"), maxLine=0} );end;
+					if g_currentMission.hlHudSystem.infoDisplay.on and inIconArea then g_currentMission.hlHudSystem:addTextDisplay( {txt=typ:getI18n("hl_infoDisplay_autoClose"), maxLine=0}, drawForce );end;
 					if inIconArea and not g_currentMission.hlUtils:disableInArea() then whichAreaClick:clickAreas( {bgSetting.x, bgSetting.x+bgSetting.width, bgSetting.y, bgSetting.y+bgSetting.height, whatClick=whatClick, whereClick=whereClick, areaClick="autoCloseIcon_", typPos=args.typPos} );end;
 				end;	
 			end;
@@ -365,7 +369,7 @@ function hlHudSystemDraw:showSettingIcons(args) --Pda,Box
 						moreTxt = " ".. typ:getI18n("hl_infoDisplay_dragDropLimitedWH");
 					end;
 					sizeWidthHeight:render();
-					if g_currentMission.hlHudSystem.infoDisplay.on and inIconArea then g_currentMission.hlHudSystem:addTextDisplay( {txt=string.format(typ:getI18n("hl_infoDisplay_dragDropWH"), typName:upper()).. moreTxt, maxLine=0} );end;
+					if g_currentMission.hlHudSystem.infoDisplay.on and inIconArea then g_currentMission.hlHudSystem:addTextDisplay( {txt=string.format(typ:getI18n("hl_infoDisplay_dragDropWH"), typName:upper()).. moreTxt, maxLine=0}, drawForce );end;
 				end;
 				if (typ.canDragDropWidth or typ.canDragDropHeight) and inIconArea and not g_currentMission.hlUtils:disableInArea() then whichAreaClick:clickAreas( {bgSetting.x, bgSetting.x+bgSetting.width, bgSetting.y, bgSetting.y+bgSetting.height, whatClick=whatClick, whereClick="dragDropWH_", areaClick="dragDropWHIcon_", typPos=args.typPos, overlay=sizeWidthHeight} );end;
 			end;			
@@ -480,7 +484,18 @@ function hlHudSystemDraw:showBoundsInfo(args) --version 1.40 (no area clicks)
 					--bounds down/right--					
 					g_currentMission.hlUtils.setOverlay(boundsDown, bgSetting.x+(bgSettingW/2), bgSetting.y+(bgSettingH/2)-(iconHeight/2), iconWidth, iconHeight);
 					
-					if typ.screen.bounds[2] < typ.screen.bounds[4] then g_currentMission.hlUtils.setBackgroundColor(boundsDown, g_currentMission.hlUtils.getColor(getTypColor("on"), true));else g_currentMission.hlUtils.setBackgroundColor(boundsDown, g_currentMission.hlUtils.getColor(getTypColor("notActive"), true));end;
+					local difBoundsDownByMod = typ.screen.bounds[5] or 1;
+					if typ.screen.bounds[2]+difBoundsDownByMod >= typ.screen.bounds[4] then
+						if typ.screen.bounds[2] == typ.screen.bounds[4] then
+							g_currentMission.hlUtils.setBackgroundColor(boundsDown, g_currentMission.hlUtils.getColor(getTypColor("notActive"), true));
+						else
+							g_currentMission.hlUtils.setBackgroundColor(boundsDown, g_currentMission.hlUtils.getColor(getTypColor("warning"), true));
+						end;
+					elseif typ.screen.bounds[2] < typ.screen.bounds[4] then 
+						g_currentMission.hlUtils.setBackgroundColor(boundsDown, g_currentMission.hlUtils.getColor(getTypColor("on"), true));
+					else 
+						g_currentMission.hlUtils.setBackgroundColor(boundsDown, g_currentMission.hlUtils.getColor(getTypColor("notActive"), true));
+					end;
 					--if bgSetting.visible then bgSetting:render();end;
 					boundsDown:render();
 					--bounds down/right--
@@ -489,4 +504,36 @@ function hlHudSystemDraw:showBoundsInfo(args) --version 1.40 (no area clicks)
 		end;	
 	end;
 	---canBounds up down info---
+end;
+
+function hlHudSystemDraw:showMouseAcceptsInfo(args) --version 1.41 (no area clicks) -max view 6 clicks, left,middle,right,leftButton,scrollUpDown,rightButton,unknown
+	if g_currentMission.hlHudSystem.infoDisplay.mouseAcceptsBox == nil then return;end;
+	local accepts = {left=false,middle=false,right=false,leftButton=false,scrollUpDown=false,rightButton=false,unknown=false};
+	local foundAccepts = {};
+	for k, v in pairs(args.acceptsMouse) do
+		if accepts[v] ~= nil then
+			table.insert(foundAccepts, tostring(v).. "Mouse");			
+		end;
+	end;
+	if #foundAccepts > 0 then		
+		local acceptsBox = g_currentMission.hlHudSystem.infoDisplay.mouseAcceptsBox;
+		local overlayGroup = g_currentMission.hlHudSystem.overlays.icons["hlHudSystem"].infoIcons;
+		local overlayByName = g_currentMission.hlHudSystem.overlays.icons.byName["hlHudSystem"].infoIcons;
+		if acceptsBox ~= nil and overlayGroup ~= nil and overlayByName ~= nil then
+			local bg = overlayGroup[overlayByName["bg"]];
+			if bg ~= nil then				
+				g_currentMission.hlUtils.setOverlay(bg, acceptsBox.posX-((acceptsBox.iconWidth*#foundAccepts)/2), acceptsBox.posY, acceptsBox.iconWidth*#foundAccepts, acceptsBox.height);
+				bg:render();
+				local nextPosX = bg.x+(acceptsBox.iconWidth*0.03);
+				for a=1, #foundAccepts do					
+					local overlay = overlayGroup[overlayByName[foundAccepts[a]]];
+					if overlay ~= nil then
+						g_currentMission.hlUtils.setOverlay(overlay, nextPosX, acceptsBox.posY, acceptsBox.dropIconWidth, acceptsBox.dropIconHeight);
+						overlay:render();
+						nextPosX = nextPosX+(acceptsBox.iconWidth);
+					end;					
+				end;
+			end;
+		end;
+	end;
 end;

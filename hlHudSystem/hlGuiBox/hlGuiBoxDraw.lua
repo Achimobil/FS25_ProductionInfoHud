@@ -147,9 +147,10 @@ function hlGuiBoxDraw:show()
 							setTextAlignment(0);							
 							setTextBold(false);
 							if inIconArea then 
-								local helpText = "";
+								local helpText = "";								
 								if text1.helpText ~= nil and text1.helpText:len() > 0 then helpText = text1.helpText;elseif line.helpText ~= nil and line.helpText:len() > 0 then helpText = line.helpText;end;
-								if helpText ~= nil and helpText:len() > 0 then g_currentMission.hlHudSystem:addTextDisplay( {txt=helpText, maxLine=0} );end;
+								if helpText ~= nil and helpText:len() > 0 then g_currentMission.hlHudSystem:addTextDisplay( {txt=helpText, maxLine=0} );end;								
+								if text1.acceptsMouse ~= nil then g_currentMission.hlHudSystem:addMouseAcceptsInfo( {acceptsMouse=text1.acceptsMouse}, true );elseif line.acceptsMouse ~= nil then g_currentMission.hlHudSystem:addMouseAcceptsInfo( {acceptsMouse=line.acceptsMouse}, true );end;
 							end;
 							local areaClick = "text1_";
 							if line.oneClick ~= nil and line.oneClick then areaClick = "line_";end;
@@ -251,6 +252,7 @@ function hlGuiBoxDraw:show()
 									local helpText = "";
 									if text2.helpText ~= nil and text2.helpText:len() > 0 then helpText = text2.helpText;elseif line.helpText ~= nil and line.helpText:len() > 0 then helpText = line.helpText;end;
 									if helpText ~= nil and helpText:len() > 0 then g_currentMission.hlHudSystem:addTextDisplay( {txt=helpText, maxLine=0} );end;
+									if text2.acceptsMouse ~= nil then g_currentMission.hlHudSystem:addMouseAcceptsInfo( {acceptsMouse=text2.acceptsMouse}, true );elseif line.acceptsMouse ~= nil then g_currentMission.hlHudSystem:addMouseAcceptsInfo( {acceptsMouse=line.acceptsMouse}, true );end;
 								end;
 								if line.oneClick == nil or not line.oneClick then
 									if not g_currentMission.hlUtils:disableInArea() and inArea then guiBox:setClickArea( {bgLine.x, bgLine.x+bgLine.width, bgLine.y, bgLine.y+bgLine.height, onClick=line.onClick, whatClick="guiBox_", typPos=pos, whereClick="guiLine_", areaClick="text2_", lineCallSequence=orgLine.lineCallSequence, line=t, ownTable=line.ownTable or {}} );end;

@@ -98,6 +98,9 @@ function hlInfoBox:addInfo(text, duration, color, priority)
 		for _, info in ipairs(infoBox.warnings) do
 			if info.text == text or priority ~= nil and info.customIdentifier == priority then
 				info.text = text;
+				if color ~= nil and type(color) == "string" then
+					color = g_currentMission.hlUtils.getColor(color, true);
+				end;
 				info.color = color;
 				info.duration = duration;
 				notSet = true;
