@@ -2,7 +2,7 @@
 <modDesc descVersion="100">
     <author>Achimobil</author>
     <contributor>HappyLooser</contributor>
-    <version>1.0.0.8</version>
+    <version>1.1.0.0</version>
 
     <title>
         <de>Produktionen Info Hud</de>
@@ -41,16 +41,13 @@ Das Verändern oder erneutes Hochladen, ob ganz oder in Teilen, ist nicht gestat
 Fehler und Anregungen gerne auf <a href="https://github.com/Achimobil/FS25_ProductionInfoHud">GitHub</a>
 
 Changelog
-0.0.0.26 - Added FR translation.
-0.0.0.29 - Correct Arrows for more lines available</a>.
-1.0.0.1 - Volle werden jetzt nicht mehr als leer angezeigt
-1.0.0.2 - Filter zum entfernen von Outputs die auf Verteilen stehen
-1.0.0.3 - Verteilen Filter wird nun auch gespeichert
-1.0.0.4 - Produktion pro Stunde in der Anzeige korrigiert bei mehr als 1 Tag pro Monat
-1.0.0.5 - Added PL translation
-1.0.0.6 - Volle Produkte die Input und Output sind werden jetzt nicht mehr als leer angezeigt
-1.0.0.7 - Fehlende Übersetzungen für Verteilen Filter hinzugefügt
-1.0.0.8 - Update HL System
+1.1.0.0
+- Übersetzungen hinzugefügen für FR und PL
+- Anzeige der Pfeile korrigiert
+- Anzeige voll und leer überarbeitet
+- Filter zum entfernen von Outputs die auf Verteilen stehen
+- Produktion pro Stunde in der Anzeige korrigiert bei mehr als 1 Tag pro Monat
+- Update HL Anzeigesystem aktualisiert
 ]]></de>
         <en><![CDATA[HUD display for productions and husbandries that require attention.
 
@@ -81,6 +78,15 @@ Uploading to sites other than ModHub is prohibited and therefore illegal, linkin
 Modifying and re-uploading in whole or in part is not allowed!
 
 Bugs and suggestions welcome on <a href="https://github.com/Achimobil/FS25_ProductionInfoHud">GitHub</a>.
+
+Changelog
+1.1.0.0
+- Added translations for FR and PL
+- Display of arrows corrected
+- Display full and empty improved
+- Filter for removing outputs that are set to distribute
+- Production per hour in the display corrected for more than 1 day per month
+- Update HL display system updated
 ]]></en>
     </description>
 
