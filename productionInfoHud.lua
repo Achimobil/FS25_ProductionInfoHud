@@ -65,7 +65,7 @@ function ProductionInfoHud:registerActionEvent()
         PlayerInputComponent.registerGlobalPlayerActionEvents,
         function(self, controlling)
             --if controlling ~= "VEHICLE" then
-                local inputAction = InputAction.PIH_ONOFFDISPLAY;
+                local inputAction = InputAction["PIH_ONOFFDISPLAY"];
                 local callbackTarget = self;
                 local callbackFunc = self.pihSystemActionCallback;
                 local triggerUp = false;
@@ -76,7 +76,7 @@ function ProductionInfoHud:registerActionEvent()
                 local _, eventId = g_inputBinding:registerActionEvent(inputAction, callbackTarget, callbackFunc, triggerUp, triggerDown, triggerAlways, startActive, nil, true);
 
                 g_inputBinding:setActionEventTextVisibility(eventId, false);
-                local action = g_inputBinding.nameActions[InputAction.PIH_ONOFFDISPLAY];
+                local action = g_inputBinding.nameActions[InputAction["PIH_ONOFFDISPLAY"]];
                 if action ~= nil then
                     action.displayCategory = "HL Hud System";
                     action.displayNamePositive = tostring(g_i18n:getText("input_TOGGLE_GUI_on"));
@@ -428,7 +428,7 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
         productionItemOutput.name = husbandry:getName();
         productionItemOutput.fillTypeId = spec.outputFillType;
         -- negative when more used than produced. calculated on one day per month as giants always does
-        productionItemOutput.productionPerHour = spec.inputLitersPerHour;
+        productionItemOutput.productionPerHour = spec.outputLitersPerHour;
          -- time until full or empty, nil when not changing
         productionItemOutput.hoursLeft = nil;
         productionItemOutput.fillLevel = spec:getHusbandryFillLevel(spec.outputFillType)
