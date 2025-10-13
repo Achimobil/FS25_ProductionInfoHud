@@ -2,7 +2,7 @@
 <modDesc descVersion="103">
     <author>Achimobil</author>
     <contributor>HappyLooser</contributor>
-    <version>1.1.0.1</version>
+    <version>1.1.0.2</version>
 
     <title>
         <de>Produktionen Info Hud</de>
@@ -42,6 +42,7 @@ Fehler und Anregungen gerne auf <a href="https://github.com/Achimobil/FS25_Produ
 
 Changelog
 1.1.0.1 - Fehler in der Berechnung der Mist Produktionsmenge behoben
+1.1.0.2 - Summenzeile bei Filtype Filter und Produktion pro Stunde unten angefügt
 
 1.1.0.0
 - Übersetzungen hinzugefügen für FR und PL

@@ -9,15 +9,29 @@ function PIH_Display_DrawBox.setBox(args)
 
     local currentProductionItems = {};
     if box.ownTable.fillTypeFilter ~= nil then
+        -- summary item erstellen
+        local sumItem = {};
+        sumItem.name = "-";
+        sumItem.fillTypeTitle = "Total";
+        sumItem.fillLevel = 0;
+        sumItem.productionPerHour = 0;
+
         -- hier werden keine anderen Filter berücksichtigt und das soll so
         for _, productionItem in pairs(ProductionInfoHud.CurrentProductionItems) do
             if string.gsub(productionItem.fillTypeTitle, "*", "") == box.ownTable.fillTypeFilter then
                 table.insert(currentProductionItems, productionItem);
+                sumItem.productionPerHour = sumItem.productionPerHour + productionItem.productionPerHour;
             end
         end
+
         -- fallback
         if #currentProductionItems == 0 then
             currentProductionItems = ProductionInfoHud.CurrentProductionItems;
+        else
+            if box.ownTable.dataViewMode == 3 then
+                -- sum item einfügen, wenn mode production per hour ist
+                table.insert(currentProductionItems, sumItem);
+            end
         end
     elseif box.ownTable.nameFilter ~= nil then
         -- hier werden keine anderen Filter berücksichtigt und das soll so

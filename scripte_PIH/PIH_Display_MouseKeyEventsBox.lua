@@ -71,7 +71,7 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                     return;
                 end;
                 if args.clickAreaTable.whereClick == "nameColumn_" then
-                    if box.ownTable.nameFilter == nil then
+                    if box.ownTable.nameFilter == nil and args.clickAreaTable.ownTable.name ~= "-" then
                         box.ownTable.nameFilter = args.clickAreaTable.ownTable.name;
                         box.ownTable.fillTypeFilter = nil;
                     else
