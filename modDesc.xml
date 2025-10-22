@@ -2,7 +2,7 @@
 <modDesc descVersion="103">
     <author>Achimobil</author>
     <contributor>HappyLooser</contributor>
-    <version>1.1.0.2</version>
+    <version>1.2.0.0</version>
 
     <title>
         <de>Produktionen Info Hud</de>
@@ -28,6 +28,7 @@ Generelle Bedienungshinweise mit der Maus
 - Links Klick auf einen Produktionsort oder einen Filltype filtert die liste nach diesem. Hierbei werden dann die Filter der Filterzeile ignorierte. Worauf gefiltert wird ist dann grün markiert. Erneutes klicken auf das Gefilterte entfernt den Filter wieder.
 - Rechtsklick auf den Produktionsort öffnet diesem im Menü
 - Linksklick auf die 3. Spalte schaltet die Anzeige um zwischen Restzeit, Kapazität (Bei Rohstoffen wie viel not rein geht, bei Hergestellten Gütern wieviel drin ist) und aktueller Stündlicher Produktionsmenge
+- Wenn in der 3. Spalte die Stündliche Produktionsmenge angezeigt wird, dann wird ein Summe der Produktionsmengen als letzte Zeile angezeigt
 
 Hinweis: Einige der Icons werden nur angezeigt, wenn man mit der Maus über die entsprechende Stelle fährt.
 
@@ -41,8 +42,9 @@ Das Verändern oder erneutes Hochladen, ob ganz oder in Teilen, ist nicht gestat
 Fehler und Anregungen gerne auf <a href="https://github.com/Achimobil/FS25_ProductionInfoHud">GitHub</a>
 
 Changelog
-1.1.0.1 - Fehler in der Berechnung der Mist Produktionsmenge behoben
-1.1.0.2 - Summenzeile bei Filtype Filter und Produktion pro Stunde unten angefügt
+1.2.0.0
+- Fehler in der Berechnung der Mist Produktionsmenge behoben
+- Summenzeile bei Filtype Filter und Produktion pro Stunde unten angefügt
 
 1.1.0.0
 - Übersetzungen hinzugefügen für FR und PL
@@ -70,6 +72,7 @@ General operating instructions with the mouse
 - Left-click on a production location or a fill type to filter the list according to this. The filters in the filter line are then ignored. What is filtered is then highlighted in green. Clicking on the filtered item again removes the filter.
 - Right-click on the production location to open it in the menu
 - Left-click on the 3rd column to switch the display between remaining time, capacity (available capacity for raw materials and used capacity for manufactured goods) and current hourly production quantity.
+- If the hourly production quantity is displayed in the third column, the total production quantities are displayed in the last row.
 
 Note: Some of the icons are only displayed when you move the mouse over the corresponding position.
 
@@ -83,6 +86,10 @@ Modifying and re-uploading in whole or in part is not allowed!
 Bugs and suggestions welcome on <a href="https://github.com/Achimobil/FS25_ProductionInfoHud">GitHub</a>.
 
 Changelog
+1.2.0.0
+- Fixed error in manure production calculation
+- Added total row for manure type filter and production per hour at the bottom
+
 1.1.0.0
 - Added translations for FR and PL
 - Display of arrows corrected
