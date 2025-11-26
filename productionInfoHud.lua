@@ -253,7 +253,10 @@ function ProductionInfoHud:refreshProductionsTable()
 
     local myProductionPoints = self.chainManager:getProductionPointsForFarmId(farmId);
     for _, productionPoint in pairs(myProductionPoints) do
-        self:AddProductionPoint(myProductionItems, productionPoint);
+        -- hiddenOnUI is only available on GTX ExtendedProductionPoint and the production should only be added when this is nil or false
+        if productionPoint.hiddenOnUI ~= nil or productionPoint.hiddenOnUI == false then
+            self:AddProductionPoint(myProductionItems, productionPoint);
+        end
     end
 
     local myFactories = self.chainManager:getFactoriesForFarmId(farmId);
