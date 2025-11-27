@@ -2,7 +2,7 @@
 <modDesc descVersion="104">
     <author>Achimobil</author>
     <contributor>HappyLooser</contributor>
-    <version>1.2.0.1</version>
+    <version>1.2.0.2</version>
 
     <title>
         <de>Produktionen Info Hud</de>
@@ -42,6 +42,7 @@ Das Verändern oder erneutes Hochladen, ob ganz oder in Teilen, ist nicht gestat
 Fehler und Anregungen gerne auf <a href="https://github.com/Achimobil/FS25_ProductionInfoHud">GitHub</a>
 
 Changelog
+1.2.0.2 - Falsche Bedingung aus 1.2.0.1 korrigiert
 1.2.0.1 - Über GTX Produktionsskript versteckte Produktionen auch im PIH nicht anzeigen
 
 1.2.0.0
