@@ -2,7 +2,7 @@
 My Mod from FS19 and FS25 complete new upset with the Visualising system from HappyLooser
 
 # ModHub
-comming soon
+https://www.farming-simulator.com/mod.php?mod_id=313960&title=fs2025
 
 # Build my Mods self
 Deutsche Anleitung: https://youtu.be/qG8wNBkjB3w
