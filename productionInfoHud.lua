@@ -14,7 +14,7 @@ Das verändern und wiederöffentlichen, auch in Teilen, ist untersagt und wird a
 ]]
 
 ProductionInfoHud = {}
-ProductionInfoHud.Debug = false;
+ProductionInfoHud.Debug = true;
 ProductionInfoHud.isInit = false;
 ProductionInfoHud.timePast = 0;
 ProductionInfoHud.longestFillTypeTitle = "";
@@ -92,6 +92,8 @@ function ProductionInfoHud:registerActionEvent()
                     if box.show ~= nil then
                         box.show = not box.show;
                         box:setUpdateState(true);
+
+                        ProductionInfoHud.UpdateProductionNeedings();
                     end
                 end
             end;
@@ -663,5 +665,316 @@ end
 function ProductionInfoHud:getDetiServer()
     return g_server ~= nil and g_client ~= nil and g_dedicatedServer ~= nil;
 end;
+
+
+
+
+
+
+
+
+
+
+-- hilffunktionen für CSV Export
+local function ensureTrailingSlash(p)
+    local last = p:sub(-1)
+    if last ~= "/" and last ~= "\\" then
+        return p .. "/"
+    end
+    return p
+end
+
+local function csvEscape(value)
+    if value == nil then return "" end
+    local s = tostring(value):gsub('"', '""')
+    if s:find("[;\n\r\"]") ~= nil then
+        s = '"' .. s .. '"'
+    end
+    return s
+end
+
+-- fileName: z.B. "myDump.csv" (keine Unterordner!)
+local function writeCsvToModSettings(fileName, headers, rows)
+    local dir = ensureTrailingSlash(g_modSettingsDirectory)
+    local filePath = dir .. fileName
+
+    local f, err = io.open(filePath, "w")
+    if f == nil then
+        print(("CSV open failed: %s (%s)"):format(tostring(err), tostring(filePath)))
+        return false
+    end
+
+    -- UTF-8 BOM (Excel/Umlaute)
+    f:write(string.char(0xEF, 0xBB, 0xBF))
+
+    -- Header
+    for i = 1, #headers do
+        if i > 1 then f:write(";") end
+        f:write(csvEscape(headers[i]))
+    end
+    f:write("\n")
+
+    -- Rows
+    for r = 1, #rows do
+        local row = rows[r]
+        for c = 1, #headers do
+            if c > 1 then f:write(";") end
+            f:write(csvEscape(row[c]))
+        end
+        f:write("\n")
+    end
+
+    f:close()
+    print("CSV written to: " .. filePath)
+    return true
+end
+
+local function asExcelText(s)
+    return '="' .. tostring(s or "") .. '"'
+end
+
+
+local function joinAlternativeTitles(alternativeFillTypes)
+    if alternativeFillTypes == nil then
+        return ""
+    end
+
+    local titles = {}
+    for _, alt in pairs(alternativeFillTypes) do
+        if alt ~= nil and alt.title ~= nil and alt.title ~= "" then
+            titles[#titles + 1] = tostring(alt.title)
+        end
+    end
+
+    if #titles == 0 then
+        return ""
+    end
+
+    table.sort(titles)
+    return table.concat(titles, ", ")
+end
+
+local function formatMinMax(minVal, maxVal)
+    if minVal == maxVal then
+        return tostring(minVal) -- echte Zahl (als String), Excel erkennt das als Number
+    end
+    return asExcelText(tostring(minVal) .. " / " .. tostring(maxVal))
+end
+
+local function exportTest(productionNeedings)
+    local fileName = "productionNeedings.csv"
+    local headers = {
+        "Title",
+        "ActiveAmount",
+        "TotalAmount",
+        "ProductionName",
+        "ProductionLineName",
+        "Alternative für",
+        "Alternative"
+    }
+
+    -- Needs sammeln + nach Title sortieren
+    local list = {}
+    for _, need in pairs(productionNeedings) do
+        list[#list + 1] = need
+    end
+    table.sort(list, function(a, b)
+        return tostring(a.title) < tostring(b.title)
+    end)
+
+    local rows = {}
+
+    for i = 1, #list do
+        local need = list[i]
+
+        -- Hauptzeile
+        rows[#rows + 1] = {
+            need.title,
+            formatMinMax(need.minActiveAmount, need.maxActiveAmount),
+            formatMinMax(need.minTotalAmount,  need.maxTotalAmount),
+            "",
+            "",
+            "",
+            ""
+        }
+
+        -- Details sammeln + sortieren
+        local detailsList = {}
+        for _, d in pairs(need.ProductionDetails or {}) do
+            detailsList[#detailsList + 1] = d
+        end
+        table.sort(detailsList, function(a, b)
+            local an = tostring(a.productionName)
+            local bn = tostring(b.productionName)
+            if an ~= bn then
+                return an < bn
+            end
+            return tostring(a.productionLineName) < tostring(b.productionLineName)
+        end)
+
+        -- Detailzeilen
+        for d = 1, #detailsList do
+            local det = detailsList[d]
+            -- Detailzeile
+            rows[#rows + 1] = {
+                "",
+                tostring(det.activeAmount),  -- Zahl statt Text-Formel
+                tostring(det.totalAmount),   -- Zahl statt Text-Formel
+                det.productionName,
+                det.productionLineName,
+                det.alternativeForFillTypeTitle or "",
+                joinAlternativeTitles(det.alternativeFillTypes)
+            }
+        end
+    end
+
+    if writeCsvToModSettings(fileName, headers, rows) then
+        print("CSV written to: " .. fileName)
+    end
+end
+
+
+
+
+function ProductionInfoHud.UpdateProductionNeedings()
+    -- Alle Produktionen auslesen mit gesamtbedarf für Tabelle
+    local farmId = g_currentMission:getFarmId();
+    local newProductionNeedings = {}
+
+    local myProductionPoints = ProductionInfoHud.chainManager:getProductionPointsForFarmId(farmId);
+    for _, productionPoint in pairs(myProductionPoints) do
+
+        local productionName = productionPoint.owningPlaceable:getName();
+        -- replace the long leasing text
+        if productionName ~= nil then
+            productionName = string.gsub(productionName, "%(Leasing%) ", "");
+        end
+
+        -- is the point shared, then the amounts needs to be divided
+        local productionPointMultiplicatorActive = 1;
+        if productionPoint.sharedThroughputCapacity and #productionPoint.activeProductions ~= 0 then
+            productionPointMultiplicatorActive = 1 / #productionPoint.activeProductions;
+        end
+        local productionPointMultiplicatorAll = 1;
+        if productionPoint.sharedThroughputCapacity and #productionPoint.productions ~= 0 then
+            productionPointMultiplicatorAll = 1 / #productionPoint.productions;
+        end
+
+--         ProductionInfoHud.DebugTable("productionPoint.unloadingStation", productionPoint.unloadingStation, 4);
+
+        --normale Produktionen einfügen
+        for _, production in pairs(productionPoint.productions) do
+            for _, inputItem in pairs(production.inputs) do
+                local changedAmountPerMonth = production.cyclesPerHour * inputItem.amount * 24 * -1;
+
+                local maxTotalAmount = changedAmountPerMonth * productionPointMultiplicatorAll;
+                local minTotalAmount = maxTotalAmount;
+
+                -- Aktive Mengen berechnen
+                local maxActiveAmount = 0;
+                if production.status ~= ProductionPoint.PROD_STATUS.INACTIVE then
+                    maxActiveAmount = changedAmountPerMonth * productionPointMultiplicatorActive;
+                end
+                local minActiveAmount = maxActiveAmount;
+
+                -- todo Wie Konverter berücksichtigen?
+                -- Wenn es einen Konverter gibt, dann wird minAmount nicht hochgesetzt, aber maxAmount für alle eingetragenen converts
+                -- converter können eingetragen sein in BaleUnloadTrigger, PalletUnloadTrigger, UnloadTrigger, WoodUnloadTrigger
+                -- UnloadTrigger ist die basis und die hat fillTypeConversions[fillTypeId] mit outgoingFillType und ratio und stecken in unloadingStation
+                -- also muss ich prüfen ob in der Liste ein outgoingFillType drin ist der mit dem aktuellen übereinstimmt und diese dann ebenfalls in die liste legen
+                local alternativeFillTypes;
+                if productionPoint.unloadingStation ~= nil and productionPoint.unloadingStation.unloadTriggers ~= nil then
+
+                    -- nur der erste converter eines types darf hinzugefügt werden, sonst wird alles pro trigger und converter mehrfach eingefügt.
+                    -- wir ignorieren hier, dass die verschiedenen Trigger unterschiedliche ratio haben könnten
+                    local alreadyAddedIncommingFillTypeIds = {};
+
+                    for _, unloadTrigger in pairs(productionPoint.unloadingStation.unloadTriggers) do
+                        for incommingFillTypeId, fillTypeConversion in pairs(unloadTrigger.fillTypeConversions) do
+                            if fillTypeConversion.outgoingFillType == inputItem.type then
+                                -- Die min Amounts nicht setzen für den aktuellen type, aber den input type nur mit max einfügen
+                                minTotalAmount = 0;
+                                minActiveAmount = 0;
+
+                                -- amounts mit ratio bestimmen
+                                local maxTotalAmountConversion = maxTotalAmount / fillTypeConversion.ratio;
+                                local maxActiveAmountConversion = maxActiveAmount / fillTypeConversion.ratio;
+
+                                if alreadyAddedIncommingFillTypeIds[incommingFillTypeId] ~= true then
+                                    ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, incommingFillTypeId, 0, maxActiveAmountConversion, 0, maxTotalAmountConversion, productionName, production.name, nil, inputItem.type);
+                                    alreadyAddedIncommingFillTypeIds[incommingFillTypeId] = true;
+                                end
+
+                                if alternativeFillTypes == nil then
+                                    alternativeFillTypes = {};
+                                end
+
+                                alternativeFillTypes[incommingFillTypeId] =
+                                {
+                                    title = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(incommingFillTypeId),
+                                    ratio = fillTypeConversion.ratio
+                                }
+                            end
+                        end
+                    end
+                end
+
+                ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, inputItem.type, minActiveAmount, maxActiveAmount, minTotalAmount, maxTotalAmount, productionName, production.name, alternativeFillTypes);
+            end
+
+            for _, outputItem in pairs(production.outputs) do
+                local changedAmountPerMonth = production.cyclesPerHour * outputItem.amount * 24;
+
+                local maxTotalAmount = changedAmountPerMonth * productionPointMultiplicatorAll;
+
+                -- Aktive Summen bilden
+                local maxActiveAmount = 0;
+                if production.status ~= ProductionPoint.PROD_STATUS.INACTIVE then
+                    maxActiveAmount = changedAmountPerMonth * productionPointMultiplicatorActive;
+                end
+
+                ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, outputItem.type, maxActiveAmount, maxActiveAmount, maxTotalAmount, maxTotalAmount, productionName, production.name);
+            end
+        end
+    end
+
+--     ProductionInfoHud.DebugTable("ProductionNeedings", newProductionNeedings, 5);
+    exportTest(newProductionNeedings);
+end
+
+
+function ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, fillTypeId, minActiveAmount, maxActiveAmount, minTotalAmount, maxTotalAmount, productionName, productionLineName, alternativeFillTypes, alternativeForFillTypeId)
+    -- neues Element erstellen, wenn noch keins vorhanden ist
+    local newProductionNeeding = newProductionNeedings[fillTypeId];
+    if newProductionNeedings[fillTypeId] == nil then
+        newProductionNeeding = {};
+--         newProductionNeeding.fillTypeId = fillTypeId;
+        newProductionNeeding.title = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillTypeId);
+        newProductionNeeding.maxActiveAmount = 0; -- Benötigte Menge pro Monat für aktive Produktionen, wenn dieser Filltype benutzt wird
+        newProductionNeeding.minActiveAmount = 0; -- Benötigte Menge pro Monat für aktive Produktionen, wenn alternative Filltypes benutzt werden
+        newProductionNeeding.maxTotalAmount = 0; -- Benötigte Menge pro Monat für alle Produktionen, wenn dieser Filltype benutzt wird
+        newProductionNeeding.minTotalAmount = 0; -- Benötigte Menge pro Monat für alle Produktionen, wenn alternative Filltypes benutzt werden
+        newProductionNeeding.ProductionDetails = {} -- Liste der Details welche Produktionslinen von welchen Produktionen wieviel benötigen
+
+        newProductionNeedings[fillTypeId] = newProductionNeeding;
+    end
+
+    newProductionNeeding.maxActiveAmount = newProductionNeeding.maxActiveAmount + math.round(maxActiveAmount);
+    newProductionNeeding.minActiveAmount = newProductionNeeding.minActiveAmount + math.round(minActiveAmount);
+    newProductionNeeding.maxTotalAmount = newProductionNeeding.maxTotalAmount + math.round(maxTotalAmount);
+    newProductionNeeding.minTotalAmount = newProductionNeeding.minTotalAmount + math.round(minTotalAmount);
+
+    local usageDetailInfoItem = {}
+    usageDetailInfoItem.productionName = productionName;
+    usageDetailInfoItem.productionLineName = productionLineName;
+    usageDetailInfoItem.activeAmount = math.round(maxActiveAmount); -- aktuell benötigte Menge pro Monat
+    usageDetailInfoItem.totalAmount = math.round(maxTotalAmount); -- benötigte Menge pro Monat wenn aktiv
+    usageDetailInfoItem.alternativeFillTypes = alternativeFillTypes; -- alternativen über converter
+    if alternativeForFillTypeId ~= nil then
+        usageDetailInfoItem.alternativeForFillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(alternativeForFillTypeId); -- alternative für welchen Filltype in dieser Produktionslinie
+    end
+
+    table.insert(newProductionNeeding.ProductionDetails, usageDetailInfoItem);
+end
 
 addModEventListener(ProductionInfoHud);
