@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<GUI name="pihProductionOverviewFrame">
+    <GuiElement profile="fs25_menuContentContainer">
+        <Text profile="fs25_textDefault" text="Produktionsübersicht (Platzhalter)"/>
+    </GuiElement>
+</GUI>
