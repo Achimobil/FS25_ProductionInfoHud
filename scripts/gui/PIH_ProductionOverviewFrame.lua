@@ -29,12 +29,40 @@ function PihProductionOverviewFrame:onFrameClose()
     PihProductionOverviewFrame:superClass().onFrameClose(self)
 end
 
+-- Behalten/Verteilt/Verkauft/Verbraucht/Rest für einen Filltype-Eintrag berechnen (nur aktive Mengen)
+local function calculateSummary(entry)
+    local kept, distributed, sold, consumed = 0, 0, 0, 0
+
+    if entry ~= nil then
+        for _, detail in ipairs(entry.ProductionDetails) do
+            if detail.activeAmount >= 0 then
+                if detail.outputMode == ProductionPoint.OUTPUT_MODE.DIRECT_SELL then
+                    sold = sold + detail.activeAmount
+                elseif detail.outputMode == ProductionPoint.OUTPUT_MODE.AUTO_DELIVER then
+                    distributed = distributed + detail.activeAmount
+                else
+                    kept = kept + detail.activeAmount
+                end
+            else
+                consumed = consumed + detail.activeAmount
+            end
+        end
+    end
+
+    local rest = kept + distributed + consumed
+
+    return kept, distributed, sold, consumed, rest
+end
+
 function PihProductionOverviewFrame:updateOverviewData()
     local productionNeedings = ProductionInfoHud.UpdateProductionNeedings()
 
     local fruitEntries = {}
     local otherEntries = {}
     for _, entry in pairs(productionNeedings) do
+        local _, _, _, _, rest = calculateSummary(entry)
+        entry.rest = rest
+
         if entry.isFruit then
             table.insert(fruitEntries, entry)
         else
@@ -62,6 +90,34 @@ local function sortByProductionNames(a, b)
     return a.productionLineName < b.productionLineName
 end
 
+local function setValueTextColor(textElement, value)
+    if value < 0 then
+        textElement:setTextColor(0.9, 0.15, 0.15, 1)
+    else
+        textElement:setTextColor(1, 1, 1, 1)
+    end
+end
+
+function PihProductionOverviewFrame:updateSummaryDisplay(entry)
+    if entry == nil then
+        self.summaryKeptText:setText("")
+        self.summaryDistributedText:setText("")
+        self.summarySoldText:setText("")
+        self.summaryConsumedText:setText("")
+        self.summaryRestText:setText("")
+        return
+    end
+
+    local kept, distributed, sold, consumed, rest = calculateSummary(entry)
+
+    self.summaryKeptText:setText(string.format("Behalten: %s", g_i18n:formatNumber(kept, 0)))
+    self.summaryDistributedText:setText(string.format("Verteilt: %s", g_i18n:formatNumber(distributed, 0)))
+    self.summarySoldText:setText(string.format("Verkauft: %s", g_i18n:formatNumber(sold, 0)))
+    self.summaryConsumedText:setText(string.format("Verbrauch: %s", g_i18n:formatNumber(consumed, 0)))
+    self.summaryRestText:setText(string.format("Rest: %s", g_i18n:formatNumber(rest, 0)))
+    setValueTextColor(self.summaryRestText, rest)
+end
+
 function PihProductionOverviewFrame:updateDetailData(entry)
     local producers = {}
     local directConsumers = {}
@@ -69,7 +125,7 @@ function PihProductionOverviewFrame:updateDetailData(entry)
 
     if entry ~= nil then
         for _, detail in ipairs(entry.ProductionDetails) do
-            if detail.totalAmount >= 0 then
+            if detail.activeAmount >= 0 then
                 table.insert(producers, detail)
             elseif detail.alternativeForFillTypeTitle ~= nil then
                 table.insert(converterConsumers, detail)
@@ -93,6 +149,8 @@ function PihProductionOverviewFrame:updateDetailData(entry)
 
     self.detailSections[PihProductionOverviewFrame.SECTION_PRODUCERS] = producers
     self.detailSections[PihProductionOverviewFrame.SECTION_CONSUMERS] = consumers
+
+    self:updateSummaryDisplay(entry)
 
     self.detailList:reloadData()
 end
@@ -136,11 +194,25 @@ function PihProductionOverviewFrame:populateCellForItemInSection(list, section, 
     if list == self.overviewList then
         local entry = self.sections[section][index]
         cell:getAttribute("title"):setText(entry.title)
-        cell:getAttribute("value"):setText(g_i18n:formatNumber(entry.maxTotalAmount, 0))
+        local valueText = cell:getAttribute("value")
+        valueText:setText(g_i18n:formatNumber(entry.rest, 0))
+        setValueTextColor(valueText, entry.rest)
     elseif list == self.detailList then
         local detail = self.detailSections[section][index]
-        cell:getAttribute("title"):setText(detail.productionName .. " - " .. detail.productionLineName)
-        cell:getAttribute("value"):setText(g_i18n:formatNumber(detail.totalAmount, 0))
+        local title = detail.productionName .. " - " .. detail.productionLineName
+        if section == PihProductionOverviewFrame.SECTION_PRODUCERS then
+            if detail.outputMode == ProductionPoint.OUTPUT_MODE.DIRECT_SELL then
+                title = title .. " (Verkauft)"
+            elseif detail.outputMode == ProductionPoint.OUTPUT_MODE.AUTO_DELIVER then
+                title = title .. " (Verteilt)"
+            elseif ProductionPoint.OUTPUT_MODE.STORE ~= nil and detail.outputMode == ProductionPoint.OUTPUT_MODE.STORE then
+                title = title .. " (Eingelagert)"
+            else
+                title = title .. " (Behalten)"
+            end
+        end
+        cell:getAttribute("title"):setText(title)
+        cell:getAttribute("value"):setText(g_i18n:formatNumber(detail.activeAmount, 0))
         if detail.alternativeForFillTypeTitle ~= nil then
             cell:getAttribute("title"):setTextColor(1, 0.6, 0, 1)
             cell:getAttribute("value"):setTextColor(1, 0.6, 0, 1)

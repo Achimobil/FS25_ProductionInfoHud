@@ -14,6 +14,12 @@
             <Slider profile="fs25_listSlider" dataElementId="overviewList"/>
         </ThreePartBitmap>
 
+        <Text profile="pih_summaryText" id="summaryKeptText" position="-63px -60px"/>
+        <Text profile="pih_summaryText" id="summaryDistributedText" position="-63px -82px"/>
+        <Text profile="pih_summaryText" id="summarySoldText" position="-63px -104px"/>
+        <Text profile="pih_summaryText" id="summaryConsumedText" position="-63px -126px"/>
+        <Text profile="pih_summaryText" id="summaryRestText" position="-63px -148px"/>
+
         <SmoothList profile="pih_detailList" id="detailList" listSectionHeader="detailSection">
             <ListItem profile="fs25_pricesPriceListItem">
                 <Text profile="fs25_pricesPriceListItemName" name="title"/>
@@ -39,12 +45,16 @@
         </Profile>
         <Profile name="pih_detailList" extends="fs25_pricesPriceList" with="anchorStretchingYRight">
             <width value="820px"/>
-            <absoluteSizeOffset value="0px 56px"/>
-            <position value="-63px -56px"/>
+            <absoluteSizeOffset value="0px 190px"/>
+            <position value="-63px -190px"/>
         </Profile>
         <Profile name="pih_detailListSliderBox" extends="fs25_pricesPriceSliderBox" with="anchorStretchingYRight">
-            <absoluteSizeOffset value="0px 56px"/>
-            <position value="-41px -56px"/>
+            <absoluteSizeOffset value="0px 190px"/>
+            <position value="-41px -190px"/>
+        </Profile>
+        <Profile name="pih_summaryText" extends="fs25_textDefault" with="anchorTopRight">
+            <width value="820px"/>
+            <textBold value="true"/>
         </Profile>
     </GUIProfiles>
 </GUI>

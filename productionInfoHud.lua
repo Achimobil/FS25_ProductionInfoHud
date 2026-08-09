@@ -933,21 +933,26 @@ function ProductionInfoHud.UpdateProductionNeedings()
                     maxActiveAmount = changedAmountPerMonth * productionPointMultiplicatorActive;
                 end
 
-                ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, outputItem.type, maxActiveAmount, maxActiveAmount, maxTotalAmount, maxTotalAmount, productionName, production.name);
+                local outputMode = nil;
+                if productionPoint.getOutputDistributionMode ~= nil then
+                    outputMode = productionPoint:getOutputDistributionMode(outputItem.type);
+                end
+
+                ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, outputItem.type, maxActiveAmount, maxActiveAmount, maxTotalAmount, maxTotalAmount, productionName, production.name, nil, nil, outputMode);
             end
         end
     end
 
 --     ProductionInfoHud.DebugTable("ProductionNeedings", newProductionNeedings, 5);
-    if ProductionInfoHud.Debug then
-        exportTest(newProductionNeedings);
-    end
+--     if ProductionInfoHud.Debug then
+--         exportTest(newProductionNeedings);
+--     end
 
     return newProductionNeedings;
 end
 
 
-function ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, fillTypeId, minActiveAmount, maxActiveAmount, minTotalAmount, maxTotalAmount, productionName, productionLineName, alternativeFillTypes, alternativeForFillTypeId)
+function ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, fillTypeId, minActiveAmount, maxActiveAmount, minTotalAmount, maxTotalAmount, productionName, productionLineName, alternativeFillTypes, alternativeForFillTypeId, outputMode)
     -- neues Element erstellen, wenn noch keins vorhanden ist
     local newProductionNeeding = newProductionNeedings[fillTypeId];
     if newProductionNeedings[fillTypeId] == nil then
@@ -974,6 +979,7 @@ function ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, 
     usageDetailInfoItem.productionLineName = productionLineName;
     usageDetailInfoItem.activeAmount = math.round(maxActiveAmount); -- aktuell benötigte Menge pro Monat
     usageDetailInfoItem.totalAmount = math.round(maxTotalAmount); -- benötigte Menge pro Monat wenn aktiv
+    usageDetailInfoItem.outputMode = outputMode; -- Verteilmodus (Behalten/Verteilen/Verkaufen) nur bei Outputs gesetzt
     usageDetailInfoItem.alternativeFillTypes = alternativeFillTypes; -- alternativen über converter
     if alternativeForFillTypeId ~= nil then
         usageDetailInfoItem.alternativeForFillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(alternativeForFillTypeId); -- alternative für welchen Filltype in dieser Produktionslinie
