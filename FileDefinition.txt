@@ -10,3 +10,6 @@ FS19_MapObjectsHider
 *.gsp
 *.gspu
 *.zip
+.vscode
+.claude
+*.code-workspace
