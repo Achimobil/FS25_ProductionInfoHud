@@ -63,26 +63,24 @@ end;
 function ProductionInfoHud:registerActionEvent()
     PlayerInputComponent.registerGlobalPlayerActionEvents = Utils.appendedFunction(
         PlayerInputComponent.registerGlobalPlayerActionEvents,
-        function(self, controlling)
-            --if controlling ~= "VEHICLE" then
-                local inputAction = InputAction["PIH_ONOFFDISPLAY"];
-                local callbackTarget = self;
-                local callbackFunc = self.pihSystemActionCallback;
-                local triggerUp = false;
-                local triggerDown = true;
-                local triggerAlways = false;
-                local startActive = true;
+        function(self, _)
+            local inputAction = InputAction["PIH_ONOFFDISPLAY"];
+            local callbackTarget = self;
+            local callbackFunc = self.pihSystemActionCallback;
+            local triggerUp = false;
+            local triggerDown = true;
+            local triggerAlways = false;
+            local startActive = true;
 
-                local _, eventId = g_inputBinding:registerActionEvent(inputAction, callbackTarget, callbackFunc, triggerUp, triggerDown, triggerAlways, startActive, nil, true);
+            local _, eventId = g_inputBinding:registerActionEvent(inputAction, callbackTarget, callbackFunc, triggerUp, triggerDown, triggerAlways, startActive, nil, true);
 
-                g_inputBinding:setActionEventTextVisibility(eventId, false);
-                local action = g_inputBinding.nameActions[InputAction["PIH_ONOFFDISPLAY"]];
-                if action ~= nil then
-                    action.displayCategory = "HL Hud System";
-                    action.displayNamePositive = tostring(g_i18n:getText("input_TOGGLE_GUI_on"));
-                    action.displayNameNegative = tostring(g_i18n:getText("input_TOGGLE_GUI_off"));
-                end;
-            --end
+            g_inputBinding:setActionEventTextVisibility(eventId, false);
+            local action = g_inputBinding.nameActions[InputAction["PIH_ONOFFDISPLAY"]];
+            if action ~= nil then
+                action.displayCategory = "HL Hud System";
+                action.displayNamePositive = tostring(g_i18n:getText("input_TOGGLE_GUI_on"));
+                action.displayNameNegative = tostring(g_i18n:getText("input_TOGGLE_GUI_off"));
+            end;
     end)
     function PlayerInputComponent:pihSystemActionCallback(actionName, inputValue, callbackState, isAnalog, isMouse, deviceCategory)
         if not g_currentMission.hlUtils.dragDrop.on then
@@ -189,9 +187,9 @@ function ProductionInfoHud:AddProductionItemToList(myProductionItems, production
         hoursLeft = hoursLeft - hours;
 
         local minutes = math.floor(hoursLeft * 60);
-        local minutesString = minutes;
+        local minutesString = tostring(minutes);
         if(minutes <= 9) then minutesString = 0 .. minutes end;
-        local hoursString = hours;
+        local hoursString = tostring(hours);
         if(hours <= 9) and (days ~= 0) then hoursString = "0" .. hours end;
 
         local timeString = "";
@@ -531,7 +529,7 @@ end
 -- @param table myProductionItems The list where it will be added to
 -- @param Factory factory What should be added
 function ProductionInfoHud:AddFactory(myProductionItems, factory)
-    for fillTypeId, fillLevel in pairs(factory.spec_factory.storage.fillLevels) do
+    for fillTypeId, _ in pairs(factory.spec_factory.storage.fillLevels) do
         -- item für produktionsliste erstellen. Ein Item pro fillType
         local productionItem = {}
         productionItem.name = factory:getName();
@@ -577,7 +575,7 @@ function ProductionInfoHud:AddProductionPoint(myProductionItems, productionPoint
         productionPointMultiplicator = 1 / #productionPoint.activeProductions;
     end
 
-    for fillTypeId, fillLevel in pairs(productionPoint.storage.fillLevels) do
+    for fillTypeId, _ in pairs(productionPoint.storage.fillLevels) do
 
         -- item für produktionsliste erstellen. Ein Item pro fillType
         local productionItem = {}
@@ -850,6 +848,8 @@ function ProductionInfoHud.UpdateProductionNeedings()
             productionName = string.gsub(productionName, "%(Leasing%) ", "");
         end
 
+        local productionImageFilename = productionPoint.owningPlaceable:getImageFilename();
+
         -- is the point shared, then the amounts needs to be divided
         local productionPointMultiplicatorActive = 1;
         if productionPoint.sharedThroughputCapacity and #productionPoint.activeProductions ~= 0 then
@@ -874,7 +874,6 @@ function ProductionInfoHud.UpdateProductionNeedings()
                     local maxActiveAmount = changedAmountPerMonth * productionPointMultiplicatorActive;
                     local minActiveAmount = maxActiveAmount;
 
-                    -- todo Wie Konverter berücksichtigen?
                     -- Wenn es einen Konverter gibt, dann wird minAmount nicht hochgesetzt, aber maxAmount für alle eingetragenen converts
                     -- converter können eingetragen sein in BaleUnloadTrigger, PalletUnloadTrigger, UnloadTrigger, WoodUnloadTrigger
                     -- UnloadTrigger ist die basis und die hat fillTypeConversions[fillTypeId] mit outgoingFillType und ratio und stecken in unloadingStation
@@ -898,7 +897,7 @@ function ProductionInfoHud.UpdateProductionNeedings()
                                     local maxActiveAmountConversion = maxActiveAmount / fillTypeConversion.ratio;
 
                                     if alreadyAddedIncommingFillTypeIds[incommingFillTypeId] ~= true then
-                                        ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, incommingFillTypeId, 0, maxActiveAmountConversion, 0, maxTotalAmountConversion, productionName, production.name, nil, inputItem.type);
+                                        ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, incommingFillTypeId, 0, maxActiveAmountConversion, 0, maxTotalAmountConversion, productionName, production.name, nil, inputItem.type, nil, productionImageFilename);
                                         alreadyAddedIncommingFillTypeIds[incommingFillTypeId] = true;
                                     end
 
@@ -916,7 +915,7 @@ function ProductionInfoHud.UpdateProductionNeedings()
                         end
                     end
 
-                    ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, inputItem.type, minActiveAmount, maxActiveAmount, minTotalAmount, maxTotalAmount, productionName, production.name, alternativeFillTypes);
+                    ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, inputItem.type, minActiveAmount, maxActiveAmount, minTotalAmount, maxTotalAmount, productionName, production.name, alternativeFillTypes, nil, nil, productionImageFilename);
                 end
 
                 for _, outputItem in pairs(production.outputs) do
@@ -930,7 +929,7 @@ function ProductionInfoHud.UpdateProductionNeedings()
                         outputMode = productionPoint:getOutputDistributionMode(outputItem.type);
                     end
 
-                    ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, outputItem.type, maxActiveAmount, maxActiveAmount, maxTotalAmount, maxTotalAmount, productionName, production.name, nil, nil, outputMode);
+                    ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, outputItem.type, maxActiveAmount, maxActiveAmount, maxTotalAmount, maxTotalAmount, productionName, production.name, nil, nil, outputMode, productionImageFilename);
                 end
             end
         end
@@ -945,13 +944,14 @@ function ProductionInfoHud.UpdateProductionNeedings()
 end
 
 
-function ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, fillTypeId, minActiveAmount, maxActiveAmount, minTotalAmount, maxTotalAmount, productionName, productionLineName, alternativeFillTypes, alternativeForFillTypeId, outputMode)
+function ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, fillTypeId, minActiveAmount, maxActiveAmount, minTotalAmount, maxTotalAmount, productionName, productionLineName, alternativeFillTypes, alternativeForFillTypeId, outputMode, productionImageFilename)
     -- neues Element erstellen, wenn noch keins vorhanden ist
     local newProductionNeeding = newProductionNeedings[fillTypeId];
     if newProductionNeedings[fillTypeId] == nil then
         newProductionNeeding = {};
         newProductionNeeding.fillTypeId = fillTypeId;
         newProductionNeeding.title = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillTypeId);
+        newProductionNeeding.hudOverlayFilename = ProductionInfoHud.fillTypeManager:getFillTypeByIndex(fillTypeId).hudOverlayFilename;
         newProductionNeeding.isFruit = g_fruitTypeManager:getFruitTypeIndexByFillTypeIndex(fillTypeId) ~= nil;
         newProductionNeeding.maxActiveAmount = 0; -- Benötigte Menge pro Monat für aktive Produktionen, wenn dieser Filltype benutzt wird
         newProductionNeeding.minActiveAmount = 0; -- Benötigte Menge pro Monat für aktive Produktionen, wenn alternative Filltypes benutzt werden
@@ -973,6 +973,7 @@ function ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, 
     usageDetailInfoItem.activeAmount = math.round(maxActiveAmount); -- aktuell benötigte Menge pro Monat
     usageDetailInfoItem.totalAmount = math.round(maxTotalAmount); -- benötigte Menge pro Monat wenn aktiv
     usageDetailInfoItem.outputMode = outputMode; -- Verteilmodus (Behalten/Verteilen/Verkaufen) nur bei Outputs gesetzt
+    usageDetailInfoItem.productionImageFilename = productionImageFilename; -- Icon des Gebäudes für die Anzeige
     usageDetailInfoItem.alternativeFillTypes = alternativeFillTypes; -- alternativen über converter
     if alternativeForFillTypeId ~= nil then
         usageDetailInfoItem.alternativeForFillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(alternativeForFillTypeId); -- alternative für welchen Filltype in dieser Produktionslinie

@@ -327,15 +327,28 @@ function PihProductionOverviewFrame:getNumberOfItemsInSection(list, section)
     return 0
 end
 
+function PihProductionOverviewFrame.setCellIcon(cell, imageFilename)
+    local icon = cell:getAttribute("icon")
+    if icon == nil then
+        return
+    end
+    icon:setVisible(imageFilename ~= nil)
+    if imageFilename ~= nil then
+        icon:setImageFilename(imageFilename)
+    end
+end
+
 function PihProductionOverviewFrame:populateCellForItemInSection(list, section, index, cell)
     if list == self.overviewList then
         local entry = self.sections[section][index]
         cell:getAttribute("title"):setText(entry.title)
+        PihProductionOverviewFrame.setCellIcon(cell, entry.hudOverlayFilename)
         local valueText = cell:getAttribute("value")
         valueText:setText(g_i18n:formatNumber(entry.rest * self:getDisplayFactor(), self:getDisplayDecimals()))
         PihProductionOverviewFrame.setValueTextColor(valueText, entry.rest)
     elseif list == self.detailList then
         local detail = self.detailSections[section][index]
+        PihProductionOverviewFrame.setCellIcon(cell, detail.productionImageFilename)
         local title = detail.productionName .. " - " .. detail.productionLineName
         if section == PihProductionOverviewFrame.SECTION_PRODUCERS then
             if detail.outputMode == ProductionPoint.OUTPUT_MODE.DIRECT_SELL then
