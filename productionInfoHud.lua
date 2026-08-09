@@ -82,6 +82,7 @@ function ProductionInfoHud:registerActionEvent()
                 action.displayNameNegative = tostring(g_i18n:getText("input_TOGGLE_GUI_off"));
             end;
     end)
+    ---@diagnostic disable-next-line: unused-local
     function PlayerInputComponent:pihSystemActionCallback(actionName, inputValue, callbackState, isAnalog, isMouse, deviceCategory)
         if not g_currentMission.hlUtils.dragDrop.on then
             if actionName == "PIH_ONOFFDISPLAY" then
@@ -664,176 +665,6 @@ function ProductionInfoHud:getDetiServer()
     return g_server ~= nil and g_client ~= nil and g_dedicatedServer ~= nil;
 end;
 
-
-
-
-
-
-
-
-
-
--- hilffunktionen für CSV Export
-local function ensureTrailingSlash(p)
-    local last = p:sub(-1)
-    if last ~= "/" and last ~= "\\" then
-        return p .. "/"
-    end
-    return p
-end
-
-local function csvEscape(value)
-    if value == nil then return "" end
-    local s = tostring(value):gsub('"', '""')
-    if s:find("[;\n\r\"]") ~= nil then
-        s = '"' .. s .. '"'
-    end
-    return s
-end
-
--- fileName: z.B. "myDump.csv" (keine Unterordner!)
-local function writeCsvToModSettings(fileName, headers, rows)
-    local dir = ensureTrailingSlash(g_modSettingsDirectory)
-    local filePath = dir .. fileName
-
-    local f, err = io.open(filePath, "w")
-    if f == nil then
-        print(("CSV open failed: %s (%s)"):format(tostring(err), tostring(filePath)))
-        return false
-    end
-
-    -- UTF-8 BOM (Excel/Umlaute)
-    f:write(string.char(0xEF, 0xBB, 0xBF))
-
-    -- Header
-    for i = 1, #headers do
-        if i > 1 then f:write(";") end
-        f:write(csvEscape(headers[i]))
-    end
-    f:write("\n")
-
-    -- Rows
-    for r = 1, #rows do
-        local row = rows[r]
-        for c = 1, #headers do
-            if c > 1 then f:write(";") end
-            f:write(csvEscape(row[c]))
-        end
-        f:write("\n")
-    end
-
-    f:close()
-    print("CSV written to: " .. filePath)
-    return true
-end
-
-local function asExcelText(s)
-    return '="' .. tostring(s or "") .. '"'
-end
-
-
-local function joinAlternativeTitles(alternativeFillTypes)
-    if alternativeFillTypes == nil then
-        return ""
-    end
-
-    local titles = {}
-    for _, alt in pairs(alternativeFillTypes) do
-        if alt ~= nil and alt.title ~= nil and alt.title ~= "" then
-            titles[#titles + 1] = tostring(alt.title)
-        end
-    end
-
-    if #titles == 0 then
-        return ""
-    end
-
-    table.sort(titles)
-    return table.concat(titles, ", ")
-end
-
-local function formatMinMax(minVal, maxVal)
-    if minVal == maxVal then
-        return tostring(minVal) -- echte Zahl (als String), Excel erkennt das als Number
-    end
-    return asExcelText(tostring(minVal) .. " / " .. tostring(maxVal))
-end
-
-local function exportTest(productionNeedings)
-    local fileName = "productionNeedings.csv"
-    local headers = {
-        "Title",
-        "ActiveAmount",
-        "TotalAmount",
-        "ProductionName",
-        "ProductionLineName",
-        "Alternative für",
-        "Alternative"
-    }
-
-    -- Needs sammeln + nach Title sortieren
-    local list = {}
-    for _, need in pairs(productionNeedings) do
-        list[#list + 1] = need
-    end
-    table.sort(list, function(a, b)
-        return tostring(a.title) < tostring(b.title)
-    end)
-
-    local rows = {}
-
-    for i = 1, #list do
-        local need = list[i]
-
-        -- Hauptzeile
-        rows[#rows + 1] = {
-            need.title,
-            formatMinMax(need.minActiveAmount, need.maxActiveAmount),
-            formatMinMax(need.minTotalAmount,  need.maxTotalAmount),
-            "",
-            "",
-            "",
-            ""
-        }
-
-        -- Details sammeln + sortieren
-        local detailsList = {}
-        for _, d in pairs(need.ProductionDetails or {}) do
-            detailsList[#detailsList + 1] = d
-        end
-        table.sort(detailsList, function(a, b)
-            local an = tostring(a.productionName)
-            local bn = tostring(b.productionName)
-            if an ~= bn then
-                return an < bn
-            end
-            return tostring(a.productionLineName) < tostring(b.productionLineName)
-        end)
-
-        -- Detailzeilen
-        for d = 1, #detailsList do
-            local det = detailsList[d]
-            -- Detailzeile
-            rows[#rows + 1] = {
-                "",
-                tostring(det.activeAmount),  -- Zahl statt Text-Formel
-                tostring(det.totalAmount),   -- Zahl statt Text-Formel
-                det.productionName,
-                det.productionLineName,
-                det.alternativeForFillTypeTitle or "",
-                joinAlternativeTitles(det.alternativeFillTypes)
-            }
-        end
-    end
-
-    if writeCsvToModSettings(fileName, headers, rows) then
-        print("CSV written to: " .. fileName)
-    end
-end
-
-
-
-
 function ProductionInfoHud.UpdateProductionNeedings()
     -- Alle Produktionen auslesen mit gesamtbedarf für Tabelle
     local farmId = g_currentMission:getFarmId();
@@ -934,11 +765,6 @@ function ProductionInfoHud.UpdateProductionNeedings()
             end
         end
     end
-
---     ProductionInfoHud.DebugTable("ProductionNeedings", newProductionNeedings, 5);
---     if ProductionInfoHud.Debug then
---         exportTest(newProductionNeedings);
---     end
 
     return newProductionNeedings;
 end
