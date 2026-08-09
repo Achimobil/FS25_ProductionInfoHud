@@ -30,7 +30,7 @@ function PihProductionOverviewFrame:onFrameClose()
 end
 
 -- Behalten/Verteilt/Verkauft/Verbraucht/Rest für einen Filltype-Eintrag berechnen (nur aktive Mengen)
-local function calculateSummary(entry)
+function PihProductionOverviewFrame.calculateSummary(entry)
     local kept, distributed, sold, consumed = 0, 0, 0, 0
 
     if entry ~= nil then
@@ -43,7 +43,7 @@ local function calculateSummary(entry)
                 else
                     kept = kept + detail.activeAmount
                 end
-            else
+            elseif detail.alternativeForFillTypeTitle == nil then
                 consumed = consumed + detail.activeAmount
             end
         end
@@ -54,13 +54,35 @@ local function calculateSummary(entry)
     return kept, distributed, sold, consumed, rest
 end
 
+-- Jahresertrag pro m² für einen Feldfrucht-Filltype ermitteln (nil, wenn nicht anwendbar, z.B. Stroh)
+function PihProductionOverviewFrame.getFruitLiterPerSqm(fillTypeId)
+    if fillTypeId == FillType.STRAW then
+        return nil
+    end
+
+    local fruitDesc = g_fruitTypeManager:getFruitTypeByFillTypeIndex(fillTypeId)
+    if fruitDesc == nil then
+        return nil
+    end
+
+    if g_fruitTypeManager:isFillTypeWindrow(fillTypeId) then
+        return fruitDesc.windrowLiterPerSqm or fruitDesc.literPerSqm
+    end
+
+    return fruitDesc.literPerSqm
+end
+
+function PihProductionOverviewFrame.sortByTitle(a, b)
+    return a.title < b.title
+end
+
 function PihProductionOverviewFrame:updateOverviewData()
     local productionNeedings = ProductionInfoHud.UpdateProductionNeedings()
 
     local fruitEntries = {}
     local otherEntries = {}
     for _, entry in pairs(productionNeedings) do
-        local _, _, _, _, rest = calculateSummary(entry)
+        local _, _, _, _, rest = PihProductionOverviewFrame.calculateSummary(entry)
         entry.rest = rest
 
         if entry.isFruit then
@@ -70,27 +92,31 @@ function PihProductionOverviewFrame:updateOverviewData()
         end
     end
 
-    local function sortByTitle(a, b)
-        return a.title < b.title
-    end
-    table.sort(fruitEntries, sortByTitle)
-    table.sort(otherEntries, sortByTitle)
+    table.sort(fruitEntries, PihProductionOverviewFrame.sortByTitle)
+    table.sort(otherEntries, PihProductionOverviewFrame.sortByTitle)
 
     self.sections[PihProductionOverviewFrame.SECTION_FRUITS] = fruitEntries
     self.sections[PihProductionOverviewFrame.SECTION_OTHERS] = otherEntries
 
     self.overviewList:reloadData()
-    self:updateDetailData(nil)
+
+    if #fruitEntries > 0 then
+        self.overviewList:setSelectedItem(PihProductionOverviewFrame.SECTION_FRUITS, 1, true)
+    elseif #otherEntries > 0 then
+        self.overviewList:setSelectedItem(PihProductionOverviewFrame.SECTION_OTHERS, 1, true)
+    else
+        self:updateDetailData(nil)
+    end
 end
 
-local function sortByProductionNames(a, b)
+function PihProductionOverviewFrame.sortByProductionNames(a, b)
     if a.productionName ~= b.productionName then
         return a.productionName < b.productionName
     end
     return a.productionLineName < b.productionLineName
 end
 
-local function setValueTextColor(textElement, value)
+function PihProductionOverviewFrame.setValueTextColor(textElement, value)
     if value < 0 then
         textElement:setTextColor(0.9, 0.15, 0.15, 1)
     else
@@ -105,17 +131,27 @@ function PihProductionOverviewFrame:updateSummaryDisplay(entry)
         self.summarySoldText:setText("")
         self.summaryConsumedText:setText("")
         self.summaryRestText:setText("")
+        self.summaryAreaText:setText("")
         return
     end
 
-    local kept, distributed, sold, consumed, rest = calculateSummary(entry)
+    local kept, distributed, sold, consumed, rest = PihProductionOverviewFrame.calculateSummary(entry)
 
     self.summaryKeptText:setText(string.format("Behalten: %s", g_i18n:formatNumber(kept, 0)))
     self.summaryDistributedText:setText(string.format("Verteilt: %s", g_i18n:formatNumber(distributed, 0)))
     self.summarySoldText:setText(string.format("Verkauft: %s", g_i18n:formatNumber(sold, 0)))
     self.summaryConsumedText:setText(string.format("Verbrauch: %s", g_i18n:formatNumber(consumed, 0)))
     self.summaryRestText:setText(string.format("Rest: %s", g_i18n:formatNumber(rest, 0)))
-    setValueTextColor(self.summaryRestText, rest)
+    PihProductionOverviewFrame.setValueTextColor(self.summaryRestText, rest)
+
+    local literPerSqm = entry.isFruit and PihProductionOverviewFrame.getFruitLiterPerSqm(entry.fillTypeId) or nil
+    if literPerSqm ~= nil and literPerSqm > 0 then
+        local yearlyDemand = math.max(0, -rest) * 12
+        local areaNeeded = yearlyDemand / (literPerSqm * 10000)
+        self.summaryAreaText:setText(string.format("Benötigte Fläche pro Jahr: %s ha", g_i18n:formatNumber(areaNeeded, 2)))
+    else
+        self.summaryAreaText:setText("")
+    end
 end
 
 function PihProductionOverviewFrame:updateDetailData(entry)
@@ -135,9 +171,9 @@ function PihProductionOverviewFrame:updateDetailData(entry)
         end
     end
 
-    table.sort(producers, sortByProductionNames)
-    table.sort(directConsumers, sortByProductionNames)
-    table.sort(converterConsumers, sortByProductionNames)
+    table.sort(producers, PihProductionOverviewFrame.sortByProductionNames)
+    table.sort(directConsumers, PihProductionOverviewFrame.sortByProductionNames)
+    table.sort(converterConsumers, PihProductionOverviewFrame.sortByProductionNames)
 
     local consumers = {}
     for _, detail in ipairs(directConsumers) do
@@ -196,7 +232,7 @@ function PihProductionOverviewFrame:populateCellForItemInSection(list, section, 
         cell:getAttribute("title"):setText(entry.title)
         local valueText = cell:getAttribute("value")
         valueText:setText(g_i18n:formatNumber(entry.rest, 0))
-        setValueTextColor(valueText, entry.rest)
+        PihProductionOverviewFrame.setValueTextColor(valueText, entry.rest)
     elseif list == self.detailList then
         local detail = self.detailSections[section][index]
         local title = detail.productionName .. " - " .. detail.productionLineName

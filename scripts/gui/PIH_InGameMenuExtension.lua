@@ -2,7 +2,7 @@ PihInGameMenuExtension = {
     MOD_DIR = g_currentModDirectory
 }
 
-local function pihOverwriteGameFunction(object, funcName, newFunc)
+function PihInGameMenuExtension.overwriteGameFunction(object, funcName, newFunc)
     local oldFunc = object[funcName]
     if oldFunc ~= nil then
         object[funcName] = function(...)
@@ -11,7 +11,7 @@ local function pihOverwriteGameFunction(object, funcName, newFunc)
     end
 end
 
-local function pihMoveProductionOverviewPageAfterProduction(inGameMenu)
+function PihInGameMenuExtension.moveProductionOverviewPageAfterProduction(inGameMenu)
     local page = inGameMenu.pagePihProductionOverview
     local afterIndex = inGameMenu.pagingElement:getPageMappingIndexByElement(inGameMenu.pageProduction)
     if afterIndex == nil then
@@ -46,7 +46,7 @@ local function pihMoveProductionOverviewPageAfterProduction(inGameMenu)
     inGameMenu:rebuildTabList()
 end
 
-pihOverwriteGameFunction(InGameMenu, "onLoadMapFinished", function(superFunc, self)
+function PihInGameMenuExtension.onLoadMapFinished(superFunc, self)
     self.pagePihProductionOverview = PihProductionOverviewFrame.register(PihInGameMenuExtension.MOD_DIR)
     self.pagingElement:addElement(self.pagePihProductionOverview)
     self:exposeControlsAsFields("pagePihProductionOverview")
@@ -62,5 +62,7 @@ pihOverwriteGameFunction(InGameMenu, "onLoadMapFinished", function(superFunc, se
     self.pagePihProductionOverview:updateAbsolutePosition()
     self.pagePihProductionOverview:onGuiSetupFinished()
 
-    pihMoveProductionOverviewPageAfterProduction(self)
-end)
+    PihInGameMenuExtension.moveProductionOverviewPageAfterProduction(self)
+end
+
+PihInGameMenuExtension.overwriteGameFunction(InGameMenu, "onLoadMapFinished", PihInGameMenuExtension.onLoadMapFinished)

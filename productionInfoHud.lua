@@ -862,83 +862,76 @@ function ProductionInfoHud.UpdateProductionNeedings()
 
 --         ProductionInfoHud.DebugTable("productionPoint.unloadingStation", productionPoint.unloadingStation, 4);
 
-        --normale Produktionen einfügen
+        --normale Produktionen einfügen, deaktivierte Produktionslinien werden komplett übersprungen
         for _, production in pairs(productionPoint.productions) do
-            for _, inputItem in pairs(production.inputs) do
-                local changedAmountPerMonth = production.cyclesPerHour * inputItem.amount * 24 * -1;
+            if production.status ~= ProductionPoint.PROD_STATUS.INACTIVE then
+                for _, inputItem in pairs(production.inputs) do
+                    local changedAmountPerMonth = production.cyclesPerHour * inputItem.amount * 24 * -1;
 
-                local maxTotalAmount = changedAmountPerMonth * productionPointMultiplicatorAll;
-                local minTotalAmount = maxTotalAmount;
+                    local maxTotalAmount = changedAmountPerMonth * productionPointMultiplicatorAll;
+                    local minTotalAmount = maxTotalAmount;
 
-                -- Aktive Mengen berechnen
-                local maxActiveAmount = 0;
-                if production.status ~= ProductionPoint.PROD_STATUS.INACTIVE then
-                    maxActiveAmount = changedAmountPerMonth * productionPointMultiplicatorActive;
-                end
-                local minActiveAmount = maxActiveAmount;
+                    local maxActiveAmount = changedAmountPerMonth * productionPointMultiplicatorActive;
+                    local minActiveAmount = maxActiveAmount;
 
-                -- todo Wie Konverter berücksichtigen?
-                -- Wenn es einen Konverter gibt, dann wird minAmount nicht hochgesetzt, aber maxAmount für alle eingetragenen converts
-                -- converter können eingetragen sein in BaleUnloadTrigger, PalletUnloadTrigger, UnloadTrigger, WoodUnloadTrigger
-                -- UnloadTrigger ist die basis und die hat fillTypeConversions[fillTypeId] mit outgoingFillType und ratio und stecken in unloadingStation
-                -- also muss ich prüfen ob in der Liste ein outgoingFillType drin ist der mit dem aktuellen übereinstimmt und diese dann ebenfalls in die liste legen
-                local alternativeFillTypes;
-                if productionPoint.unloadingStation ~= nil and productionPoint.unloadingStation.unloadTriggers ~= nil then
+                    -- todo Wie Konverter berücksichtigen?
+                    -- Wenn es einen Konverter gibt, dann wird minAmount nicht hochgesetzt, aber maxAmount für alle eingetragenen converts
+                    -- converter können eingetragen sein in BaleUnloadTrigger, PalletUnloadTrigger, UnloadTrigger, WoodUnloadTrigger
+                    -- UnloadTrigger ist die basis und die hat fillTypeConversions[fillTypeId] mit outgoingFillType und ratio und stecken in unloadingStation
+                    -- also muss ich prüfen ob in der Liste ein outgoingFillType drin ist der mit dem aktuellen übereinstimmt und diese dann ebenfalls in die liste legen
+                    local alternativeFillTypes;
+                    if productionPoint.unloadingStation ~= nil and productionPoint.unloadingStation.unloadTriggers ~= nil then
 
-                    -- nur der erste converter eines types darf hinzugefügt werden, sonst wird alles pro trigger und converter mehrfach eingefügt.
-                    -- wir ignorieren hier, dass die verschiedenen Trigger unterschiedliche ratio haben könnten
-                    local alreadyAddedIncommingFillTypeIds = {};
+                        -- nur der erste converter eines types darf hinzugefügt werden, sonst wird alles pro trigger und converter mehrfach eingefügt.
+                        -- wir ignorieren hier, dass die verschiedenen Trigger unterschiedliche ratio haben könnten
+                        local alreadyAddedIncommingFillTypeIds = {};
 
-                    for _, unloadTrigger in pairs(productionPoint.unloadingStation.unloadTriggers) do
-                        for incommingFillTypeId, fillTypeConversion in pairs(unloadTrigger.fillTypeConversions) do
-                            if fillTypeConversion.outgoingFillType == inputItem.type then
-                                -- Die min Amounts nicht setzen für den aktuellen type, aber den input type nur mit max einfügen
-                                minTotalAmount = 0;
-                                minActiveAmount = 0;
+                        for _, unloadTrigger in pairs(productionPoint.unloadingStation.unloadTriggers) do
+                            for incommingFillTypeId, fillTypeConversion in pairs(unloadTrigger.fillTypeConversions) do
+                                if fillTypeConversion.outgoingFillType == inputItem.type then
+                                    -- Die min Amounts nicht setzen für den aktuellen type, aber den input type nur mit max einfügen
+                                    minTotalAmount = 0;
+                                    minActiveAmount = 0;
 
-                                -- amounts mit ratio bestimmen
-                                local maxTotalAmountConversion = maxTotalAmount / fillTypeConversion.ratio;
-                                local maxActiveAmountConversion = maxActiveAmount / fillTypeConversion.ratio;
+                                    -- amounts mit ratio bestimmen
+                                    local maxTotalAmountConversion = maxTotalAmount / fillTypeConversion.ratio;
+                                    local maxActiveAmountConversion = maxActiveAmount / fillTypeConversion.ratio;
 
-                                if alreadyAddedIncommingFillTypeIds[incommingFillTypeId] ~= true then
-                                    ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, incommingFillTypeId, 0, maxActiveAmountConversion, 0, maxTotalAmountConversion, productionName, production.name, nil, inputItem.type);
-                                    alreadyAddedIncommingFillTypeIds[incommingFillTypeId] = true;
+                                    if alreadyAddedIncommingFillTypeIds[incommingFillTypeId] ~= true then
+                                        ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, incommingFillTypeId, 0, maxActiveAmountConversion, 0, maxTotalAmountConversion, productionName, production.name, nil, inputItem.type);
+                                        alreadyAddedIncommingFillTypeIds[incommingFillTypeId] = true;
+                                    end
+
+                                    if alternativeFillTypes == nil then
+                                        alternativeFillTypes = {};
+                                    end
+
+                                    alternativeFillTypes[incommingFillTypeId] =
+                                    {
+                                        title = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(incommingFillTypeId),
+                                        ratio = fillTypeConversion.ratio
+                                    }
                                 end
-
-                                if alternativeFillTypes == nil then
-                                    alternativeFillTypes = {};
-                                end
-
-                                alternativeFillTypes[incommingFillTypeId] =
-                                {
-                                    title = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(incommingFillTypeId),
-                                    ratio = fillTypeConversion.ratio
-                                }
                             end
                         end
                     end
+
+                    ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, inputItem.type, minActiveAmount, maxActiveAmount, minTotalAmount, maxTotalAmount, productionName, production.name, alternativeFillTypes);
                 end
 
-                ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, inputItem.type, minActiveAmount, maxActiveAmount, minTotalAmount, maxTotalAmount, productionName, production.name, alternativeFillTypes);
-            end
+                for _, outputItem in pairs(production.outputs) do
+                    local changedAmountPerMonth = production.cyclesPerHour * outputItem.amount * 24;
 
-            for _, outputItem in pairs(production.outputs) do
-                local changedAmountPerMonth = production.cyclesPerHour * outputItem.amount * 24;
+                    local maxTotalAmount = changedAmountPerMonth * productionPointMultiplicatorAll;
+                    local maxActiveAmount = changedAmountPerMonth * productionPointMultiplicatorActive;
 
-                local maxTotalAmount = changedAmountPerMonth * productionPointMultiplicatorAll;
+                    local outputMode = nil;
+                    if productionPoint.getOutputDistributionMode ~= nil then
+                        outputMode = productionPoint:getOutputDistributionMode(outputItem.type);
+                    end
 
-                -- Aktive Summen bilden
-                local maxActiveAmount = 0;
-                if production.status ~= ProductionPoint.PROD_STATUS.INACTIVE then
-                    maxActiveAmount = changedAmountPerMonth * productionPointMultiplicatorActive;
+                    ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, outputItem.type, maxActiveAmount, maxActiveAmount, maxTotalAmount, maxTotalAmount, productionName, production.name, nil, nil, outputMode);
                 end
-
-                local outputMode = nil;
-                if productionPoint.getOutputDistributionMode ~= nil then
-                    outputMode = productionPoint:getOutputDistributionMode(outputItem.type);
-                end
-
-                ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, outputItem.type, maxActiveAmount, maxActiveAmount, maxTotalAmount, maxTotalAmount, productionName, production.name, nil, nil, outputMode);
             end
         end
     end
