@@ -7,9 +7,15 @@ PihProductionOverviewFrame.SECTION_OTHERS = 2
 PihProductionOverviewFrame.SECTION_PRODUCERS = 1
 PihProductionOverviewFrame.SECTION_CONSUMERS = 2
 
+PihProductionOverviewFrame.MODE_HOUR = 1
+PihProductionOverviewFrame.MODE_DAY = 2
+PihProductionOverviewFrame.MODE_MONTH = 3
+PihProductionOverviewFrame.MODE_YEAR = 4
+
 function PihProductionOverviewFrame.register(modDirectory)
     local controller = PihProductionOverviewFrame.new()
     g_gui:loadGui(modDirectory .. "gui/PIH_ProductionOverviewFrame.xml", "PihProductionOverviewFrame", controller, true)
+    controller:initialize()
     return controller
 end
 
@@ -17,19 +23,110 @@ function PihProductionOverviewFrame.new(target, subclass_mt)
     local self = TabbedMenuFrameElement.new(target, subclass_mt or PihProductionOverviewFrame_mt)
     self.sections = { {}, {} }
     self.detailSections = { {}, {} }
+    self.displayMode = PihProductionOverviewFrame.MODE_MONTH
+    self.hasCustomMenuButtons = true
     return self
+end
+
+function PihProductionOverviewFrame:initialize()
+    PihProductionOverviewFrame:superClass().initialize(self)
+
+    self.backButtonInfo = {
+        inputAction = InputAction.MENU_BACK
+    }
+    self.nextPageButtonInfo = {
+        inputAction = InputAction.MENU_PAGE_NEXT,
+        text = g_i18n:getText("ui_ingameMenuNext"),
+        callback = self.onPageNext
+    }
+    self.prevPageButtonInfo = {
+        inputAction = InputAction.MENU_PAGE_PREV,
+        text = g_i18n:getText("ui_ingameMenuPrev"),
+        callback = self.onPagePrevious
+    }
+    self.toggleModeButtonInfo = {
+        inputAction = InputAction.MENU_ACTIVATE,
+        text = "Zeit umschalten",
+        callback = function()
+            self:onButtonToggleMode()
+        end
+    }
 end
 
 function PihProductionOverviewFrame:onFrameOpen()
     PihProductionOverviewFrame:superClass().onFrameOpen(self)
     self:updateOverviewData()
+    self:updateMenuButtons()
 end
 
 function PihProductionOverviewFrame:onFrameClose()
     PihProductionOverviewFrame:superClass().onFrameClose(self)
 end
 
--- Behalten/Verteilt/Verkauft/Verbraucht/Rest für einen Filltype-Eintrag berechnen (nur aktive Mengen)
+function PihProductionOverviewFrame:updateMenuButtons()
+    self.menuButtonInfo = { self.backButtonInfo, self.nextPageButtonInfo, self.prevPageButtonInfo, self.toggleModeButtonInfo }
+    self:setMenuButtonInfoDirty()
+end
+
+-- Beschriftung der aktuell gewählten Zeiteinheit
+function PihProductionOverviewFrame:getModeLabel()
+    if self.displayMode == PihProductionOverviewFrame.MODE_HOUR then
+        return "pro Stunde"
+    elseif self.displayMode == PihProductionOverviewFrame.MODE_DAY then
+        return "pro Tag"
+    elseif self.displayMode == PihProductionOverviewFrame.MODE_YEAR then
+        return "pro Jahr"
+    end
+    return "pro Monat"
+end
+
+-- Umrechnungsfaktor von unserem intern gespeicherten Monatswert auf die aktuelle Zeiteinheit
+function PihProductionOverviewFrame:getDisplayFactor()
+    local daysPerPeriod = g_currentMission.environment.daysPerPeriod
+    if self.displayMode == PihProductionOverviewFrame.MODE_HOUR then
+        return 1 / (24 * daysPerPeriod)
+    elseif self.displayMode == PihProductionOverviewFrame.MODE_DAY then
+        return 1 / daysPerPeriod
+    elseif self.displayMode == PihProductionOverviewFrame.MODE_YEAR then
+        return 12
+    end
+    return 1
+end
+
+function PihProductionOverviewFrame:getDisplayDecimals()
+    if self.displayMode == PihProductionOverviewFrame.MODE_HOUR or self.displayMode == PihProductionOverviewFrame.MODE_DAY then
+        return 2
+    end
+    return 0
+end
+
+function PihProductionOverviewFrame:updateTitle()
+    self.dialogTitleText:setText(string.format("Produktionsverbrauch (%s)", self:getModeLabel()))
+end
+
+function PihProductionOverviewFrame:onButtonToggleMode()
+    local daysPerPeriod = g_currentMission.environment.daysPerPeriod
+
+    if self.displayMode == PihProductionOverviewFrame.MODE_HOUR then
+        if daysPerPeriod > 1 then
+            self.displayMode = PihProductionOverviewFrame.MODE_DAY
+        else
+            self.displayMode = PihProductionOverviewFrame.MODE_MONTH
+        end
+    elseif self.displayMode == PihProductionOverviewFrame.MODE_DAY then
+        self.displayMode = PihProductionOverviewFrame.MODE_MONTH
+    elseif self.displayMode == PihProductionOverviewFrame.MODE_MONTH then
+        self.displayMode = PihProductionOverviewFrame.MODE_YEAR
+    else
+        self.displayMode = PihProductionOverviewFrame.MODE_HOUR
+    end
+
+    self:updateTitle()
+    self.overviewList:reloadData()
+    self.detailList:reloadData()
+end
+
+-- Behalten/Verteilt/Verkauft/Verbraucht/Rest für einen Filltype-Eintrag berechnen (nur aktive Mengen, unabhängig von der Zeiteinheit)
 function PihProductionOverviewFrame.calculateSummary(entry)
     local kept, distributed, sold, consumed = 0, 0, 0, 0
 
@@ -98,6 +195,7 @@ function PihProductionOverviewFrame:updateOverviewData()
     self.sections[PihProductionOverviewFrame.SECTION_FRUITS] = fruitEntries
     self.sections[PihProductionOverviewFrame.SECTION_OTHERS] = otherEntries
 
+    self:updateTitle()
     self.overviewList:reloadData()
 
     if #fruitEntries > 0 then
@@ -136,14 +234,17 @@ function PihProductionOverviewFrame:updateSummaryDisplay(entry)
     end
 
     local kept, distributed, sold, consumed, rest = PihProductionOverviewFrame.calculateSummary(entry)
+    local factor = self:getDisplayFactor()
+    local decimals = self:getDisplayDecimals()
 
-    self.summaryKeptText:setText(string.format("Behalten: %s", g_i18n:formatNumber(kept, 0)))
-    self.summaryDistributedText:setText(string.format("Verteilt: %s", g_i18n:formatNumber(distributed, 0)))
-    self.summarySoldText:setText(string.format("Verkauft: %s", g_i18n:formatNumber(sold, 0)))
-    self.summaryConsumedText:setText(string.format("Verbrauch: %s", g_i18n:formatNumber(consumed, 0)))
-    self.summaryRestText:setText(string.format("Rest: %s", g_i18n:formatNumber(rest, 0)))
+    self.summaryKeptText:setText(string.format("Behalten: %s", g_i18n:formatNumber(kept * factor, decimals)))
+    self.summaryDistributedText:setText(string.format("Verteilt: %s", g_i18n:formatNumber(distributed * factor, decimals)))
+    self.summarySoldText:setText(string.format("Verkauft: %s", g_i18n:formatNumber(sold * factor, decimals)))
+    self.summaryConsumedText:setText(string.format("Verbrauch: %s", g_i18n:formatNumber(consumed * factor, decimals)))
+    self.summaryRestText:setText(string.format("Rest: %s", g_i18n:formatNumber(rest * factor, decimals)))
     PihProductionOverviewFrame.setValueTextColor(self.summaryRestText, rest)
 
+    -- Flächenbedarf bezieht sich immer aufs Jahr, unabhängig von der gewählten Zeiteinheit
     local literPerSqm = entry.isFruit and PihProductionOverviewFrame.getFruitLiterPerSqm(entry.fillTypeId) or nil
     if literPerSqm ~= nil and literPerSqm > 0 then
         local yearlyDemand = math.max(0, -rest) * 12
@@ -231,7 +332,7 @@ function PihProductionOverviewFrame:populateCellForItemInSection(list, section, 
         local entry = self.sections[section][index]
         cell:getAttribute("title"):setText(entry.title)
         local valueText = cell:getAttribute("value")
-        valueText:setText(g_i18n:formatNumber(entry.rest, 0))
+        valueText:setText(g_i18n:formatNumber(entry.rest * self:getDisplayFactor(), self:getDisplayDecimals()))
         PihProductionOverviewFrame.setValueTextColor(valueText, entry.rest)
     elseif list == self.detailList then
         local detail = self.detailSections[section][index]
@@ -248,7 +349,7 @@ function PihProductionOverviewFrame:populateCellForItemInSection(list, section, 
             end
         end
         cell:getAttribute("title"):setText(title)
-        cell:getAttribute("value"):setText(g_i18n:formatNumber(detail.activeAmount, 0))
+        cell:getAttribute("value"):setText(g_i18n:formatNumber(detail.activeAmount * self:getDisplayFactor(), self:getDisplayDecimals()))
         if detail.alternativeForFillTypeTitle ~= nil then
             cell:getAttribute("title"):setTextColor(1, 0.6, 0, 1)
             cell:getAttribute("value"):setTextColor(1, 0.6, 0, 1)
