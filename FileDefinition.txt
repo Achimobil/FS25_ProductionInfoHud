@@ -13,3 +13,4 @@ FS19_MapObjectsHider
 .vscode
 .claude
 *.code-workspace
+.luarc.json
