@@ -46,7 +46,7 @@ function PihProductionOverviewFrame:initialize()
     }
     self.toggleModeButtonInfo = {
         inputAction = InputAction.MENU_ACTIVATE,
-        text = "Zeit umschalten",
+        text = g_i18n:getText("pih_toggleModeButton"),
         callback = function()
             self:onButtonToggleMode()
         end
@@ -71,13 +71,13 @@ end
 -- Beschriftung der aktuell gewählten Zeiteinheit
 function PihProductionOverviewFrame:getModeLabel()
     if self.displayMode == PihProductionOverviewFrame.MODE_HOUR then
-        return "pro Stunde"
+        return g_i18n:getText("pih_mode_hour")
     elseif self.displayMode == PihProductionOverviewFrame.MODE_DAY then
-        return "pro Tag"
+        return g_i18n:getText("pih_mode_day")
     elseif self.displayMode == PihProductionOverviewFrame.MODE_YEAR then
-        return "pro Jahr"
+        return g_i18n:getText("pih_mode_year")
     end
-    return "pro Monat"
+    return g_i18n:getText("pih_mode_month")
 end
 
 -- Umrechnungsfaktor von unserem intern gespeicherten Monatswert auf die aktuelle Zeiteinheit
@@ -101,7 +101,7 @@ function PihProductionOverviewFrame:getDisplayDecimals()
 end
 
 function PihProductionOverviewFrame:updateTitle()
-    self.dialogTitleText:setText(string.format("Produktionsverbrauch (%s)", self:getModeLabel()))
+    self.dialogTitleText:setText(string.format(g_i18n:getText("pih_dialogTitle"), self:getModeLabel()))
 end
 
 function PihProductionOverviewFrame:onButtonToggleMode()
@@ -237,11 +237,11 @@ function PihProductionOverviewFrame:updateSummaryDisplay(entry)
     local factor = self:getDisplayFactor()
     local decimals = self:getDisplayDecimals()
 
-    self.summaryKeptText:setText(string.format("Behalten: %s", g_i18n:formatNumber(kept * factor, decimals)))
-    self.summaryDistributedText:setText(string.format("Verteilt: %s", g_i18n:formatNumber(distributed * factor, decimals)))
-    self.summarySoldText:setText(string.format("Verkauft: %s", g_i18n:formatNumber(sold * factor, decimals)))
-    self.summaryConsumedText:setText(string.format("Verbrauch: %s", g_i18n:formatNumber(consumed * factor, decimals)))
-    self.summaryRestText:setText(string.format("Rest: %s", g_i18n:formatNumber(rest * factor, decimals)))
+    self.summaryKeptText:setText(string.format("%s: %s", g_i18n:getText("pih_word_kept"), g_i18n:formatNumber(kept * factor, decimals)))
+    self.summaryDistributedText:setText(string.format("%s: %s", g_i18n:getText("pih_word_distributed"), g_i18n:formatNumber(distributed * factor, decimals)))
+    self.summarySoldText:setText(string.format("%s: %s", g_i18n:getText("pih_word_sold"), g_i18n:formatNumber(sold * factor, decimals)))
+    self.summaryConsumedText:setText(string.format("%s: %s", g_i18n:getText("pih_word_consumed"), g_i18n:formatNumber(consumed * factor, decimals)))
+    self.summaryRestText:setText(string.format("%s: %s", g_i18n:getText("pih_word_rest"), g_i18n:formatNumber(rest * factor, decimals)))
     PihProductionOverviewFrame.setValueTextColor(self.summaryRestText, rest)
 
     -- Flächenbedarf bezieht sich immer aufs Jahr, unabhängig von der gewählten Zeiteinheit
@@ -249,7 +249,7 @@ function PihProductionOverviewFrame:updateSummaryDisplay(entry)
     if literPerSqm ~= nil and literPerSqm > 0 then
         local yearlyDemand = math.max(0, -rest) * 12
         local areaNeeded = yearlyDemand / (literPerSqm * 10000)
-        self.summaryAreaText:setText(string.format("Benötigte Fläche pro Jahr: %s ha", g_i18n:formatNumber(areaNeeded, 2)))
+        self.summaryAreaText:setText(string.format(g_i18n:getText("pih_summary_areaNeeded"), g_i18n:formatNumber(areaNeeded, 2)))
     else
         self.summaryAreaText:setText("")
     end
@@ -304,15 +304,15 @@ end
 function PihProductionOverviewFrame:getTitleForSectionHeader(list, section)
     if list == self.overviewList then
         if section == PihProductionOverviewFrame.SECTION_FRUITS then
-            return "Feldfrüchte"
+            return g_i18n:getText("pih_section_fruits")
         else
-            return "Andere Filltypes"
+            return g_i18n:getText("pih_section_others")
         end
     elseif list == self.detailList then
         if section == PihProductionOverviewFrame.SECTION_PRODUCERS then
-            return "Produzenten"
+            return g_i18n:getText("pih_section_producers")
         else
-            return "Verbraucher"
+            return g_i18n:getText("pih_section_consumers")
         end
     end
     return nil
@@ -352,13 +352,13 @@ function PihProductionOverviewFrame:populateCellForItemInSection(list, section, 
         local title = detail.productionName .. " - " .. detail.productionLineName
         if section == PihProductionOverviewFrame.SECTION_PRODUCERS then
             if detail.outputMode == ProductionPoint.OUTPUT_MODE.DIRECT_SELL then
-                title = title .. " (Verkauft)"
+                title = string.format("%s (%s)", title, g_i18n:getText("pih_word_sold"))
             elseif detail.outputMode == ProductionPoint.OUTPUT_MODE.AUTO_DELIVER then
-                title = title .. " (Verteilt)"
+                title = string.format("%s (%s)", title, g_i18n:getText("pih_word_distributed"))
             elseif ProductionPoint.OUTPUT_MODE.STORE ~= nil and detail.outputMode == ProductionPoint.OUTPUT_MODE.STORE then
-                title = title .. " (Eingelagert)"
+                title = string.format("%s (%s)", title, g_i18n:getText("pih_word_stored"))
             else
-                title = title .. " (Behalten)"
+                title = string.format("%s (%s)", title, g_i18n:getText("pih_word_kept"))
             end
         end
         cell:getAttribute("title"):setText(title)

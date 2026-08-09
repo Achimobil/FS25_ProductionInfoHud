@@ -23,7 +23,7 @@
         <Text profile="pih_summaryText" id="summaryConsumedText" position="514px -166px"/>
         <Text profile="pih_summaryText" id="summaryRestText" position="514px -188px"/>
         <Text profile="pih_summaryText" id="summaryAreaText" position="514px -210px"/>
-        <Text profile="pih_legendText" text="Orange = Verbrauch über Konverter (Alternative)" position="514px -232px"/>
+        <Text profile="pih_legendText" text="$l10n_pih_legend_converterAlternative" position="514px -232px"/>
 
         <SmoothList profile="pih_detailList" id="detailList" listSectionHeader="detailSection">
             <ListItem profile="pih_detailListItem">
