@@ -939,7 +939,11 @@ function ProductionInfoHud.UpdateProductionNeedings()
     end
 
 --     ProductionInfoHud.DebugTable("ProductionNeedings", newProductionNeedings, 5);
-    exportTest(newProductionNeedings);
+    if ProductionInfoHud.Debug then
+        exportTest(newProductionNeedings);
+    end
+
+    return newProductionNeedings;
 end
 
 
@@ -950,6 +954,7 @@ function ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, 
         newProductionNeeding = {};
 --         newProductionNeeding.fillTypeId = fillTypeId;
         newProductionNeeding.title = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillTypeId);
+        newProductionNeeding.isFruit = g_fruitTypeManager:getFruitTypeIndexByFillTypeIndex(fillTypeId) ~= nil;
         newProductionNeeding.maxActiveAmount = 0; -- Benötigte Menge pro Monat für aktive Produktionen, wenn dieser Filltype benutzt wird
         newProductionNeeding.minActiveAmount = 0; -- Benötigte Menge pro Monat für aktive Produktionen, wenn alternative Filltypes benutzt werden
         newProductionNeeding.maxTotalAmount = 0; -- Benötigte Menge pro Monat für alle Produktionen, wenn dieser Filltype benutzt wird
