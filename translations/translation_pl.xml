@@ -16,6 +16,25 @@
         <text name="pih_productionFilter" text="Pokaż/Ukryj produkcje (lewy przycisk myszki)" />
         <text name="pih_timeFilterOne" text="Filtr czasu brak / miesiąc (lewy przycisk myszki)" />
         <text name="pih_timeFilterTwo" text="Filtr czasu brak / 24h / miesiąc (lewy przycisk myszki)" />
-        <text name="pih_autoDeliverFilter" text="Show/hide distributed products (left-click to toggle)" />
+        <text name="pih_autoDeliverFilter" text="Pokaż/Ukryj rozdystrybuowane produkty (lewy przycisk myszki)" />
+
+        <text name="pih_dialogTitle" text="Zużycie produkcji (%s)" />
+        <text name="pih_mode_hour" text="na godzinę" />
+        <text name="pih_mode_day" text="na dzień" />
+        <text name="pih_mode_month" text="na miesiąc" />
+        <text name="pih_mode_year" text="na rok" />
+        <text name="pih_section_fruits" text="Uprawy polowe" />
+        <text name="pih_section_others" text="Inne typy produktów" />
+        <text name="pih_section_producers" text="Producenci" />
+        <text name="pih_section_consumers" text="Konsumenci" />
+        <text name="pih_word_kept" text="Zachowano" />
+        <text name="pih_word_distributed" text="Rozdystrybuowano" />
+        <text name="pih_word_sold" text="Sprzedano" />
+        <text name="pih_word_consumed" text="Zużycie" />
+        <text name="pih_word_stored" text="Zmagazynowano" />
+        <text name="pih_word_rest" text="Pozostało" />
+        <text name="pih_summary_areaNeeded" text="Wymagana powierzchnia rocznie: %s ha" />
+        <text name="pih_legend_converterAlternative" text="Pomarańczowy = zużycie przez konwerter (alternatywa)" />
+        <text name="pih_toggleModeButton" text="Zmień jednostkę czasu" />
     </texts>
 </l10n>

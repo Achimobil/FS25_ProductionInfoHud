@@ -17,5 +17,24 @@
         <text name="pih_timeFilterOne" text="Time filter none / month (left-click to toggle)" />
         <text name="pih_timeFilterTwo" text="Time filter none / 24h / month (left-click to toggle)" />
         <text name="pih_autoDeliverFilter" text="Show/hide distributed products (left-click to toggle)" />
+
+        <text name="pih_dialogTitle" text="Production consumption (%s)" />
+        <text name="pih_mode_hour" text="per hour" />
+        <text name="pih_mode_day" text="per day" />
+        <text name="pih_mode_month" text="per month" />
+        <text name="pih_mode_year" text="per year" />
+        <text name="pih_section_fruits" text="Field crops" />
+        <text name="pih_section_others" text="Other fill types" />
+        <text name="pih_section_producers" text="Producers" />
+        <text name="pih_section_consumers" text="Consumers" />
+        <text name="pih_word_kept" text="Kept" />
+        <text name="pih_word_distributed" text="Distributed" />
+        <text name="pih_word_sold" text="Sold" />
+        <text name="pih_word_consumed" text="Consumption" />
+        <text name="pih_word_stored" text="Stored" />
+        <text name="pih_word_rest" text="Remaining" />
+        <text name="pih_summary_areaNeeded" text="Required area per year: %s ha" />
+        <text name="pih_legend_converterAlternative" text="Orange = Consumption via converter (alternative)" />
+        <text name="pih_toggleModeButton" text="Switch time unit" />
     </texts>
 </l10n>

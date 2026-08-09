@@ -114,6 +114,8 @@ Changelog
         <sourceFile filename="scripte_PIH/PIH_Display_MouseKeyEventsBox.lua"/>
         <sourceFile filename="scripte_PIH/xml/PIH_Display_DrawBox.lua"/>
         <sourceFile filename="scripte_PIH/xml/PIH_Display_XmlBox.lua"/>
+        <sourceFile filename="scripts/gui/PIH_ProductionOverviewFrame.lua"/>
+        <sourceFile filename="scripts/gui/PIH_InGameMenuExtension.lua"/>
     </extraSourceFiles>
 
     <l10n filenamePrefix="translations/translation" />
