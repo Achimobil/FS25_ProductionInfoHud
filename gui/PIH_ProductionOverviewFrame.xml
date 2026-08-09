@@ -1,21 +1,50 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <GUI name="pihProductionOverviewFrame">
     <GuiElement profile="fs25_menuContentContainer">
-        <GuiElement profile="fs25_subCategoryListContainer" id="overviewListBox">
-            <Bitmap profile="fs25_subCategoryStartClipper" name="startClipper"/>
-            <Bitmap profile="fs25_subCategoryStopClipper" name="endClipper"/>
-            <SmoothList profile="fs25_subCategoryList" id="overviewList" startClipperElementName="startClipper" endClipperElementName="endClipper" listSectionHeader="section">
-                <ListItem profile="fs25_subCategoryListItem">
-                    <Text profile="fs25_textDefault" name="title"/>
-                    <Text profile="fs25_textDefault" name="value" textAlignment="right"/>
-                </ListItem>
-                <ListItem profile="fs25_subCategoryListSectionHeader" name="section">
-                    <Text profile="fs25_subCategoryListSectionHeaderTitle" name="title"/>
-                </ListItem>
-            </SmoothList>
-            <ThreePartBitmap profile="fs25_subCategoryListSliderBox">
-                <Slider profile="fs25_listSlider" dataElementId="overviewList"/>
-            </ThreePartBitmap>
-        </GuiElement>
+        <SmoothList profile="pih_overviewList" id="overviewList" listSectionHeader="section">
+            <ListItem profile="fs25_pricesProductListItem">
+                <Text profile="fs25_pricesProductListItemName" name="title"/>
+                <Text profile="fs25_pricesProductListItemStorage" name="value"/>
+            </ListItem>
+            <ListItem profile="fs25_pricesProductListSection" name="section">
+                <Text profile="fs25_pricesProductListSectionTitle" name="title"/>
+            </ListItem>
+        </SmoothList>
+        <ThreePartBitmap profile="fs25_pricesProductListSliderBox">
+            <Slider profile="fs25_listSlider" dataElementId="overviewList"/>
+        </ThreePartBitmap>
+
+        <SmoothList profile="pih_detailList" id="detailList" listSectionHeader="detailSection">
+            <ListItem profile="fs25_pricesPriceListItem">
+                <Text profile="fs25_pricesPriceListItemName" name="title"/>
+                <Text profile="pih_priceListItemValue" name="value"/>
+            </ListItem>
+            <ListItem profile="fs25_pricesProductListSection" name="detailSection">
+                <Text profile="fs25_pricesProductListSectionTitle" name="title"/>
+            </ListItem>
+        </SmoothList>
+        <ThreePartBitmap profile="pih_detailListSliderBox">
+            <Slider profile="fs25_listSlider" dataElementId="detailList"/>
+        </ThreePartBitmap>
     </GuiElement>
+
+    <GUIProfiles>
+        <Profile name="pih_priceListItemValue" extends="fs25_textDarkHighlight" with="anchorStretchingYRight">
+            <position value="-62px 0px"/>
+            <textAlignment value="right"/>
+        </Profile>
+        <Profile name="pih_overviewList" extends="fs25_pricesProductList" with="anchorStretchingYLeft">
+            <width value="396px"/>
+            <position value="25px -56px"/>
+        </Profile>
+        <Profile name="pih_detailList" extends="fs25_pricesPriceList" with="anchorStretchingYRight">
+            <width value="820px"/>
+            <absoluteSizeOffset value="0px 56px"/>
+            <position value="-63px -56px"/>
+        </Profile>
+        <Profile name="pih_detailListSliderBox" extends="fs25_pricesPriceSliderBox" with="anchorStretchingYRight">
+            <absoluteSizeOffset value="0px 56px"/>
+            <position value="-41px -56px"/>
+        </Profile>
+    </GUIProfiles>
 </GUI>

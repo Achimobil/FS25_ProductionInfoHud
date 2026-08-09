@@ -952,7 +952,7 @@ function ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, 
     local newProductionNeeding = newProductionNeedings[fillTypeId];
     if newProductionNeedings[fillTypeId] == nil then
         newProductionNeeding = {};
---         newProductionNeeding.fillTypeId = fillTypeId;
+        newProductionNeeding.fillTypeId = fillTypeId;
         newProductionNeeding.title = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillTypeId);
         newProductionNeeding.isFruit = g_fruitTypeManager:getFruitTypeIndexByFillTypeIndex(fillTypeId) ~= nil;
         newProductionNeeding.maxActiveAmount = 0; -- Benötigte Menge pro Monat für aktive Produktionen, wenn dieser Filltype benutzt wird
