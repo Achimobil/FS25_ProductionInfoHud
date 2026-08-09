@@ -6,8 +6,8 @@
         <SmoothList profile="pih_overviewList" id="overviewList" listSectionHeader="section">
             <ListItem profile="pih_overviewListItem">
                 <Bitmap profile="pih_listItemIcon" name="icon"/>
-                <Text profile="fs25_pricesProductListItemName" name="title"/>
-                <Text profile="fs25_pricesProductListItemStorage" name="value"/>
+                <Text profile="fs25_pricesProductListItemName"     name="title"/>
+                <Text profile="fs25_pricesProductListItemStorage"  name="value"/>
             </ListItem>
             <ListItem profile="fs25_pricesProductListSection" name="section">
                 <Text profile="fs25_pricesProductListSectionTitle" name="title"/>
@@ -17,19 +17,19 @@
             <Slider profile="fs25_listSlider" dataElementId="overviewList"/>
         </ThreePartBitmap>
 
-        <Text profile="pih_summaryText" id="summaryKeptText" position="514px -100px"/>
+        <Text profile="pih_summaryText" id="summaryKeptText"        position="514px -100px"/>
         <Text profile="pih_summaryText" id="summaryDistributedText" position="514px -122px"/>
-        <Text profile="pih_summaryText" id="summarySoldText" position="514px -144px"/>
-        <Text profile="pih_summaryText" id="summaryConsumedText" position="514px -166px"/>
-        <Text profile="pih_summaryText" id="summaryRestText" position="514px -188px"/>
-        <Text profile="pih_summaryText" id="summaryAreaText" position="514px -210px"/>
+        <Text profile="pih_summaryText" id="summarySoldText"        position="514px -144px"/>
+        <Text profile="pih_summaryText" id="summaryConsumedText"    position="514px -166px"/>
+        <Text profile="pih_summaryText" id="summaryRestText"        position="514px -188px"/>
+        <Text profile="pih_summaryText" id="summaryAreaText"        position="514px -210px"/>
         <Text profile="pih_legendText" text="$l10n_pih_legend_converterAlternative" position="514px -232px"/>
 
         <SmoothList profile="pih_detailList" id="detailList" listSectionHeader="detailSection">
             <ListItem profile="pih_detailListItem">
                 <Bitmap profile="pih_detailListIcon" name="icon"/>
-                <Text profile="pih_detailListItemName" name="title"/>
-                <Text profile="pih_priceListItemValue" name="value"/>
+                <Text profile="pih_detailListItemName"             name="title"/>
+                <Text profile="pih_priceListItemValue"             name="value"/>
             </ListItem>
             <ListItem profile="fs25_pricesProductListSection" name="detailSection">
                 <Text profile="fs25_pricesProductListSectionTitle" name="title"/>
