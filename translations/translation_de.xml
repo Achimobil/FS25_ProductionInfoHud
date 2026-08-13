@@ -11,13 +11,14 @@
         <text name="input_TOGGLE_GUI_on"       text="PIH anzeigen"/>
         <text name="input_TOGGLE_GUI_off"      text="PIH ausblenden"/>
 
-        <text name="pih_infoDisplay_textSize" text="*TEXT GRÖSSE* %s (Mausklick Links/Rechts)"/>
-        <text name="pih_animalFilter"         text="Tiere anzeigen/ausblenden (Linksklick zum Umschalten)"/>
-        <text name="pih_productionFilter"     text="Produktionen anzeigen/ausblenden (Linksklick zum Umschalten)"/>
-        <text name="pih_timeFilterOne"        text="Zeitfilter keiner / Monat (Linksklick zum Umschalten)"/>
-        <text name="pih_timeFilterTwo"        text="Zeitfilter keiner / 24h / Monat (Linksklick zum Umschalten)"/>
-        <text name="pih_autoDeliverFilter"    text="Verteilte Produkte anzeigen/ausblenden (Linksklick zum Umschalten)"/>
-        <text name="pih_loadedCargoFilter"    text="Nur Abladeorte für aktuell geladene Ware anzeigen (Linksklick zum Umschalten)"/>
+        <text name="pih_infoDisplay_textSize"    text="*TEXT GRÖSSE* %s (Mausklick Links/Rechts)"/>
+        <text name="pih_animalFilter"            text="Tiere anzeigen/ausblenden (Linksklick zum Umschalten)"/>
+        <text name="pih_productionFilter"        text="Produktionen anzeigen/ausblenden (Linksklick zum Umschalten)"/>
+        <text name="pih_timeFilterOne"           text="Zeitfilter keiner / Monat (Linksklick zum Umschalten)"/>
+        <text name="pih_timeFilterTwo"           text="Zeitfilter keiner / 24h / Monat (Linksklick zum Umschalten)"/>
+        <text name="pih_autoDeliverFilter"       text="Verteilte Produkte anzeigen/ausblenden (Linksklick zum Umschalten)"/>
+        <text name="pih_loadedCargoFilter"       text="Nur Abladeorte für aktuell geladene Ware anzeigen (Linksklick zum Umschalten)"/>
+        <text name="pih_loadedCargoFilterActive" text="Gefiltert: nur Abladeorte für geladene Ware"/>
 
         <text name="pih_dialogTitle"                 text="Produktionsverbrauch (%s)"/>
         <text name="pih_mode_hour"                   text="pro Stunde"/>

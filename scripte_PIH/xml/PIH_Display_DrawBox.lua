@@ -8,6 +8,7 @@ function PIH_Display_DrawBox.setBox(args)
     if ProductionInfoHud.CurrentProductionItems == nil then return;end;
 
     local currentProductionItems = {};
+    local isLoadedCargoFilterActive = false;
     if box.ownTable.fillTypeFilter ~= nil then
         -- summary item erstellen
         local sumItem = {};
@@ -49,10 +50,12 @@ function PIH_Display_DrawBox.setBox(args)
         local loadedFillTypes = nil;
         if box.ownTable.LoadedCargoFilter then
             loadedFillTypes = ProductionInfoHud.getCurrentlyLoadedFillTypes();
+
             if next(loadedFillTypes) == nil then
                 loadedFillTypes = nil; -- nichts geladen -> Filter ignorieren statt alles auszublenden
             end
         end
+        isLoadedCargoFilterActive = loadedFillTypes ~= nil;
 
         for _, productionItem in pairs(ProductionInfoHud.CurrentProductionItems) do
             local skipItem = false;
@@ -143,6 +146,7 @@ function PIH_Display_DrawBox.setBox(args)
     nextPosY = nextPosY+(h)-(box.ownTable.lineHeight)-difH;
     box.screen.bounds[4] = #currentProductionItems; -- +1 for Imaginäre Line wenn untergruppe an ist (viewAmountStorages/viewBestPriceStations etc.
     if box.viewExtraLine then box.screen.bounds[4] = box.screen.bounds[4]+1;end;
+    if isLoadedCargoFilterActive then box.screen.bounds[4] = box.screen.bounds[4]+1;end; -- +1 für den nicht-scrollenden Cargo-Filter-Hinweis
 
 
     function setInfoHelpText(txt, maxLine, txtColor) --global or mod
@@ -313,6 +317,18 @@ function PIH_Display_DrawBox.setBox(args)
 
         if box.viewExtraLine and not box.isSetting then viewExtraLine();elseif box.viewExtraLine and box.isSetting then viewExtraLineSetting();end;
         --viewExtraLine--
+
+        --loadedCargoFilterHint--
+        if isLoadedCargoFilterActive and nextPosY >= y then
+            local hintText = g_currentMission.hlUtils.getTxtToWidth(tostring(ProductionInfoHud.i18n:getText("pih_loadedCargoFilterActive")), size, w-(difW*2), false, ".");
+            setTextBold(true);
+            setTextColor(unpack(g_currentMission.hlUtils.getColor(box.overlays.color.on, true)));
+            renderText(nextLeftPosX, nextPosY, size, tostring(hintText));
+            setTextBold(false);
+            setTextColor(1, 1, 1, 1);
+            nextPosY = nextPosY-box.ownTable.lineHeight;
+        end;
+        --loadedCargoFilterHint--
 
         local color = g_currentMission.hlUtils.getColor(box.overlays.color.text, true);
         local colorOn = g_currentMission.hlUtils.getColor(box.overlays.color.on, true);

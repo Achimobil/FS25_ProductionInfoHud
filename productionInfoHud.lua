@@ -282,7 +282,7 @@ function ProductionInfoHud:refreshProductionsTable()
     ProductionInfoHud.DebugText("refreshProductionsTable: %.2f ms (%d Items)", (getTimeSec() - startTime) * 1000, #myProductionItems);
 end
 
---- Get the fillTypeIds currently loaded (fillLevel > 0) in the vehicle the player is sitting in and all its attached implements/trailers
+--- Get the fillTypeIds currently loaded (fillLevel > 0) in the vehicle the player is sitting in and all its attached implements/trailers, inklusive mit Spanngurten befestigter Paletten. Betriebsstoffe wie Diesel/AdBlue/Luft werden nicht mitgezählt.
 -- @return table set of fillTypeId -> true
 function ProductionInfoHud.getCurrentlyLoadedFillTypes()
     local loadedFillTypes = {};
@@ -295,24 +295,14 @@ function ProductionInfoHud.getCurrentlyLoadedFillTypes()
         return loadedFillTypes;
     end
 
-    local rootVehicle = vehicle:getRootVehicle();
-    for _, childVehicle in ipairs(rootVehicle:getChildVehicles()) do
-        if childVehicle.spec_fillUnit ~= nil then
-            -- Betriebsstoff-FillUnits (Diesel/AdBlue/Strom/Methan) sind keine Fracht und müssen ausgeschlossen werden
-            local propellantFillUnitIndices = {};
-            if childVehicle.spec_motorized ~= nil then
-                for _, fillUnitIndex in ipairs(childVehicle.spec_motorized.propellantFillUnitIndices) do
-                    propellantFillUnitIndices[fillUnitIndex] = true;
-                end
-            end
-
-            for fillUnitIndex, fillUnit in pairs(childVehicle:getFillUnits()) do
-                if fillUnit.fillLevel > 0 and fillUnit.fillType ~= FillType.UNKNOWN and not propellantFillUnitIndices[fillUnitIndex] then
-                    loadedFillTypes[fillUnit.fillType] = true;
-                end
-            end
+    local collector = {};
+    function collector.addFillLevel(_, fillType, fillLevel)
+        if fillLevel ~= nil and fillLevel > 0 and fillType ~= nil and fillType ~= FillType.UNKNOWN then
+            loadedFillTypes[fillType] = true;
         end
     end
+
+    vehicle:getRootVehicle():getFillLevelInformation(collector);
 
     return loadedFillTypes;
 end

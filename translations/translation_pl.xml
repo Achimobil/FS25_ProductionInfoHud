@@ -11,13 +11,14 @@
         <text name="input_TOGGLE_GUI_on"       text="Pokaż HUD Informacji Produkcji"/>
         <text name="input_TOGGLE_GUI_off"      text="Ukryj HUD Informacji Produkcji"/>
 
-        <text name="pih_infoDisplay_textSize" text="*ROZMIAR TEKSTU* %s (prawy/lewy przycisk myszki)"/>
-        <text name="pih_animalFilter"         text="Pokaż/Ukryj zwierzęta (lewy przycisk myszki)"/>
-        <text name="pih_productionFilter"     text="Pokaż/Ukryj produkcje (lewy przycisk myszki)"/>
-        <text name="pih_timeFilterOne"        text="Filtr czasu brak / miesiąc (lewy przycisk myszki)"/>
-        <text name="pih_timeFilterTwo"        text="Filtr czasu brak / 24h / miesiąc (lewy przycisk myszki)"/>
-        <text name="pih_autoDeliverFilter"    text="Pokaż/Ukryj rozdystrybuowane produkty (lewy przycisk myszki)"/>
-        <text name="pih_loadedCargoFilter"    text="Pokaż tylko miejsca rozładunku dla aktualnie załadowanego towaru (lewy przycisk myszki)"/>
+        <text name="pih_infoDisplay_textSize"    text="*ROZMIAR TEKSTU* %s (prawy/lewy przycisk myszki)"/>
+        <text name="pih_animalFilter"            text="Pokaż/Ukryj zwierzęta (lewy przycisk myszki)"/>
+        <text name="pih_productionFilter"        text="Pokaż/Ukryj produkcje (lewy przycisk myszki)"/>
+        <text name="pih_timeFilterOne"           text="Filtr czasu brak / miesiąc (lewy przycisk myszki)"/>
+        <text name="pih_timeFilterTwo"           text="Filtr czasu brak / 24h / miesiąc (lewy przycisk myszki)"/>
+        <text name="pih_autoDeliverFilter"       text="Pokaż/Ukryj rozdystrybuowane produkty (lewy przycisk myszki)"/>
+        <text name="pih_loadedCargoFilter"       text="Pokaż tylko miejsca rozładunku dla aktualnie załadowanego towaru (lewy przycisk myszki)"/>
+        <text name="pih_loadedCargoFilterActive" text="Przefiltrowano: tylko miejsca rozładunku dla załadowanego towaru"/>
 
         <text name="pih_dialogTitle"                 text="Zużycie produkcji (%s)"/>
         <text name="pih_mode_hour"                   text="na godzinę"/>
