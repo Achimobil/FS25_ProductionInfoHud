@@ -254,6 +254,8 @@ function ProductionInfoHud:refreshProductionsTable()
     local farmId = g_currentMission:getFarmId();
     local myProductionItems = {}
 
+    -- TEMP-DEBUG für #28: aufgeschlüsselte Zeitmessung, um zu sehen wo innerhalb der 5ms die Zeit hingeht
+    local productionPointsStartTime = getTimeSec();
     local myProductionPoints = self.chainManager:getProductionPointsForFarmId(farmId);
     for _, productionPoint in pairs(myProductionPoints) do
         -- hiddenOnUI is only available on GTX ExtendedProductionPoint and the production should only be added when this is nil or false
@@ -261,25 +263,37 @@ function ProductionInfoHud:refreshProductionsTable()
             self:AddProductionPoint(myProductionItems, productionPoint);
         end
     end
+    local productionPointsTime = (getTimeSec() - productionPointsStartTime) * 1000;
 
+    local factoriesStartTime = getTimeSec();
     local myFactories = self.chainManager:getFactoriesForFarmId(farmId);
     for _, factory in pairs(myFactories) do
         self:AddFactory(myProductionItems, factory);
     end
+    local factoriesTime = (getTimeSec() - factoriesStartTime) * 1000;
 
+    local husbandriesStartTime = getTimeSec();
     local myHusbandries = g_currentMission.husbandrySystem:getPlaceablesByFarm(farmId);
     for _, husbandry in pairs(myHusbandries) do
         self:AddHusbandry(myProductionItems, husbandry);
     end
+    local husbandriesTime = (getTimeSec() - husbandriesStartTime) * 1000;
 
+    local sortStartTime = getTimeSec();
     table.sort(myProductionItems, ProductionInfoHud.compPrductionTable)
+    local sortTime = (getTimeSec() - sortStartTime) * 1000;
 
     ProductionInfoHud.CurrentProductionItems = myProductionItems;
 
 --     ProductionInfoHud.DebugTable("CurrentProductionItems", ProductionInfoHud.CurrentProductionItems, 1);
 --     ProductionInfoHud.DebugTable("myProductionPoints", myProductionPoints);
 
-    ProductionInfoHud.DebugText("refreshProductionsTable: %.2f ms (%d Items)", (getTimeSec() - startTime) * 1000, #myProductionItems);
+    ProductionInfoHud.DebugText("refreshProductionsTable: %.2f ms total (%d Items) | ProductionPoints: %.2f ms (%d) | Factories: %.2f ms (%d) | Husbandries: %.2f ms (%d) | Sort: %.2f ms",
+        (getTimeSec() - startTime) * 1000, #myProductionItems,
+        productionPointsTime, table.size(myProductionPoints),
+        factoriesTime, table.size(myFactories),
+        husbandriesTime, table.size(myHusbandries),
+        sortTime);
 end
 
 --- Get the fillTypeIds currently loaded (fillLevel > 0) in the vehicle the player is sitting in and all its attached implements/trailers, inklusive mit Spanngurten befestigter Paletten. Betriebsstoffe wie Diesel/AdBlue/Luft werden nicht mitgezählt.
@@ -634,11 +648,17 @@ function ProductionInfoHud:AddProductionPoint(myProductionItems, productionPoint
         productionPointMultiplicator = 1 / #productionPoint.activeProductions;
     end
 
+    -- Name ist pro Produktionspunkt gleich, daher nur ein Mal statt pro FillType berechnen
+    local productionName = productionPoint.owningPlaceable:getName();
+    if productionName ~= nil then
+        productionName = string.gsub(productionName, "%(Leasing%) ", "");
+    end
+
     for fillTypeId, _ in pairs(productionPoint.storage.fillLevels) do
 
         -- item für produktionsliste erstellen. Ein Item pro fillType
         local productionItem = {}
-        productionItem.name = productionPoint.owningPlaceable:getName();
+        productionItem.name = productionName;
         productionItem.fillTypeId = fillTypeId;
         productionItem.productionPerHour = 0; -- negative when more used than produced. calculated on one day per month as giants always does
         productionItem.hoursLeft = nil; -- time until full or empty, nil when not changing
@@ -649,11 +669,6 @@ function ProductionInfoHud:AddProductionPoint(myProductionItems, productionPoint
         productionItem.IsProduction = true;
         productionItem.target = productionPoint;
         productionItem.isAutoDeliver = productionPoint.outputFillTypeIdsAutoDeliver[fillTypeId];
-
-        -- replace the long leasing text
-        if productionItem.name ~= nil then
-            productionItem.name = string.gsub(productionItem.name, "%(Leasing%) ", "");
-        end
 
         -- prüfen ob input type
         if productionPoint.inputFillTypeIds[fillTypeId] ~= nil then

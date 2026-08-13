@@ -27,21 +27,25 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                     end;
                     if args.clickAreaTable.whereClick == "animalFilter_" then
                         box.ownTable.ShowAnimal = not box.ownTable.ShowAnimal;
+                        box.filterCacheDirty = true;
                         box:setUpdateState(true);
                         return;
                     end;
                     if args.clickAreaTable.whereClick == "productionFilter_" then
                         box.ownTable.ShowProduction = not box.ownTable.ShowProduction;
+                        box.filterCacheDirty = true;
                         box:setUpdateState(true);
                         return;
                     end;
                     if args.clickAreaTable.whereClick == "autoDeliverFilter_" then
                         box.ownTable.AutoDeliverFilter = not box.ownTable.AutoDeliverFilter;
+                        box.filterCacheDirty = true;
                         box:setUpdateState(true);
                         return;
                     end;
                     if args.clickAreaTable.whereClick == "loadedCargoFilter_" then
                         box.ownTable.LoadedCargoFilter = not box.ownTable.LoadedCargoFilter;
+                        box.filterCacheDirty = true;
                         box:setUpdateState(true);
                         return;
                     end;
@@ -54,6 +58,7 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                         if box.ownTable.TimeFilter == 4 then
                             box.ownTable.TimeFilter = 1
                         end
+                        box.filterCacheDirty = true;
                         box:setUpdateState(true);
                         return;
                     end;
@@ -73,6 +78,7 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                     else
                         box.ownTable.fillTypeFilter = nil;
                     end;
+                    box.filterCacheDirty = true;
                     return;
                 end;
                 if args.clickAreaTable.whereClick == "nameColumn_" then
@@ -82,6 +88,7 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                     else
                         box.ownTable.nameFilter = nil;
                     end;
+                    box.filterCacheDirty = true;
                     return;
                 end;
             end;
