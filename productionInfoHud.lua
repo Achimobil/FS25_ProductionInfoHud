@@ -14,7 +14,7 @@ Das verändern und wiederöffentlichen, auch in Teilen, ist untersagt und wird a
 ]]
 
 ProductionInfoHud = {}
-ProductionInfoHud.Debug = true;
+ProductionInfoHud.Debug = false;
 ProductionInfoHud.isInit = false;
 ProductionInfoHud.timePast = 0;
 ProductionInfoHud.longestFillTypeTitle = "";
@@ -654,6 +654,27 @@ function ProductionInfoHud:AddProductionPoint(myProductionItems, productionPoint
         productionName = string.gsub(productionName, "%(Leasing%) ", "");
     end
 
+    -- Einmal pro Produktionspunkt statt pro FillType über alle aktiven Produktionen laufen und direkt pro FillType einsortieren
+    -- (gleiche Bedingungen wie vorher: MISSING_INPUTS und DirectSell-Outputs werden nicht mitgezählt)
+    local productionPerHourDeltaByFillType = {};
+    local isInputByFillType = {};
+    local isOutputByFillType = {};
+    for _, production in pairs(productionPoint.activeProductions) do
+        for _, inputItem in pairs(production.inputs) do
+            isInputByFillType[inputItem.type] = true;
+            productionPerHourDeltaByFillType[inputItem.type] = (productionPerHourDeltaByFillType[inputItem.type] or 0) - (production.cyclesPerHour * inputItem.amount * productionPointMultiplicator);
+        end
+
+        if production.status ~= ProductionPoint.PROD_STATUS.MISSING_INPUTS then
+            for _, outputItem in pairs(production.outputs) do
+                if productionPoint.outputFillTypeIdsDirectSell[outputItem.type] == nil then
+                    isOutputByFillType[outputItem.type] = true;
+                    productionPerHourDeltaByFillType[outputItem.type] = (productionPerHourDeltaByFillType[outputItem.type] or 0) + (production.cyclesPerHour * outputItem.amount * productionPointMultiplicator);
+                end
+            end
+        end
+    end
+
     for fillTypeId, _ in pairs(productionPoint.storage.fillLevels) do
 
         -- item für produktionsliste erstellen. Ein Item pro fillType
@@ -689,26 +710,14 @@ function ProductionInfoHud:AddProductionPoint(myProductionItems, productionPoint
 
         productionItem.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillTypeId);
 
-        -- loop through all active productions to see if the fillType is produced or consumed
-        for _, production in pairs(productionPoint.activeProductions) do
-            for _, fillTypeId2 in pairs(production.inputs) do
-                if fillTypeId2.type == fillTypeId then
-                    productionItem.isInput = true;
-                    productionItem.productionPerHour = productionItem.productionPerHour - (production.cyclesPerHour * fillTypeId2.amount * productionPointMultiplicator);
-                end
-            end
-
-            -- outputs nur einbeziehen, wenn inputs alle da sind, also missing inputs state nicht summieren. Kann ja nicht voll laufen ohne Produktion
-            -- Auch die auf direktverkaufen müssen hier ausgeblendet werden
-            if production.status ~= ProductionPoint.PROD_STATUS.MISSING_INPUTS and productionPoint.outputFillTypeIdsDirectSell[fillTypeId] == nil then
-                for _, fillTypeId2 in pairs(production.outputs) do
-                    if fillTypeId2.type == fillTypeId then
-                        productionItem.isOutput = true;
-                        productionItem.productionPerHour = productionItem.productionPerHour + (production.cyclesPerHour * fillTypeId2.amount * productionPointMultiplicator);
-                    end
-                end
-            end
+        -- oben einmal pro Produktionspunkt vorberechnet, siehe productionPerHourDeltaByFillType/isInputByFillType/isOutputByFillType
+        if isInputByFillType[fillTypeId] then
+            productionItem.isInput = true;
         end
+        if isOutputByFillType[fillTypeId] then
+            productionItem.isOutput = true;
+        end
+        productionItem.productionPerHour = productionItem.productionPerHour + (productionPerHourDeltaByFillType[fillTypeId] or 0);
 
         self:AddProductionItemToList(myProductionItems, productionItem);
     end
