@@ -249,6 +249,8 @@ end
 
 ---refresh all the products table
 function ProductionInfoHud:refreshProductionsTable()
+    local startTime = getTimeSec();
+
     local farmId = g_currentMission:getFarmId();
     local myProductionItems = {}
 
@@ -276,11 +278,48 @@ function ProductionInfoHud:refreshProductionsTable()
 
 --     ProductionInfoHud.DebugTable("CurrentProductionItems", ProductionInfoHud.CurrentProductionItems, 1);
 --     ProductionInfoHud.DebugTable("myProductionPoints", myProductionPoints);
+
+    ProductionInfoHud.DebugText("refreshProductionsTable: %.2f ms (%d Items)", (getTimeSec() - startTime) * 1000, #myProductionItems);
+end
+
+--- Get the fillTypeIds currently loaded (fillLevel > 0) in the vehicle the player is sitting in and all its attached implements/trailers
+-- @return table set of fillTypeId -> true
+function ProductionInfoHud.getCurrentlyLoadedFillTypes()
+    local loadedFillTypes = {};
+    if g_localPlayer == nil then
+        return loadedFillTypes;
+    end
+
+    local vehicle = g_localPlayer:getCurrentVehicle();
+    if vehicle == nil then
+        return loadedFillTypes;
+    end
+
+    local rootVehicle = vehicle:getRootVehicle();
+    for _, childVehicle in ipairs(rootVehicle:getChildVehicles()) do
+        if childVehicle.spec_fillUnit ~= nil then
+            -- Betriebsstoff-FillUnits (Diesel/AdBlue/Strom/Methan) sind keine Fracht und müssen ausgeschlossen werden
+            local propellantFillUnitIndices = {};
+            if childVehicle.spec_motorized ~= nil then
+                for _, fillUnitIndex in ipairs(childVehicle.spec_motorized.propellantFillUnitIndices) do
+                    propellantFillUnitIndices[fillUnitIndex] = true;
+                end
+            end
+
+            for fillUnitIndex, fillUnit in pairs(childVehicle:getFillUnits()) do
+                if fillUnit.fillLevel > 0 and fillUnit.fillType ~= FillType.UNKNOWN and not propellantFillUnitIndices[fillUnitIndex] then
+                    loadedFillTypes[fillUnit.fillType] = true;
+                end
+            end
+        end
+    end
+
+    return loadedFillTypes;
 end
 
 ---Add the given husbandry to the list
 -- @param table myProductionItems The list where it will be added to
--- @param Husbandry husbandry What should be added
+-- @param PlaceableHusbandry husbandry What should be added
 function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
 --     ProductionInfoHud.DebugTable("husbandry", husbandry);
 
@@ -528,7 +567,7 @@ end
 
 ---Add the given factory to the list
 -- @param table myProductionItems The list where it will be added to
--- @param Factory factory What should be added
+-- @param PlaceableFactory factory What should be added
 function ProductionInfoHud:AddFactory(myProductionItems, factory)
     for fillTypeId, _ in pairs(factory.spec_factory.storage.fillLevels) do
         -- item für produktionsliste erstellen. Ein Item pro fillType
@@ -657,6 +696,16 @@ function ProductionInfoHud.compPrductionTable(a,b)
         return true;
     end
     return false;
+end
+
+--- Zum Sortieren bei aktivem LoadedCargoFilter: FillTypes gruppieren, innerhalb der Gruppe nach freier Kapazität (wieviel passt noch rein, absteigend)
+function ProductionInfoHud.compProductionTableByFillTypeAndFreeCapacity(a, b)
+    if a.fillTypeId ~= b.fillTypeId then
+        return a.fillTypeId < b.fillTypeId;
+    end
+    local freeCapacityA = (a.capacity or 0) - (a.fillLevel or 0);
+    local freeCapacityB = (b.capacity or 0) - (b.fillLevel or 0);
+    return freeCapacityA > freeCapacityB;
 end
 
 ---Simple check if this is server and not client

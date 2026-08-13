@@ -40,6 +40,11 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                         box:setUpdateState(true);
                         return;
                     end;
+                    if args.clickAreaTable.whereClick == "loadedCargoFilter_" then
+                        box.ownTable.LoadedCargoFilter = not box.ownTable.LoadedCargoFilter;
+                        box:setUpdateState(true);
+                        return;
+                    end;
                     if args.clickAreaTable.whereClick == "timeFilter_" then
                         box.ownTable.TimeFilter = box.ownTable.TimeFilter + 1;
                         if box.ownTable.TimeFilter == 2 and g_currentMission.environment.daysPerPeriod == 1 then

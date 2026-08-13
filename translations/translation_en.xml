@@ -3,38 +3,39 @@
     <translationContributors>Achimobil, deepl.com</translationContributors>
     <texts>
         <text name="input_HL_ONOFFMOUSECURSOR" text="HL Mouse on/off"/>
-        <text name="Empty" text="Empty"/>
-        <text name="Full" text="Full"/>
-        <text name="StorageMissing" text="Missing"/>
-        <text name="OnlyPallets" text="Pallets"/>
-        <text name="input_PIH_ONOFFDISPLAY" text="PIH: Switch display"/>
-        <text name="input_TOGGLE_GUI_on" text="Show PIH"/>
-        <text name="input_TOGGLE_GUI_off" text="Hide PIH"/>
+        <text name="Empty"                     text="Empty"/>
+        <text name="Full"                      text="Full"/>
+        <text name="StorageMissing"            text="Missing"/>
+        <text name="OnlyPallets"               text="Pallets"/>
+        <text name="input_PIH_ONOFFDISPLAY"    text="PIH: Switch display"/>
+        <text name="input_TOGGLE_GUI_on"       text="Show PIH"/>
+        <text name="input_TOGGLE_GUI_off"      text="Hide PIH"/>
 
-        <text name="pih_infoDisplay_textSize" text="*TEXT SIZE* %s (mouse click left/right)" />
-        <text name="pih_animalFilter" text="Show/hide animals (left-click to switch)" />
-        <text name="pih_productionFilter" text="Show/hide productions (left-click to switch)" />
-        <text name="pih_timeFilterOne" text="Time filter none / month (left-click to toggle)" />
-        <text name="pih_timeFilterTwo" text="Time filter none / 24h / month (left-click to toggle)" />
-        <text name="pih_autoDeliverFilter" text="Show/hide distributed products (left-click to toggle)" />
+        <text name="pih_infoDisplay_textSize" text="*TEXT SIZE* %s (mouse click left/right)"/>
+        <text name="pih_animalFilter"         text="Show/hide animals (left-click to switch)"/>
+        <text name="pih_productionFilter"     text="Show/hide productions (left-click to switch)"/>
+        <text name="pih_timeFilterOne"        text="Time filter none / month (left-click to toggle)"/>
+        <text name="pih_timeFilterTwo"        text="Time filter none / 24h / month (left-click to toggle)"/>
+        <text name="pih_autoDeliverFilter"    text="Show/hide distributed products (left-click to toggle)"/>
+        <text name="pih_loadedCargoFilter"    text="Show only delivery points for currently loaded cargo (left-click to toggle)"/>
 
-        <text name="pih_dialogTitle" text="Production consumption (%s)" />
-        <text name="pih_mode_hour" text="per hour" />
-        <text name="pih_mode_day" text="per day" />
-        <text name="pih_mode_month" text="per month" />
-        <text name="pih_mode_year" text="per year" />
-        <text name="pih_section_fruits" text="Field crops" />
-        <text name="pih_section_others" text="Other fill types" />
-        <text name="pih_section_producers" text="Producers" />
-        <text name="pih_section_consumers" text="Consumers" />
-        <text name="pih_word_kept" text="Kept" />
-        <text name="pih_word_distributed" text="Distributed" />
-        <text name="pih_word_sold" text="Sold" />
-        <text name="pih_word_consumed" text="Consumption" />
-        <text name="pih_word_stored" text="Stored" />
-        <text name="pih_word_rest" text="Remaining" />
-        <text name="pih_summary_areaNeeded" text="Required area per year: %s ha" />
-        <text name="pih_legend_converterAlternative" text="Orange = Consumption via converter (alternative)" />
-        <text name="pih_toggleModeButton" text="Switch time unit" />
+        <text name="pih_dialogTitle"                 text="Production consumption (%s)"/>
+        <text name="pih_mode_hour"                   text="per hour"/>
+        <text name="pih_mode_day"                    text="per day"/>
+        <text name="pih_mode_month"                  text="per month"/>
+        <text name="pih_mode_year"                   text="per year"/>
+        <text name="pih_section_fruits"              text="Field crops"/>
+        <text name="pih_section_others"              text="Other fill types"/>
+        <text name="pih_section_producers"           text="Producers"/>
+        <text name="pih_section_consumers"           text="Consumers"/>
+        <text name="pih_word_kept"                   text="Kept"/>
+        <text name="pih_word_distributed"            text="Distributed"/>
+        <text name="pih_word_sold"                   text="Sold"/>
+        <text name="pih_word_consumed"               text="Consumption"/>
+        <text name="pih_word_stored"                 text="Stored"/>
+        <text name="pih_word_rest"                   text="Remaining"/>
+        <text name="pih_summary_areaNeeded"          text="Required area per year: %s ha"/>
+        <text name="pih_legend_converterAlternative" text="Orange = Consumption via converter (alternative)"/>
+        <text name="pih_toggleModeButton"            text="Switch time unit"/>
     </texts>
 </l10n>

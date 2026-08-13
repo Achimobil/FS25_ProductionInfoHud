@@ -46,6 +46,14 @@ function PIH_Display_DrawBox.setBox(args)
         end
     else
         -- hier alle klickbaren Filter kombinieren
+        local loadedFillTypes = nil;
+        if box.ownTable.LoadedCargoFilter then
+            loadedFillTypes = ProductionInfoHud.getCurrentlyLoadedFillTypes();
+            if next(loadedFillTypes) == nil then
+                loadedFillTypes = nil; -- nichts geladen -> Filter ignorieren statt alles auszublenden
+            end
+        end
+
         for _, productionItem in pairs(ProductionInfoHud.CurrentProductionItems) do
             local skipItem = false;
             if not skipItem and box.ownTable.ShowAnimal ~= nil and box.ownTable.ShowAnimal == false and productionItem.IsAnimal then
@@ -64,10 +72,18 @@ function PIH_Display_DrawBox.setBox(args)
                     skipItem = true;
                 end
             end
+            if not skipItem and loadedFillTypes ~= nil and (not productionItem.isInput or not loadedFillTypes[productionItem.fillTypeId]) then
+                skipItem = true;
+            end
 
             if not skipItem then
                 table.insert(currentProductionItems, productionItem);
             end
+        end
+
+        if loadedFillTypes ~= nil then
+            -- bei aktivem LoadedCargoFilter FillTypes gruppieren statt nach Restzeit zu sortieren
+            table.sort(currentProductionItems, ProductionInfoHud.compProductionTableByFillTypeAndFreeCapacity);
         end
     end
 
@@ -275,6 +291,19 @@ function PIH_Display_DrawBox.setBox(args)
                 setWarningLine = true;
             end;
             --AutoDeliverFilter filter--
+
+            --LoadedCargoFilter filter--
+            if nextIconPosX+iconWidth < x+w then
+                overlay = overlayDefaultGroup[overlayDefaultByName["trailerfull"]];
+                if overlay ~= nil then
+                    if box.ownTable.LoadedCargoFilter then iconColor = box.overlays.color.on;end;
+                    setOverlay("loadedCargoFilter_", iconColor);
+                    if inIconArea and box.isHelp then setInfoHelpText(ProductionInfoHud.i18n:getText("pih_loadedCargoFilter"), 0);end;
+                end;
+            else
+                setWarningLine = true;
+            end;
+            --LoadedCargoFilter filter--
 
             if setWarningLine then
                 setWarningLineIcon();

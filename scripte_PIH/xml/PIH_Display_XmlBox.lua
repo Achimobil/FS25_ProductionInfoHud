@@ -6,7 +6,8 @@ function PIH_Display_XmlBox:defaultValues(box)
         ShowAnimal=true,
         ShowProduction=true,
         TimeFilter = 1,
-        AutoDeliverFilter=true
+        AutoDeliverFilter=true,
+        LoadedCargoFilter=false
 
     }; --own values TimeFilter=1(no fitler), 2(less 24 hours), 3(lee 1 month)
 end;
@@ -31,6 +32,9 @@ function PIH_Display_XmlBox:onLoadXml(box, Xml, xmlNameTag)
         if getXMLBool(Xml, xmlNameTag.."#AutoDeliverFilter") ~= nil then
             box.ownTable.AutoDeliverFilter = getXMLBool(Xml, xmlNameTag.. "#AutoDeliverFilter");
         end;
+        if getXMLBool(Xml, xmlNameTag.."#LoadedCargoFilter") ~= nil then
+            box.ownTable.LoadedCargoFilter = getXMLBool(Xml, xmlNameTag.. "#LoadedCargoFilter");
+        end;
     end;
 end;
 
@@ -41,6 +45,7 @@ function PIH_Display_XmlBox.onSaveXml(box, Xml, xmlNameTag)
     setXMLInt(Xml, xmlNameTag.."#dataViewMode", box.ownTable.dataViewMode);
     setXMLInt(Xml, xmlNameTag.."#TimeFilter", box.ownTable.TimeFilter);
     setXMLBool(Xml, xmlNameTag.."#AutoDeliverFilter", box.ownTable.AutoDeliverFilter);
+    setXMLBool(Xml, xmlNameTag.."#LoadedCargoFilter", box.ownTable.LoadedCargoFilter);
 end;
 
 function PIH_Display_XmlBox:loadBox(name, onSave)

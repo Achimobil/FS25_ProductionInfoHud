@@ -1,5 +1,7 @@
 {
     "diagnostics.globals": [
-        "PIH_DisplaySetGet"
+        "PIH_DisplaySetGet",
+        "PIH_Display_XmlBox",
+        "getTimeSec"
     ]
 }

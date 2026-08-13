@@ -3,38 +3,39 @@
     <translationContributors>Achimobil</translationContributors>
     <texts>
         <text name="input_HL_ONOFFMOUSECURSOR" text="HL Mouse an/aus"/>
-        <text name="Empty" text="Leer"/>
-        <text name="Full" text="Voll"/>
-        <text name="StorageMissing" text="Lager fehlt"/>
-        <text name="OnlyPallets" text="Paletten"/>
-        <text name="input_PIH_ONOFFDISPLAY" text="PIH: Anzeige umschalten"/>
-        <text name="input_TOGGLE_GUI_on" text="PIH anzeigen"/>
-        <text name="input_TOGGLE_GUI_off" text="PIH ausblenden"/>
+        <text name="Empty"                     text="Leer"/>
+        <text name="Full"                      text="Voll"/>
+        <text name="StorageMissing"            text="Lager fehlt"/>
+        <text name="OnlyPallets"               text="Paletten"/>
+        <text name="input_PIH_ONOFFDISPLAY"    text="PIH: Anzeige umschalten"/>
+        <text name="input_TOGGLE_GUI_on"       text="PIH anzeigen"/>
+        <text name="input_TOGGLE_GUI_off"      text="PIH ausblenden"/>
 
-        <text name="pih_infoDisplay_textSize" text="*TEXT GRÖSSE* %s (Mausklick Links/Rechts)" />
-        <text name="pih_animalFilter" text="Tiere anzeigen/ausblenden (Linksklick zum Umschalten)" />
-        <text name="pih_productionFilter" text="Produktionen anzeigen/ausblenden (Linksklick zum Umschalten)" />
-        <text name="pih_timeFilterOne" text="Zeitfilter keiner / Monat (Linksklick zum Umschalten)" />
-        <text name="pih_timeFilterTwo" text="Zeitfilter keiner / 24h / Monat (Linksklick zum Umschalten)" />
-        <text name="pih_autoDeliverFilter" text="Verteilte Produkte anzeigen/ausblenden (Linksklick zum Umschalten)" />
+        <text name="pih_infoDisplay_textSize" text="*TEXT GRÖSSE* %s (Mausklick Links/Rechts)"/>
+        <text name="pih_animalFilter"         text="Tiere anzeigen/ausblenden (Linksklick zum Umschalten)"/>
+        <text name="pih_productionFilter"     text="Produktionen anzeigen/ausblenden (Linksklick zum Umschalten)"/>
+        <text name="pih_timeFilterOne"        text="Zeitfilter keiner / Monat (Linksklick zum Umschalten)"/>
+        <text name="pih_timeFilterTwo"        text="Zeitfilter keiner / 24h / Monat (Linksklick zum Umschalten)"/>
+        <text name="pih_autoDeliverFilter"    text="Verteilte Produkte anzeigen/ausblenden (Linksklick zum Umschalten)"/>
+        <text name="pih_loadedCargoFilter"    text="Nur Abladeorte für aktuell geladene Ware anzeigen (Linksklick zum Umschalten)"/>
 
-        <text name="pih_dialogTitle" text="Produktionsverbrauch (%s)" />
-        <text name="pih_mode_hour" text="pro Stunde" />
-        <text name="pih_mode_day" text="pro Tag" />
-        <text name="pih_mode_month" text="pro Monat" />
-        <text name="pih_mode_year" text="pro Jahr" />
-        <text name="pih_section_fruits" text="Feldfrüchte" />
-        <text name="pih_section_others" text="Andere Filltypes" />
-        <text name="pih_section_producers" text="Produzenten" />
-        <text name="pih_section_consumers" text="Verbraucher" />
-        <text name="pih_word_kept" text="Behalten" />
-        <text name="pih_word_distributed" text="Verteilt" />
-        <text name="pih_word_sold" text="Verkauft" />
-        <text name="pih_word_consumed" text="Verbrauch" />
-        <text name="pih_word_stored" text="Eingelagert" />
-        <text name="pih_word_rest" text="Rest" />
-        <text name="pih_summary_areaNeeded" text="Benötigte Fläche pro Jahr: %s ha" />
-        <text name="pih_legend_converterAlternative" text="Orange = Verbrauch über Konverter (Alternative)" />
-        <text name="pih_toggleModeButton" text="Zeit umschalten" />
+        <text name="pih_dialogTitle"                 text="Produktionsverbrauch (%s)"/>
+        <text name="pih_mode_hour"                   text="pro Stunde"/>
+        <text name="pih_mode_day"                    text="pro Tag"/>
+        <text name="pih_mode_month"                  text="pro Monat"/>
+        <text name="pih_mode_year"                   text="pro Jahr"/>
+        <text name="pih_section_fruits"              text="Feldfrüchte"/>
+        <text name="pih_section_others"              text="Andere Filltypes"/>
+        <text name="pih_section_producers"           text="Produzenten"/>
+        <text name="pih_section_consumers"           text="Verbraucher"/>
+        <text name="pih_word_kept"                   text="Behalten"/>
+        <text name="pih_word_distributed"            text="Verteilt"/>
+        <text name="pih_word_sold"                   text="Verkauft"/>
+        <text name="pih_word_consumed"               text="Verbrauch"/>
+        <text name="pih_word_stored"                 text="Eingelagert"/>
+        <text name="pih_word_rest"                   text="Rest"/>
+        <text name="pih_summary_areaNeeded"          text="Benötigte Fläche pro Jahr: %s ha"/>
+        <text name="pih_legend_converterAlternative" text="Orange = Verbrauch über Konverter (Alternative)"/>
+        <text name="pih_toggleModeButton"            text="Zeit umschalten"/>
     </texts>
 </l10n>
