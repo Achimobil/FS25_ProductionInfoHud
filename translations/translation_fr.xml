@@ -11,14 +11,15 @@
         <text name="input_TOGGLE_GUI_on"       text="Afficher PIH"/>
         <text name="input_TOGGLE_GUI_off"      text="Masquer PIH"/>
 
-        <text name="pih_infoDisplay_textSize"    text="*TAILLE DU TEXTE* %s (clic gauche/droit de la souris)"/>
-        <text name="pih_animalFilter"            text="Afficher/masquer les animaux (clic gauche pour basculer)"/>
-        <text name="pih_productionFilter"        text="Afficher/masquer les productions (clic gauche pour basculer)"/>
-        <text name="pih_timeFilterOne"           text="Filtre temporel aucun / mois (clic gauche pour basculer)"/>
-        <text name="pih_timeFilterTwo"           text="Filtre temporel aucun / 24h / mois (clic gauche pour basculer)"/>
-        <text name="pih_autoDeliverFilter"       text="Afficher/masquer les produits distribués (clic gauche pour basculer)"/>
-        <text name="pih_loadedCargoFilter"       text="Afficher uniquement les points de livraison pour la marchandise actuellement chargée (clic gauche pour basculer)"/>
-        <text name="pih_loadedCargoFilterActive" text="Filtré : uniquement les points de livraison pour la marchandise chargée"/>
+        <text name="pih_infoDisplay_textSize"          text="*TAILLE DU TEXTE* %s (clic gauche/droit de la souris)"/>
+        <text name="pih_animalFilter"                  text="Afficher/masquer les animaux (clic gauche pour basculer)"/>
+        <text name="pih_productionFilter"              text="Afficher/masquer les productions (clic gauche pour basculer)"/>
+        <text name="pih_timeFilterOne"                 text="Filtre temporel aucun / mois (clic gauche pour basculer)"/>
+        <text name="pih_timeFilterTwo"                 text="Filtre temporel aucun / 24h / mois (clic gauche pour basculer)"/>
+        <text name="pih_autoDeliverFilter"             text="Afficher/masquer les produits distribués (clic gauche pour basculer)"/>
+        <text name="pih_loadedCargoFilter"             text="Afficher uniquement les points de livraison pour la marchandise actuellement chargée (clic gauche pour basculer)"/>
+        <text name="pih_loadedCargoFilterActive"       text="Filtré : uniquement les points de livraison pour la marchandise chargée"/>
+        <text name="pih_vehicleCapabilityFilterActive" text="Filtré : uniquement les marchandises que ce véhicule peut transporter"/>
 
         <text name="pih_dialogTitle"                 text="Consommation de production (%s)"/>
         <text name="pih_mode_hour"                   text="par heure"/>

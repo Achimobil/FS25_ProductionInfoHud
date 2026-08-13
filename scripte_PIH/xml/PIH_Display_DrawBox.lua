@@ -9,6 +9,7 @@ function PIH_Display_DrawBox.setBox(args)
 
     local currentProductionItems = {};
     local isLoadedCargoFilterActive = false;
+    local isLoadedCargoFilterBySupportedTypes = false;
     if box.ownTable.fillTypeFilter ~= nil then
         -- summary item erstellen
         local sumItem = {};
@@ -52,10 +53,17 @@ function PIH_Display_DrawBox.setBox(args)
             loadedFillTypes = ProductionInfoHud.getCurrentlyLoadedFillTypes();
 
             if next(loadedFillTypes) == nil then
-                loadedFillTypes = nil; -- nichts geladen -> Filter ignorieren statt alles auszublenden
+                -- nichts geladen -> stattdessen nach dem filtern, was das Fahrzeug überhaupt transportieren kann
+                loadedFillTypes = ProductionInfoHud.getVehicleSupportedFillTypes();
+                if next(loadedFillTypes) == nil then
+                    loadedFillTypes = nil; -- auch das leer (z.B. Paletten-/Ballenanhänger) -> Filter ignorieren statt alles auszublenden
+                else
+                    isLoadedCargoFilterBySupportedTypes = true;
+                end
             end
         end
         isLoadedCargoFilterActive = loadedFillTypes ~= nil;
+        local isFilteringByLoadedCargo = loadedFillTypes ~= nil and not isLoadedCargoFilterBySupportedTypes;
 
         for _, productionItem in pairs(ProductionInfoHud.CurrentProductionItems) do
             local skipItem = false;
@@ -68,7 +76,8 @@ function PIH_Display_DrawBox.setBox(args)
             if not skipItem and box.ownTable.AutoDeliverFilter ~= nil and box.ownTable.AutoDeliverFilter == false and productionItem.isAutoDeliver == true then
                 skipItem = true;
             end
-            if not skipItem and box.ownTable.TimeFilter ~= nil and box.ownTable.TimeFilter ~= 1 then
+            -- bei geladener Ware (Punkt 3, "wo bring ich das hin") sollen ALLE möglichen Abladeorte gezeigt werden, unabhängig vom Zeitfilter
+            if not skipItem and not isFilteringByLoadedCargo and box.ownTable.TimeFilter ~= nil and box.ownTable.TimeFilter ~= 1 then
                 if box.ownTable.TimeFilter == 2 and productionItem.hoursLeft > 24 then
                     skipItem = true;
                 elseif box.ownTable.TimeFilter == 3 and productionItem.hoursLeft > (24 * g_currentMission.environment.daysPerPeriod) then
@@ -84,8 +93,8 @@ function PIH_Display_DrawBox.setBox(args)
             end
         end
 
-        if loadedFillTypes ~= nil then
-            -- bei aktivem LoadedCargoFilter FillTypes gruppieren statt nach Restzeit zu sortieren
+        if isFilteringByLoadedCargo then
+            -- nur bei geladener Ware (Punkt 3) FillTypes gruppieren statt nach Restzeit zu sortieren; bei Punkt 2 (Fahrzeug-Fähigkeit) bleibt die normale Sortierung
             table.sort(currentProductionItems, ProductionInfoHud.compProductionTableByFillTypeAndFreeCapacity);
         end
     end
@@ -320,7 +329,8 @@ function PIH_Display_DrawBox.setBox(args)
 
         --loadedCargoFilterHint--
         if isLoadedCargoFilterActive and nextPosY >= y then
-            local hintText = g_currentMission.hlUtils.getTxtToWidth(tostring(ProductionInfoHud.i18n:getText("pih_loadedCargoFilterActive")), size, w-(difW*2), false, ".");
+            local hintKey = isLoadedCargoFilterBySupportedTypes and "pih_vehicleCapabilityFilterActive" or "pih_loadedCargoFilterActive";
+            local hintText = g_currentMission.hlUtils.getTxtToWidth(tostring(ProductionInfoHud.i18n:getText(hintKey)), size, w-(difW*2), false, ".");
             setTextBold(true);
             setTextColor(unpack(g_currentMission.hlUtils.getColor(box.overlays.color.on, true)));
             renderText(nextLeftPosX, nextPosY, size, tostring(hintText));

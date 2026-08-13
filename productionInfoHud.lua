@@ -307,6 +307,35 @@ function ProductionInfoHud.getCurrentlyLoadedFillTypes()
     return loadedFillTypes;
 end
 
+--- Get the fillTypeIds the vehicle the player is sitting in and all its attached implements/trailers could carry (unabhängig vom aktuellen Füllstand). Betriebsstoffe wie Diesel/AdBlue/Luft werden nicht mitgezählt. Bei Paletten-/Ballenanhängern (feste Fracht wird nur über Spanngurte gehalten, nicht über eine feste Filltype-Liste) bleibt das Ergebnis leer.
+-- @return table set of fillTypeId -> true
+function ProductionInfoHud.getVehicleSupportedFillTypes()
+    local supportedFillTypes = {};
+    if g_localPlayer == nil then
+        return supportedFillTypes;
+    end
+
+    local vehicle = g_localPlayer:getCurrentVehicle();
+    if vehicle == nil then
+        return supportedFillTypes;
+    end
+
+    local rootVehicle = vehicle:getRootVehicle();
+    for _, childVehicle in ipairs(rootVehicle:getChildVehicles()) do
+        if childVehicle.spec_fillUnit ~= nil then
+            for _, fillUnit in pairs(childVehicle:getFillUnits()) do
+                if fillUnit.showOnHud and fillUnit.supportedFillTypes ~= nil then
+                    for fillTypeId, _ in pairs(fillUnit.supportedFillTypes) do
+                        supportedFillTypes[fillTypeId] = true;
+                    end
+                end
+            end
+        end
+    end
+
+    return supportedFillTypes;
+end
+
 ---Add the given husbandry to the list
 -- @param table myProductionItems The list where it will be added to
 -- @param PlaceableHusbandry husbandry What should be added

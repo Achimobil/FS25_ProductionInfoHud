@@ -2,7 +2,7 @@
 <modDesc descVersion="111">
     <author>Achimobil</author>
     <contributor>HappyLooser</contributor>
-    <version>1.2.0.5</version>
+    <version>1.2.0.6</version>
 
     <title>
         <de>Produktionen Info Hud</de>
@@ -42,6 +42,7 @@ Das Verändern oder erneutes Hochladen, ob ganz oder in Teilen, ist nicht gestat
 Fehler und Anregungen gerne auf <a href="https://github.com/Achimobil/FS25_ProductionInfoHud">GitHub</a>
 
 Changelog
+1.2.0.6 - Fracht-Filter zeigt jetzt auch passende Abladeorte für leere Fahrzeuge an, je nachdem was sie transportieren können
 1.2.0.5 - Fracht-Filter erkennt jetzt auch Paletten korrekt und zeigt einen Hinweis an, wenn gerade gefiltert wird
 1.2.0.4 - Neuer HUD-Filter: zeigt auf Wunsch nur noch Abladeorte für die gerade geladene Ware, sortiert nach Füllstand
 1.2.0.3 - Neue Seite "Produktionsübersicht" im Menü: zeigt je Frucht/Rohstoff auf einen Blick, was behalten, verteilt, verkauft oder verbraucht wird

@@ -11,14 +11,15 @@
         <text name="input_TOGGLE_GUI_on"       text="Show PIH"/>
         <text name="input_TOGGLE_GUI_off"      text="Hide PIH"/>
 
-        <text name="pih_infoDisplay_textSize"    text="*TEXT SIZE* %s (mouse click left/right)"/>
-        <text name="pih_animalFilter"            text="Show/hide animals (left-click to switch)"/>
-        <text name="pih_productionFilter"        text="Show/hide productions (left-click to switch)"/>
-        <text name="pih_timeFilterOne"           text="Time filter none / month (left-click to toggle)"/>
-        <text name="pih_timeFilterTwo"           text="Time filter none / 24h / month (left-click to toggle)"/>
-        <text name="pih_autoDeliverFilter"       text="Show/hide distributed products (left-click to toggle)"/>
-        <text name="pih_loadedCargoFilter"       text="Show only delivery points for currently loaded cargo (left-click to toggle)"/>
-        <text name="pih_loadedCargoFilterActive" text="Filtered: only delivery points for loaded cargo"/>
+        <text name="pih_infoDisplay_textSize"          text="*TEXT SIZE* %s (mouse click left/right)"/>
+        <text name="pih_animalFilter"                  text="Show/hide animals (left-click to switch)"/>
+        <text name="pih_productionFilter"              text="Show/hide productions (left-click to switch)"/>
+        <text name="pih_timeFilterOne"                 text="Time filter none / month (left-click to toggle)"/>
+        <text name="pih_timeFilterTwo"                 text="Time filter none / 24h / month (left-click to toggle)"/>
+        <text name="pih_autoDeliverFilter"             text="Show/hide distributed products (left-click to toggle)"/>
+        <text name="pih_loadedCargoFilter"             text="Show only delivery points for currently loaded cargo (left-click to toggle)"/>
+        <text name="pih_loadedCargoFilterActive"       text="Filtered: only delivery points for loaded cargo"/>
+        <text name="pih_vehicleCapabilityFilterActive" text="Filtered: only cargo this vehicle can carry"/>
 
         <text name="pih_dialogTitle"                 text="Production consumption (%s)"/>
         <text name="pih_mode_hour"                   text="per hour"/>
