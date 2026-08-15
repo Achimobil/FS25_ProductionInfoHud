@@ -39,5 +39,9 @@
         <text name="pih_summary_areaNeeded"          text="Surface nécessaire par an : %s ha"/>
         <text name="pih_legend_converterAlternative" text="Orange = Consommation via convertisseur (alternative)"/>
         <text name="pih_toggleModeButton"            text="Changer d'unité de temps"/>
+
+        <text name="pih_hourSingular" text="heure"/>
+        <text name="pih_hourPlural"   text="heures"/>
+        <text name="pih_millionShort" text="M"/>
     </texts>
 </l10n>

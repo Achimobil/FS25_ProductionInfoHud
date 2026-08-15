@@ -39,5 +39,9 @@
         <text name="pih_summary_areaNeeded"          text="Wymagana powierzchnia rocznie: %s ha"/>
         <text name="pih_legend_converterAlternative" text="Pomarańczowy = zużycie przez konwerter (alternatywa)"/>
         <text name="pih_toggleModeButton"            text="Zmień jednostkę czasu"/>
+
+        <text name="pih_hourSingular" text="godzina"/>
+        <text name="pih_hourPlural"   text="godziny"/>
+        <text name="pih_millionShort" text="Mln"/>
     </texts>
 </l10n>

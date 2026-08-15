@@ -39,5 +39,9 @@
         <text name="pih_summary_areaNeeded"          text="Required area per year: %s ha"/>
         <text name="pih_legend_converterAlternative" text="Orange = Consumption via converter (alternative)"/>
         <text name="pih_toggleModeButton"            text="Switch time unit"/>
+
+        <text name="pih_hourSingular" text="hour"/>
+        <text name="pih_hourPlural"   text="hours"/>
+        <text name="pih_millionShort" text="M"/>
     </texts>
 </l10n>

@@ -52,6 +52,19 @@ function ProductionInfoHud.DebugText(text, ...)
     print("ProductionInfoHudDebug: " .. string.format(text, ...));
 end
 
+--- Menge abgekürzt formatieren für die kombinierte Zeit+Menge-Anzeige beim Cargo-Filter. Abgeschnitten, nicht gerundet ("mindestens noch X").
+-- @param float amount
+-- @return string shortAmount
+function ProductionInfoHud.FormatShortAmount(amount)
+    amount = amount or 0;
+    if amount >= 1000000 then
+        return math.floor(amount / 1000000) .. " " .. ProductionInfoHud.i18n:getText("pih_millionShort");
+    elseif amount >= 1000 then
+        return math.floor(amount / 1000) .. "k";
+    end
+    return string.format("%d", amount);
+end
+
 function ProductionInfoHud:loadMap(mapName)
     print("---loading ".. tostring(ProductionInfoHud.metadata.title).. " ".. tostring(ProductionInfoHud.metadata.version).. "(#".. tostring(ProductionInfoHud.metadata.build).. ") ".. tostring(ProductionInfoHud.metadata.author).. "---")
     if not ProductionInfoHud:getDetiServer() then
@@ -229,8 +242,18 @@ function ProductionInfoHud:AddProductionItemToList(myProductionItems, production
         end
 
         productionItem.TimeLeftString = timeString;
+
+        -- kurze/ungefähre Variante (nur Tage ODER nur Stunden, keine Minuten) für die kombinierte Zeit+Menge-Anzeige beim Cargo-Filter
+        if days == 0 and hours == 0 and minutes <= 2 then
+            productionItem.TimeShortString = timeString; -- Full/Empty/StorageMissing/OnlyPallets
+        elseif days > 0 then
+            productionItem.TimeShortString = ProductionInfoHud.i18n:formatNumDay(days);
+        else
+            productionItem.TimeShortString = hours .. " " .. ProductionInfoHud.i18n:getText(hours == 1 and "pih_hourSingular" or "pih_hourPlural");
+        end
     else
         productionItem.TimeLeftString = "";
+        productionItem.TimeShortString = "";
     end
 
     -- ProductionInfoHud.DebugTable("productionItem", productionItem);
@@ -350,6 +373,43 @@ function ProductionInfoHud.getVehicleSupportedFillTypes()
     return supportedFillTypes;
 end
 
+--- Get the set of fillTypeIds that should count as a match for the given fillTypeId when filtering by loaded/supported cargo:
+--- der type selbst, plus alle types die über einen Converter (BaleUnloadTrigger/PalletUnloadTrigger/UnloadTrigger/WoodUnloadTrigger
+--- an der unloadingStation dieses Produktionspunkts) zu diesem type konvertiert werden. Gleiches Muster wie in UpdateProductionNeedings.
+-- @param table place ProductionPoint oder Factory, dessen unloadingStation (falls vorhanden) nach Convertern durchsucht wird
+-- @param integer fillTypeId der eigentliche (Lager-)FillType
+-- @return table set of fillTypeId -> true
+function ProductionInfoHud.GetMatchFillTypeIds(place, fillTypeId)
+    local matchFillTypeIds = {};
+    matchFillTypeIds[fillTypeId] = true;
+
+    if place ~= nil and place.unloadingStation ~= nil and place.unloadingStation.unloadTriggers ~= nil then
+        for _, unloadTrigger in pairs(place.unloadingStation.unloadTriggers) do
+            for incommingFillTypeId, fillTypeConversion in pairs(unloadTrigger.fillTypeConversions) do
+                if fillTypeConversion.outgoingFillType == fillTypeId then
+                    matchFillTypeIds[incommingFillTypeId] = true;
+                end
+            end
+        end
+    end
+
+    return matchFillTypeIds;
+end
+
+--- Returns true if productionItem's matchFillTypeIds (das eigene FillType plus ggf. Converter-Alternativen bzw. beim Futter alle zulässigen Futter-Sorten) mind. eine der geladenen/unterstützten fillTypeIds enthält
+-- @param table matchFillTypeIds set of fillTypeId -> true (kann nil sein, wenn noch nicht berechnet)
+-- @param table fillTypeIds set of fillTypeId -> true, gegen das geprüft wird (geladene/unterstützte Ware)
+-- @return boolean matches
+function ProductionInfoHud.MatchesAnyFillType(matchFillTypeIds, fillTypeIds)
+    if matchFillTypeIds == nil then return false; end
+    for fillTypeId, _ in pairs(matchFillTypeIds) do
+        if fillTypeIds[fillTypeId] then
+            return true;
+        end
+    end
+    return false;
+end
+
 ---Add the given husbandry to the list
 -- @param table myProductionItems The list where it will be added to
 -- @param PlaceableHusbandry husbandry What should be added
@@ -382,6 +442,20 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
             productionItem.capacityLevel = productionItem.fillLevel / productionItem.capacity;
         end
         productionItem.fillTypeTitle = spec.info.title;
+
+        -- alle fillTypeIds eintragen, die für die Tierart dieses Stalls laut animalFoodSystem als Futter zulässig sind (mehrere Gruppen möglich,
+        -- z.B. Totalmischration/Heu/Silage/Gras), damit der Fracht-Filter unabhängig von der gerade geladenen Futtersorte matcht
+        local animalTypeIndex = husbandry.spec_husbandryAnimals ~= nil and husbandry.spec_husbandryAnimals.animalTypeIndex or nil;
+        local animalFood = animalTypeIndex ~= nil and g_currentMission.animalFoodSystem:getAnimalFood(animalTypeIndex) or nil;
+        if animalFood ~= nil then
+            local matchFillTypeIds = {};
+            for _, group in pairs(animalFood.groups) do
+                for _, groupFillTypeId in pairs(group.fillTypes) do
+                    matchFillTypeIds[groupFillTypeId] = true;
+                end
+            end
+            productionItem.matchFillTypeIds = matchFillTypeIds;
+        end
 
         -- Weide einbeziehen
         local specMeadow = husbandry.spec_husbandryMeadow;
@@ -634,6 +708,10 @@ function ProductionInfoHud:AddFactory(myProductionItems, factory)
             end
         end
 
+        if productionItem.isInput then
+            productionItem.matchFillTypeIds = ProductionInfoHud.GetMatchFillTypeIds(factory, fillTypeId);
+        end
+
         self:AddProductionItemToList(myProductionItems, productionItem);
     end
 end
@@ -719,6 +797,10 @@ function ProductionInfoHud:AddProductionPoint(myProductionItems, productionPoint
         end
         productionItem.productionPerHour = productionItem.productionPerHour + (productionPerHourDeltaByFillType[fillTypeId] or 0);
 
+        if productionItem.isInput then
+            productionItem.matchFillTypeIds = ProductionInfoHud.GetMatchFillTypeIds(productionPoint, fillTypeId);
+        end
+
         self:AddProductionItemToList(myProductionItems, productionItem);
     end
 end
@@ -744,6 +826,9 @@ end
 --- Zum Sortieren bei aktivem LoadedCargoFilter: FillTypes gruppieren, innerhalb der Gruppe nach freier Kapazität (wieviel passt noch rein, absteigend)
 function ProductionInfoHud.compProductionTableByFillTypeAndFreeCapacity(a, b)
     if a.fillTypeId ~= b.fillTypeId then
+        -- Futter-Einträge (Kuhstall etc.) haben keine einzelne fillTypeId, da mehrere Sorten zulässig sind - ans Ende sortieren statt Vergleichsfehler
+        if a.fillTypeId == nil then return false; end
+        if b.fillTypeId == nil then return true; end
         return a.fillTypeId < b.fillTypeId;
     end
     local freeCapacityA = (a.capacity or 0) - (a.fillLevel or 0);

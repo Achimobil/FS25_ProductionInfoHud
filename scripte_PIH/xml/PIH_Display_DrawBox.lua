@@ -97,7 +97,7 @@ function PIH_Display_DrawBox.setBox(args)
                         skipItem = true;
                     end
                 end
-                if not skipItem and loadedFillTypes ~= nil and (not productionItem.isInput or not loadedFillTypes[productionItem.fillTypeId]) then
+                if not skipItem and loadedFillTypes ~= nil and (not productionItem.isInput or not ProductionInfoHud.MatchesAnyFillType(productionItem.matchFillTypeIds, loadedFillTypes)) then
                     skipItem = true;
                 end
 
@@ -439,7 +439,10 @@ function PIH_Display_DrawBox.setBox(args)
                 ---data column---
                 if canNextView then
                     local dataString = "";
-                    if box.ownTable.dataViewMode == 1 then
+                    if isLoadedCargoFilterActive then
+                        -- bei aktivem Cargo-Filter Zeit UND Kapazität kombiniert+abgekürzt anzeigen, statt ständig zwischen beidem umschalten zu müssen
+                        dataString = tostring(productionItem.TimeShortString) .. " (" .. ProductionInfoHud.FormatShortAmount(productionItem.capacityData) .. ")";
+                    elseif box.ownTable.dataViewMode == 1 then
                         -- mode 1 = Time left
                         dataString = tostring(productionItem.TimeLeftString);
                     elseif box.ownTable.dataViewMode == 2 then
@@ -456,7 +459,8 @@ function PIH_Display_DrawBox.setBox(args)
                     setTextBold(false);
                     setTextColor(1, 1, 1, 1);
                     setTextAlignment(0);
-                    if not g_currentMission.hlUtils:disableInArea() and inArea then box:setClickArea( {nextRightPosX, nextRightPosX+box.ownTable.timeWidth, nextPosY, nextPosY+box.ownTable.lineHeight, onClick=PIH_Display_MouseKeyEventsBox.onClickArea, whatClick="PIH_Display_Box", typPos=boxNumber, whereClick="dataColumn_", ownTable={}} );end;
+                    -- Umschalten der Spalte ergibt bei kombinierter Anzeige keinen Sinn mehr, daher Klick währenddessen deaktiviert
+                    if not isLoadedCargoFilterActive and not g_currentMission.hlUtils:disableInArea() and inArea then box:setClickArea( {nextRightPosX, nextRightPosX+box.ownTable.timeWidth, nextPosY, nextPosY+box.ownTable.lineHeight, onClick=PIH_Display_MouseKeyEventsBox.onClickArea, whatClick="PIH_Display_Box", typPos=boxNumber, whereClick="dataColumn_", ownTable={}} );end;
                     lineWidth = lineWidth+box.ownTable.timeWidth;
                     nextRightPosX = nextRightPosX+box.ownTable.timeWidth;
                     canNextView = lineWidth > iconWidth;
