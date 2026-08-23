@@ -69,6 +69,7 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                         newValue = 1;
                     end;
                     box.ownTable.dataViewMode = newValue;
+                    box.filterCacheDirty = true;
                     return;
                 end;
                 if args.clickAreaTable.whereClick == "fillTypeColumn_" then
