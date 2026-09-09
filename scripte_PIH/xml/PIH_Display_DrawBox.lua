@@ -97,8 +97,20 @@ function PIH_Display_DrawBox.setBox(args)
                         skipItem = true;
                     end
                 end
-                if not skipItem and loadedFillTypes ~= nil and (not productionItem.isInput or not ProductionInfoHud.MatchesAnyFillType(productionItem.matchFillTypeIds, loadedFillTypes)) then
-                    skipItem = true;
+                -- Die Zuordnung gilt nur für den aktuellen Durchlauf, deshalb vorher zurücksetzen
+                productionItem.cargoMatchFillTypeId = nil;
+                if not skipItem and loadedFillTypes ~= nil then
+                    local matchingFillTypeId = nil;
+                    if productionItem.isInput then
+                        matchingFillTypeId = ProductionInfoHud.GetMatchingFillType(productionItem.matchFillTypeIds, loadedFillTypes);
+                    end
+
+                    if matchingFillTypeId == nil then
+                        skipItem = true;
+                    else
+                        -- Zeilen für mehrere Sorten sortieren und beschriften sich über die Sorte, die zur Ware passt
+                        productionItem.cargoMatchFillTypeId = matchingFillTypeId;
+                    end
                 end
 
                 if not skipItem then
@@ -424,7 +436,7 @@ function PIH_Display_DrawBox.setBox(args)
                         setTextColor(unpack(color));
                     end
                     setTextAlignment(0);
-                    local text = g_currentMission.hlUtils.getTxtToWidth(tostring(productionItem.fillTypeTitle), size, box.ownTable.fillTypeWidth - iconSpace, false, ".");
+                    local text = g_currentMission.hlUtils.getTxtToWidth(ProductionInfoHud.GetItemFillTypeTitle(productionItem), size, box.ownTable.fillTypeWidth - iconSpace, false, ".");
                     renderText(nextRightPosX, nextPosY, size, tostring(text));
                     setTextBold(false);
                     setTextColor(1, 1, 1, 1);

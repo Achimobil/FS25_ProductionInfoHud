@@ -19,6 +19,15 @@ ProductionInfoHud.isInit = false;
 ProductionInfoHud.timePast = 0;
 ProductionInfoHud.longestFillTypeTitle = "";
 
+-- Kennungen der Zutaten-Gruppen aus dem Datenmodell von Production Revamp: 1 bis 97 sind Gruppen alternativer Zutaten,
+-- von denen pro Takt genau eine verbraucht wird, 98 und 99 sind die beiden optionalen Booster.
+ProductionInfoHud.MIX_BOOST = 98;
+ProductionInfoHud.MIX_MASTER = 99;
+
+-- Weiter als 100 Tage zeigt die Zeitspalte ohnehin keine Uhrzeit mehr an, das ist auch die Grenze der Vorausrechnung.
+ProductionInfoHud.MAX_FORECAST_DAYS = 100;
+
+
 ProductionInfoHud.metadata = {
     title = "ProductionInfoHud",
     notes = "Erweiterung des Infodisplays für Silos und Produktionen",
@@ -101,7 +110,7 @@ function ProductionInfoHud:registerActionEvent()
             if actionName == "PIH_ONOFFDISPLAY" then
                 if g_currentMission.hlHudSystem.hlBox ~= nil then
                     local box = g_currentMission.hlHudSystem.hlBox:getData("PIH_Display_Box");
-                    if box.show ~= nil then
+                    if box ~= nil and box.show ~= nil then
                         box.show = not box.show;
                         box:setUpdateState(true);
 
@@ -162,7 +171,7 @@ function ProductionInfoHud:update(dt)
         -- update lists only when the system is visible
         if g_currentMission.hlHudSystem.hlBox ~= nil then
             local box = g_currentMission.hlHudSystem.hlBox:getData("PIH_Display_Box");
-            if box.show == true then
+            if box ~= nil and box.show == true then
 
                 -- update all info tables for display
                 ProductionInfoHud:refreshProductionsTable();
@@ -170,6 +179,478 @@ function ProductionInfoHud:update(dt)
         end
     end
 
+end
+
+---Prüft, ob die Zeit- und Wettervorgaben der Rezeptlinien im Spielstand überhaupt wirken.
+---Die Vorgaben bleiben an den Linien gespeichert, auch wenn ein Admin sie für den Spielstand abgeschaltet hat -
+---dann läuft jede Linie rund um die Uhr. Solange dieser Zustand nicht ohne Umweg über die Mod-Umgebung lesbar ist,
+---wird von wirksamen Vorgaben ausgegangen.
+---@return boolean isActive
+function ProductionInfoHud.GetAreProductionTimeModesActive()
+    return true;
+end
+
+---Zählt die Rezeptlinien, die sich die Durchsatzkapazität ihres Produktionspunktes gerade tatsächlich teilen.
+---Ohne angehaltene Linien und ohne linieneigenes Flag ist das die Zahl aller aktiven Linien, also genau der Wert,
+---mit dem auch das Grundspiel rechnet.
+---@param productionPoint table
+---@return integer count 0 wenn der Punkt seinen Durchsatz gar nicht teilt
+function ProductionInfoHud.CountSharedThroughputLines(productionPoint)
+    if not productionPoint.sharedThroughputCapacity then
+        return 0;
+    end
+
+    local count = 0;
+    for _, production in ipairs(productionPoint.activeProductions) do
+        if production.modeStatus == nil and production.sharedThroughputCapacity ~= false then
+            count = count + 1;
+        end
+    end
+
+    return count;
+end
+
+---Effektiver Takt einer Rezeptlinie in Zyklen pro Spielstunde.
+---Wetter- und Master-Faktor stammen aus dem letzten Produktionstakt und fehlen ohne Production Revamp,
+---dann bleibt der nominale Wert der Linie stehen.
+---@param productionPoint table
+---@param production table
+---@param numSharedThroughputLines integer Ergebnis von CountSharedThroughputLines
+---@return number throughput Takt inklusive Master-Faktor
+---@return number throughputWithoutMaster Takt ohne Master-Faktor, mit dem sich der Master-Booster selbst verbraucht
+function ProductionInfoHud.GetLineThroughput(productionPoint, production, numSharedThroughputLines)
+    local throughput = production.cyclesPerHour;
+
+    if production.weatherFactorCurrent ~= nil then
+        throughput = throughput * production.weatherFactorCurrent;
+    end
+
+    if numSharedThroughputLines > 0 and production.sharedThroughputCapacity ~= false then
+        throughput = throughput / numSharedThroughputLines;
+    end
+
+    local throughputWithoutMaster = throughput;
+    if production.masterFactor ~= nil then
+        throughput = throughput * production.masterFactor;
+    end
+
+    return throughput, throughputWithoutMaster;
+end
+
+---Prüft, ob eine Rezeptlinie Vorgaben zu Uhrzeit, Monat oder Jahreszeit hat und deshalb stundenweise
+---vorausgerechnet werden muss statt mit einem festen Stundenwert.
+---@param production table
+---@return boolean hasTimeModes
+function ProductionInfoHud.GetLineHasTimeModes(production)
+    if production.modes == nil or not ProductionInfoHud.GetAreProductionTimeModesActive() then
+        return false;
+    end
+
+    for _, mode in ipairs(production.modes) do
+        if mode == "HOURLY" or mode == "SEASONAL" or mode == "MONTHLY" then
+            return true;
+        end
+    end
+
+    return false;
+end
+
+---Prüft, ob eine Rezeptlinie zur angegebenen Spielzeit laufen darf.
+---Die Wettervorgaben bleiben dabei außen vor: das Wetter der nächsten Stunden ist nicht vorhersagbar,
+---sein aktueller Faktor steckt bereits im Takt der Linie.
+---@param production table
+---@param hour integer Stunde 0 bis 23
+---@param period integer Monat 1 bis 12, wobei 1 der März ist
+---@param season integer Jahreszeit 1 bis 4
+---@return boolean runs
+function ProductionInfoHud.GetLineRunsAtHour(production, hour, period, season)
+    if not ProductionInfoHud.GetLineHasTimeModes(production) then
+        return true;
+    end
+
+    for _, mode in ipairs(production.modes) do
+        if mode == "HOURLY" and production.hoursTable ~= nil and not production.hoursTable[hour] then
+            return false;
+        elseif mode == "SEASONAL" and production.seasonsList ~= nil and not production.seasonsList[season] then
+            return false;
+        elseif mode == "MONTHLY" and production.monthsList ~= nil and not production.monthsList[period] then
+            return false;
+        end
+    end
+
+    return true;
+end
+
+---Jahreszeit des angegebenen Monats. Je drei Monate bilden eine Jahreszeit, Monat 1 ist der März.
+---@param period integer Monat 1 bis 12
+---@return integer season Jahreszeit 1 bis 4
+function ProductionInfoHud.GetSeasonForPeriod(period)
+    return math.floor((period - 1) / 3) + 1;
+end
+
+---Summiert die Beiträge aller Rezeptlinien, die zur angegebenen Spielzeit laufen dürfen.
+---@param contributions table Liste von { production = table, delta = number }
+---@param hour integer Stunde 0 bis 23
+---@param period integer Monat 1 bis 12
+---@param season integer Jahreszeit 1 bis 4
+---@return number delta Menge pro Spielstunde, negativ wenn verbraucht wird
+function ProductionInfoHud.GetHourlyDelta(contributions, hour, period, season)
+    local delta = 0;
+
+    for _, contribution in ipairs(contributions) do
+        if ProductionInfoHud.GetLineRunsAtHour(contribution.production, hour, period, season) then
+            delta = delta + contribution.delta;
+        end
+    end
+
+    return delta;
+end
+
+---Durchschnittlicher Stundenwert über einen ganzen Spieltag. Eine Linie mit Zeitvorgaben steht zwischendurch still,
+---ihr Beitrag wird deshalb über 24 Stunden gemittelt - sonst hätte eine Bäckerei während ihrer Mittagspause
+---keinen Stundenwert und fiele ganz aus der Liste.
+---@param contributions table Liste von { production = table, delta = number }
+---@return number delta Menge pro Spielstunde im Tagesmittel
+function ProductionInfoHud.GetDailyAverageDelta(contributions)
+    local period = g_currentMission.environment.currentPeriod;
+    local season = ProductionInfoHud.GetSeasonForPeriod(period);
+    local total = 0;
+
+    for hour = 0, 23 do
+        total = total + ProductionInfoHud.GetHourlyDelta(contributions, hour, period, season);
+    end
+
+    return total / 24;
+end
+
+---Ermittelt die Sorte, welche eine Gruppe alternativer Zutaten beim angegebenen Bestand gerade gewinnt.
+---Der Auswahlmodus gehört der Rezeptlinie und ist im Spiel umstellbar: ASC nimmt die erste bevorratete Sorte
+---in Rezept-Reihenfolge, DESC die letzte, MOST die bestbevorratete und LEAST die schwächstbevorratete.
+---@param group table Gruppe mit members und amountByFillType
+---@param levels table fillTypeId -> Bestand
+---@param mixMode string|nil Auswahlmodus der Linie
+---@return integer|nil fillTypeId nil wenn keine Sorte der Gruppe bevorratet ist
+function ProductionInfoHud.GetMixGroupWinnerFillType(group, levels, mixMode)
+    local winner = nil;
+    local winnerLevel = nil;
+
+    for _, fillTypeId in ipairs(group.members) do
+        local level = levels[fillTypeId] or 0;
+        if level > 0 then
+            if winner == nil
+                or mixMode == "DESC"
+                or (mixMode == "MOST" and level > winnerLevel)
+                or (mixMode == "LEAST" and level < winnerLevel) then
+                winner = fillTypeId;
+                winnerLevel = level;
+            end
+        end
+    end
+
+    return winner;
+end
+
+---Baut die Rezeptlinien eines Produktionspunktes in eine Form, mit der sich der Verlauf der Lagerbestände nachrechnen lässt.
+---Die Mengen stehen darin schon als Menge pro Spielstunde, jeweils mit dem Takt der Linie verrechnet.
+---@param productionPoint table
+---@param numSharedThroughputLines integer
+---@return table lines
+function ProductionInfoHud.BuildSimulationLines(productionPoint, numSharedThroughputLines)
+    local lines = {};
+
+    for _, production in ipairs(productionPoint.activeProductions) do
+        local hasTimeModes = ProductionInfoHud.GetLineHasTimeModes(production);
+
+        -- Eine wegen des Wetters angehaltene Linie bleibt außen vor, eine wegen ihrer Uhrzeit angehaltene kommt mit:
+        -- sie läuft später wieder, und genau das soll der Verlauf zeigen.
+        if production.modeStatus == nil or hasTimeModes then
+            local throughput, throughputWithoutMaster = ProductionInfoHud.GetLineThroughput(productionPoint, production, numSharedThroughputLines);
+            local line = {production = production, hasTimeModes = hasTimeModes, required = {}, boosters = {}, groups = {}, outputs = {}};
+            local groupsByMix = {};
+
+            for _, inputItem in ipairs(production.inputs) do
+                local mix = inputItem.mix or 0;
+                local isBooster = mix == ProductionInfoHud.MIX_BOOST or mix == ProductionInfoHud.MIX_MASTER;
+
+                -- Der Master-Booster verbraucht sich mit dem Takt ohne seinen eigenen Faktor, sonst schaukelt er sich selbst hoch
+                local lineThroughput = throughput;
+                if mix == ProductionInfoHud.MIX_MASTER then
+                    lineThroughput = throughputWithoutMaster;
+                end
+
+                local amount = inputItem.amount * lineThroughput;
+                if inputItem.rngAffected then
+                    -- Der Zufall wirkt pro Takt, über eine Spielstunde mittelt er sich auf die Hälfte ein
+                    amount = amount * 0.5;
+                end
+
+                if isBooster then
+                    -- Ein Booster hält die Linie nie an, er fällt bei fehlendem Bestand nur aus.
+                    -- Nur ein ausdrückliches false heißt Ausfall, nicht ein noch gar nicht gesetzter Wert.
+                    if inputItem.boostSatisfied ~= false then
+                        table.insert(line.boosters, {fillTypeId = inputItem.type, amount = amount});
+                    end
+                elseif mix > 0 then
+                    local group = groupsByMix[mix];
+                    if group == nil then
+                        group = {mix = mix, members = {}, amountByFillType = {}};
+                        groupsByMix[mix] = group;
+                        table.insert(line.groups, group);
+                    end
+                    if group.amountByFillType[inputItem.type] == nil then
+                        table.insert(group.members, inputItem.type);
+                    end
+                    group.amountByFillType[inputItem.type] = amount;
+                else
+                    table.insert(line.required, {fillTypeId = inputItem.type, amount = amount});
+                end
+            end
+
+            for _, outputItem in ipairs(production.outputs) do
+                if productionPoint.outputFillTypeIdsDirectSell[outputItem.type] == nil and not outputItem.sellDirectly then
+                    local amount = outputItem.amount * throughput;
+
+                    -- Booster wirken auf die Erzeugnisse: true vervielfacht die Menge, "reverse" verringert sie um denselben Faktor
+                    if production.boosterFactor ~= nil and production.boosterFactor ~= 0 then
+                        if outputItem.boost == true then
+                            amount = amount * production.boosterFactor;
+                        elseif outputItem.boost == "reverse" then
+                            amount = amount / production.boosterFactor;
+                        end
+                    end
+
+                    if outputItem.rngAffected then
+                        amount = amount * 0.5;
+                    end
+
+                    table.insert(line.outputs, {fillTypeId = outputItem.type, amount = amount});
+                end
+            end
+
+            table.insert(lines, line);
+        end
+    end
+
+    return lines;
+end
+
+---Bestimmt für den angegebenen Zeitpunkt, was pro Spielstunde in jedes Lager fließt und was daraus abgeht.
+---Eine Linie zählt nur mit, wenn sie laufen darf und ihre zwingenden Zutaten samt einer Sorte je Zutaten-Gruppe bevorratet sind -
+---fehlt eine, steht die Linie und verbraucht auch die übrigen Zutaten nicht.
+---@param lines table Ergebnis von BuildSimulationLines
+---@param levels table fillTypeId -> Bestand
+---@param hour integer Stunde 0 bis 23
+---@param period integer Monat 1 bis 12
+---@param season integer Jahreszeit 1 bis 4
+---@param timeFactor number Umrechnung der Rezeptwerte auf die Länge eines Spieltages
+---@param rates table wird geleert und mit fillTypeId -> Menge pro Spielstunde gefüllt
+function ProductionInfoHud.ApplySimulationRates(lines, levels, hour, period, season, timeFactor, rates)
+    for fillTypeId, _ in pairs(rates) do
+        rates[fillTypeId] = nil;
+    end
+
+    for _, line in ipairs(lines) do
+        if ProductionInfoHud.GetLineRunsAtHour(line.production, hour, period, season) then
+            local canRun = true;
+
+            for _, entry in ipairs(line.required) do
+                if (levels[entry.fillTypeId] or 0) <= 0 then
+                    canRun = false;
+                    break;
+                end
+            end
+
+            local winners = nil;
+            if canRun then
+                for _, group in ipairs(line.groups) do
+                    local winner = ProductionInfoHud.GetMixGroupWinnerFillType(group, levels, line.production.mixMode);
+                    if winner == nil then
+                        canRun = false;
+                        break;
+                    end
+                    winners = winners or {};
+                    winners[winner] = group.amountByFillType[winner];
+                end
+            end
+
+            if canRun then
+                for _, entry in ipairs(line.required) do
+                    rates[entry.fillTypeId] = (rates[entry.fillTypeId] or 0) - (entry.amount * timeFactor);
+                end
+
+                if winners ~= nil then
+                    for fillTypeId, amount in pairs(winners) do
+                        rates[fillTypeId] = (rates[fillTypeId] or 0) - (amount * timeFactor);
+                    end
+                end
+
+                for _, entry in ipairs(line.boosters) do
+                    if (levels[entry.fillTypeId] or 0) > 0 then
+                        rates[entry.fillTypeId] = (rates[entry.fillTypeId] or 0) - (entry.amount * timeFactor);
+                    end
+                end
+
+                for _, entry in ipairs(line.outputs) do
+                    rates[entry.fillTypeId] = (rates[entry.fillTypeId] or 0) + (entry.amount * timeFactor);
+                end
+            end
+        end
+    end
+end
+
+---Prüft, welche Einträge ihre Grenze erreicht haben, und schreibt ihnen den erreichten Zeitpunkt hinein.
+---@param items table Einträge mit simFillTypeIds und simLimit
+---@param levels table fillTypeId -> Bestand
+---@param hoursPast number bisher vergangene Spielstunden
+---@return integer finished Anzahl der Einträge, die mit diesem Aufruf fertig geworden sind
+function ProductionInfoHud.CheckSimulationTargets(items, levels, hoursPast)
+    local finished = 0;
+
+    for _, item in ipairs(items) do
+        if item.hoursLeft == nil and item.simFillTypeIds ~= nil then
+            local reached = true;
+
+            if item.simLimit > 0 then
+                reached = (levels[item.simFillTypeIds[1]] or 0) >= item.simLimit;
+            else
+                -- Eine Zutaten-Gruppe ist erst am Ende, wenn keine ihrer Sorten mehr etwas hergibt
+                for _, fillTypeId in ipairs(item.simFillTypeIds) do
+                    if (levels[fillTypeId] or 0) > 0 then
+                        reached = false;
+                        break;
+                    end
+                end
+            end
+
+            if reached then
+                item.hoursLeft = hoursPast;
+                finished = finished + 1;
+            end
+        end
+    end
+
+    return finished;
+end
+
+---Rechnet den Verlauf aller Lagerbestände einer Produktionsstätte gemeinsam voraus und trägt in jeden Eintrag ein,
+---wann er seine Grenze erreicht: bei Verbrauch die Leere, bei Erzeugung die Lagerkapazität.
+---Gemeinsam statt je Eintrag, weil sich Zutaten-Gruppen und einzelne Zutaten dieselbe Sorte teilen können -
+---eine getrennte Rechnung würde denselben Weizen mehrfach verplanen.
+---Zwischen zwei Ereignissen (eine Sorte wird leer, ein Zeitfenster wechselt) bleiben alle Mengen gleich,
+---deshalb wird von Ereignis zu Ereignis gesprungen statt in Stundenschritten gerechnet.
+---Die Erzeugung läuft dabei über die Lagergrenze hinaus weiter: ob eine volle Ausgabe die Linie tatsächlich anhält,
+---hängt daran, ob die Ware verteilt oder direkt verkauft wird.
+---@param productionPoint table
+---@param lines table Ergebnis von BuildSimulationLines
+---@param items table Einträge mit simFillTypeIds und simLimit, deren hoursLeft gesetzt wird
+---@param timeFactor number Umrechnung der Rezeptwerte auf die Länge eines Spieltages
+function ProductionInfoHud.SimulateStorageTimeline(productionPoint, lines, items, timeFactor)
+    local environment = g_currentMission.environment;
+    local levels = {};
+    local hasTimeModes = false;
+    local openItems = 0;
+
+    for fillTypeId, _ in pairs(productionPoint.storage.fillLevels) do
+        levels[fillTypeId] = productionPoint:getFillLevel(fillTypeId);
+    end
+
+    for _, line in ipairs(lines) do
+        if line.hasTimeModes then
+            hasTimeModes = true;
+        end
+    end
+
+    for _, item in ipairs(items) do
+        if item.simFillTypeIds ~= nil then
+            item.hoursLeft = nil;
+            openItems = openItems + 1;
+        end
+    end
+
+    local hour = environment.currentHour;
+    local period = environment.currentPeriod;
+    local dayInPeriod = environment.currentDayInPeriod;
+    local daysPerPeriod = environment.daysPerPeriod;
+    local maxHours = ProductionInfoHud.MAX_FORECAST_DAYS * 24;
+    -- Die laufende Stunde ist meist schon angebrochen, sonst faengt die Vorausrechnung zu frueh an
+    local hourFraction = (environment.currentMinute or 0) / 60;
+    local hoursPast = 0;
+    local rates = {};
+
+    -- Ein Lager, das jetzt schon leer oder voll ist, hat keine Restzeit und nicht die des ersten Rechenschritts
+    openItems = openItems - ProductionInfoHud.CheckSimulationTargets(items, levels, 0);
+
+    while hoursPast < maxHours and openItems > 0 do
+        local season = ProductionInfoHud.GetSeasonForPeriod(period);
+        ProductionInfoHud.ApplySimulationRates(lines, levels, hour, period, season, timeFactor, rates);
+
+        -- Bis zum nächsten Ereignis bleiben alle Mengen gleich
+        local step = maxHours - hoursPast;
+        if hasTimeModes then
+            step = math.min(step, 1 - hourFraction);
+        end
+
+        for fillTypeId, rate in pairs(rates) do
+            if rate < 0 then
+                local level = levels[fillTypeId] or 0;
+                if level > 0 then
+                    step = math.min(step, level / -rate);
+                end
+            end
+        end
+
+        for _, item in ipairs(items) do
+            if item.hoursLeft == nil and item.simFillTypeIds ~= nil and item.simLimit > 0 then
+                local rate = rates[item.simFillTypeIds[1]];
+                if rate ~= nil and rate > 0 then
+                    local missing = item.simLimit - (levels[item.simFillTypeIds[1]] or 0);
+                    if missing > 0 then
+                        step = math.min(step, missing / rate);
+                    end
+                end
+            end
+        end
+
+        if step <= 0 then
+            -- Sicherheitsnetz gegen einen Stillstand, falls ein Ereignis auf der Stelle liegt
+            step = 1 / 60;
+        end
+
+        for fillTypeId, rate in pairs(rates) do
+            local level = (levels[fillTypeId] or 0) + (rate * step);
+            if level < 0 then
+                level = 0;
+            end
+            levels[fillTypeId] = level;
+        end
+
+        hoursPast = hoursPast + step;
+        hourFraction = hourFraction + step;
+        while hourFraction >= 1 do
+            hourFraction = hourFraction - 1;
+            hour = hour + 1;
+            if hour > 23 then
+                hour = 0;
+                dayInPeriod = dayInPeriod + 1;
+                if dayInPeriod > daysPerPeriod then
+                    dayInPeriod = 1;
+                    period = period + 1;
+                    if period > Environment.PERIODS_IN_YEAR then
+                        period = 1;
+                    end
+                end
+            end
+        end
+
+        openItems = openItems - ProductionInfoHud.CheckSimulationTargets(items, levels, hoursPast);
+    end
+
+    -- Was in der Vorausrechnung nicht eintritt, reicht mindestens bis an deren Grenze
+    for _, item in ipairs(items) do
+        if item.simFillTypeIds ~= nil and item.hoursLeft == nil then
+            item.hoursLeft = maxHours;
+        end
+    end
 end
 
 ---Add the given item to the list after calculating some stuff
@@ -180,15 +661,21 @@ function ProductionInfoHud:AddProductionItemToList(myProductionItems, production
     local timeFactor = (1 / g_currentMission.environment.daysPerPeriod);
 
     -- restzeit berechnen
+    -- Ein bereits gesetztes hoursLeft stammt aus der gemeinsamen Vorausrechnung der Produktionsstätte und bleibt stehen,
+    -- sonst reicht die Division durch den Stundenwert.
     if productionItem.productionPerHour ~= 0 then
         if productionItem.productionPerHour < 0 then
             -- wenn productionPerHour negativ, dann wird verbraucht, aber die Stunden sollten alle positiv sein
-            productionItem.hoursLeft = productionItem.fillLevel / (productionItem.productionPerHour * timeFactor * -1);
             productionItem.capacityData = (productionItem.capacity - productionItem.fillLevel);
+            if productionItem.hoursLeft == nil then
+                productionItem.hoursLeft = productionItem.fillLevel / (productionItem.productionPerHour * timeFactor * -1);
+            end
         else
             -- wenn productionPerHour positiv, dann wird produziert, also Restzeit basiert auf bis lager voll ist
-            productionItem.hoursLeft = (productionItem.capacity - productionItem.fillLevel) / (productionItem.productionPerHour * timeFactor);
             productionItem.capacityData = productionItem.fillLevel;
+            if productionItem.hoursLeft == nil then
+                productionItem.hoursLeft = (productionItem.capacity - productionItem.fillLevel) / (productionItem.productionPerHour * timeFactor);
+            end
         end
         -- pro stunde noch umrechnen anhand des timefactor
         productionItem.productionPerHour = productionItem.productionPerHour * timeFactor;
@@ -251,6 +738,13 @@ function ProductionInfoHud:AddProductionItemToList(myProductionItems, production
         else
             productionItem.TimeShortString = hours .. " " .. ProductionInfoHud.i18n:getText(hours == 1 and "pih_hourSingular" or "pih_hourPlural");
         end
+
+        -- Beruht der Wert auf dem aktuellen Wetter oder auf Zufallsmengen, kann er sich jederzeit ändern:
+        -- die Tilde kennzeichnet ihn als schwankend. Bei Voll, Leer und den Hinweistexten bleibt sie weg, dort gibt es nichts zu schätzen.
+        if productionItem.isVarying and not (days == 0 and hours == 0 and minutes <= 2) then
+            productionItem.TimeLeftString = "~" .. productionItem.TimeLeftString;
+            productionItem.TimeShortString = "~" .. productionItem.TimeShortString;
+        end
     else
         productionItem.TimeLeftString = "";
         productionItem.TimeShortString = "";
@@ -261,11 +755,14 @@ function ProductionInfoHud:AddProductionItemToList(myProductionItems, production
         -- nur items mit einem Stundenwert einfügen, da für die Verteilliste eine eigene Liste gemacht wird
         table.insert(myProductionItems, productionItem)
 
-        -- längsten filltypetitel für box behalten
-        local textWidth = getTextWidth(10, utf8Substr(productionItem.fillTypeTitle, 0));
-        if ProductionInfoHud.longestFillTypeTitleWidth == nil or ProductionInfoHud.longestFillTypeTitleWidth < textWidth then
-            ProductionInfoHud.longestFillTypeTitleWidth = textWidth;
-            ProductionInfoHud.longestFillTypeTitle = productionItem.fillTypeTitle;
+        -- längsten filltypetitel für box behalten.
+        -- Die Aufzählung einer Zutaten-Gruppe bleibt dabei außen vor, sie würde die Namensspalte zusammenquetschen - angezeigt wird sie gekürzt.
+        if productionItem.mixFillTypeIds == nil then
+            local textWidth = getTextWidth(10, utf8Substr(productionItem.fillTypeTitle, 0));
+            if ProductionInfoHud.longestFillTypeTitleWidth == nil or ProductionInfoHud.longestFillTypeTitleWidth < textWidth then
+                ProductionInfoHud.longestFillTypeTitleWidth = textWidth;
+                ProductionInfoHud.longestFillTypeTitle = productionItem.fillTypeTitle;
+            end
         end
     end
 end
@@ -401,13 +898,48 @@ end
 -- @param table fillTypeIds set of fillTypeId -> true, gegen das geprüft wird (geladene/unterstützte Ware)
 -- @return boolean matches
 function ProductionInfoHud.MatchesAnyFillType(matchFillTypeIds, fillTypeIds)
-    if matchFillTypeIds == nil then return false; end
+    return ProductionInfoHud.GetMatchingFillType(matchFillTypeIds, fillTypeIds) ~= nil;
+end
+
+---Liefert die Sorte, über die ein Eintrag zur geladenen oder transportierbaren Ware passt.
+---Eine Zeile, die mehrere Sorten zusammenfasst, wird darüber der passenden Ware zugeordnet.
+---@param matchFillTypeIds table set of fillTypeId -> true, kann nil sein wenn noch nicht berechnet
+---@param fillTypeIds table set of fillTypeId -> true, gegen das geprüft wird
+---@return integer|nil fillTypeId nil wenn keine Sorte passt
+function ProductionInfoHud.GetMatchingFillType(matchFillTypeIds, fillTypeIds)
+    if matchFillTypeIds == nil then
+        return nil;
+    end
+
     for fillTypeId, _ in pairs(matchFillTypeIds) do
         if fillTypeIds[fillTypeId] then
-            return true;
+            return fillTypeId;
         end
     end
-    return false;
+
+    return nil;
+end
+
+---Beschriftung der FillType-Spalte eines Eintrags. Bei einer Zeile für mehrere Sorten rückt die Sorte nach vorne,
+---die zur geladenen Ware passt, damit sie nicht von der Spaltenbreite abgeschnitten wird.
+---Hat der Modder der Gruppe einen eigenen Namen gegeben, bleibt dieser unverändert stehen.
+---@param productionItem table
+---@return string title
+function ProductionInfoHud.GetItemFillTypeTitle(productionItem)
+    if productionItem.mixFillTypeTitles == nil or productionItem.cargoMatchFillTypeId == nil then
+        return tostring(productionItem.fillTypeTitle);
+    end
+
+    local titles = {};
+    for index, fillTypeId in ipairs(productionItem.mixFillTypeIds) do
+        if fillTypeId == productionItem.cargoMatchFillTypeId then
+            table.insert(titles, 1, productionItem.mixFillTypeTitles[index]);
+        else
+            table.insert(titles, productionItem.mixFillTypeTitles[index]);
+        end
+    end
+
+    return table.concat(titles, ", ");
 end
 
 ---Add the given husbandry to the list
@@ -716,91 +1248,313 @@ function ProductionInfoHud:AddFactory(myProductionItems, factory)
     end
 end
 
+---Hängt den Beitrag einer Rezeptlinie an die Liste ihres FillTypes. Der Beitrag hält seine Linie fest,
+---damit die Restzeit später berücksichtigen kann, wann diese Linie überhaupt läuft.
+---@param contributionsByFillType table
+---@param fillTypeId integer
+---@param production table
+---@param delta number Menge pro Spielstunde, negativ wenn verbraucht wird
+function ProductionInfoHud.AddContribution(contributionsByFillType, fillTypeId, production, delta)
+    local contributions = contributionsByFillType[fillTypeId];
+    if contributions == nil then
+        contributions = {};
+        contributionsByFillType[fillTypeId] = contributions;
+    end
+
+    table.insert(contributions, {production = production, delta = delta});
+end
+
+---Baut die Zeile für eine Gruppe alternativer Zutaten. Bestand und Kapazität sind die Summe ihrer Sorten,
+---verbraucht wird pro Takt aber nur eine davon - die Gruppe reicht deshalb so lange, bis die letzte Alternative leer ist.
+---@param productionPoint table
+---@param productionName string|nil Name des Gebäudes, den auch die übrigen Zeilen tragen
+---@param mixGroup table
+---@return table|nil productionItem nil wenn die Gruppe keine Sorte enthält
+function ProductionInfoHud.CreateMixGroupItem(productionPoint, productionName, mixGroup)
+    if #mixGroup.members == 0 then
+        return nil;
+    end
+
+    local storage = productionPoint.storage;
+    local fillLevel = 0;
+    local capacity = 0;
+    local hasSharedCapacity = false;
+    local titles = {};
+    local matchFillTypeIds = {};
+
+    for _, fillTypeId in ipairs(mixGroup.members) do
+        fillLevel = fillLevel + productionPoint:getFillLevel(fillTypeId);
+        capacity = capacity + productionPoint:getCapacity(fillTypeId);
+        table.insert(titles, ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillTypeId));
+
+        for matchFillTypeId, _ in pairs(ProductionInfoHud.GetMatchFillTypeIds(productionPoint, fillTypeId)) do
+            matchFillTypeIds[matchFillTypeId] = true;
+        end
+
+        -- Eine Sorte ohne eigene Kapazitätszeile lebt vom gemeinsamen Topf des Lagers
+        if storage ~= nil and storage.supportsMultipleFillTypes and storage.capacities ~= nil and storage.capacities[fillTypeId] == nil then
+            hasSharedCapacity = true;
+        end
+    end
+
+    -- Teilen sich Sorten der Gruppe einen gemeinsamen Topf, dürfen sich ihre Kapazitäten nicht über dessen Größe hinaus aufaddieren
+    if hasSharedCapacity and storage.capacity ~= nil and capacity > storage.capacity then
+        capacity = storage.capacity;
+    end
+
+    local productionItem = {};
+    productionItem.name = productionName;
+    productionItem.fillTypeId = nil; -- die Zeile steht für mehrere Sorten, nicht für eine einzelne
+    productionItem.mixFillTypeIds = mixGroup.members;
+    productionItem.fillTypeTitle = mixGroup.title or table.concat(titles, ", ");
+    if mixGroup.title == nil then
+        -- nur die selbst aufgezählten Sorten lassen sich für die geladene Ware umsortieren, ein eigener Gruppenname bleibt wie er ist
+        productionItem.mixFillTypeTitles = titles;
+    end
+    productionItem.fillLevel = fillLevel;
+    productionItem.capacity = capacity;
+    productionItem.hoursLeft = nil;
+    productionItem.isInput = true;
+    productionItem.isOutput = false;
+    productionItem.IsProduction = true;
+    productionItem.target = productionPoint;
+    productionItem.matchFillTypeIds = matchFillTypeIds;
+    productionItem.isVarying = mixGroup.isVarying;
+
+    if capacity == 0 then
+        productionItem.capacityLevel = 0;
+    else
+        productionItem.capacityLevel = fillLevel / capacity;
+    end
+
+    local contributions = {{production = mixGroup.production, delta = -mixGroup.amount}};
+    if mixGroup.hasTimeModes then
+        productionItem.productionPerHour = ProductionInfoHud.GetDailyAverageDelta(contributions);
+    else
+        productionItem.productionPerHour = -mixGroup.amount;
+    end
+
+    -- Die Gruppe ist erst am Ende, wenn keine ihrer Sorten mehr etwas hergibt
+    if productionItem.productionPerHour ~= 0 then
+        productionItem.simFillTypeIds = mixGroup.members;
+        productionItem.simLimit = 0;
+    end
+
+    return productionItem;
+end
+
 ---Add the given production point to the list
 -- @param table myProductionItems The list where it will be added to
 -- @param ProductionPoint productionPoint What should be added
 function ProductionInfoHud:AddProductionPoint(myProductionItems, productionPoint)
-    -- is the point shared, then the amounts needs to be divided
-    local productionPointMultiplicator = 1;
-    if productionPoint.sharedThroughputCapacity and #productionPoint.activeProductions ~= 0 then
-        productionPointMultiplicator = 1 / #productionPoint.activeProductions;
-    end
-
     -- Name ist pro Produktionspunkt gleich, daher nur ein Mal statt pro FillType berechnen
     local productionName = productionPoint.owningPlaceable:getName();
     if productionName ~= nil then
         productionName = string.gsub(productionName, "%(Leasing%) ", "");
     end
 
-    -- Einmal pro Produktionspunkt statt pro FillType über alle aktiven Produktionen laufen und direkt pro FillType einsortieren
-    -- (gleiche Bedingungen wie vorher: MISSING_INPUTS und DirectSell-Outputs werden nicht mitgezählt)
-    local productionPerHourDeltaByFillType = {};
+    local numSharedThroughputLines = ProductionInfoHud.CountSharedThroughputLines(productionPoint);
+
+    -- Einmal pro Produktionspunkt statt pro FillType über alle aktiven Produktionen laufen und die Beiträge je FillType einsammeln
+    local contributionsByFillType = {};
     local isInputByFillType = {};
     local isOutputByFillType = {};
-    for _, production in pairs(productionPoint.activeProductions) do
-        for _, inputItem in pairs(production.inputs) do
-            isInputByFillType[inputItem.type] = true;
-            productionPerHourDeltaByFillType[inputItem.type] = (productionPerHourDeltaByFillType[inputItem.type] or 0) - (production.cyclesPerHour * inputItem.amount * productionPointMultiplicator);
+    local isVaryingByFillType = {};
+    local hasTimeModesByFillType = {};
+    local mixGroupsByKey = {};
+    local mixGroupList = {};
+    local mixMemberFillTypes = {};
+    local plainFillTypes = {};
+
+    local hasAnyTimeModes = false;
+
+    for _, production in ipairs(productionPoint.activeProductions) do
+        local hasTimeModes = ProductionInfoHud.GetLineHasTimeModes(production);
+        if hasTimeModes then
+            hasAnyTimeModes = true;
         end
 
-        if production.status ~= ProductionPoint.PROD_STATUS.MISSING_INPUTS then
-            for _, outputItem in pairs(production.outputs) do
-                if productionPoint.outputFillTypeIdsDirectSell[outputItem.type] == nil then
-                    isOutputByFillType[outputItem.type] = true;
-                    productionPerHourDeltaByFillType[outputItem.type] = (productionPerHourDeltaByFillType[outputItem.type] or 0) + (production.cyclesPerHour * outputItem.amount * productionPointMultiplicator);
+        -- Eine wegen des Wetters angehaltene Linie verbraucht und erzeugt nichts. Eine wegen ihrer Uhrzeit, ihres Monats
+        -- oder ihrer Jahreszeit angehaltene Linie zählt dagegen mit: sie läuft später wieder, und genau das rechnet die Zeitachse aus.
+        if production.modeStatus == nil or hasTimeModes then
+            local throughput, throughputWithoutMaster = ProductionInfoHud.GetLineThroughput(productionPoint, production, numSharedThroughputLines);
+            -- Ein Wetterfaktor stammt immer aus dem letzten Takt und ändert sich mit dem Wetter
+            local isLineVarying = production.weatherFactorCurrent ~= nil;
+
+            for _, inputItem in ipairs(production.inputs) do
+                local mix = inputItem.mix or 0;
+                local isBooster = mix == ProductionInfoHud.MIX_BOOST or mix == ProductionInfoHud.MIX_MASTER;
+
+                -- Ein Booster verbraucht sich nur, wenn sein Bestand im letzten Takt gereicht hat.
+                -- Nur ein ausdrückliches false heißt, dass er ausfällt: ohne gelaufenen Takt steht dort gar nichts,
+                -- und dann darf die Sorte nicht stillschweigend aus der Liste fallen.
+                if not isBooster or inputItem.boostSatisfied ~= false then
+                    -- Der Master-Booster verbraucht sich mit dem Takt ohne seinen eigenen Faktor, sonst schaukelt er sich selbst hoch
+                    local lineThroughput = throughput;
+                    if mix == ProductionInfoHud.MIX_MASTER then
+                        lineThroughput = throughputWithoutMaster;
+                    end
+
+                    local amount = inputItem.amount * lineThroughput;
+                    local isAmountVarying = isLineVarying;
+                    if inputItem.rngAffected then
+                        -- Der Zufall wirkt pro Takt, über eine Spielstunde mittelt er sich auf die Hälfte ein
+                        amount = amount * 0.5;
+                        isAmountVarying = true;
+                    end
+
+                    if mix > 0 and not isBooster then
+                        -- Gruppe alternativer Zutaten: pro Takt wird nur eine Sorte verbraucht, deshalb bekommt die Gruppe eine gemeinsame Zeile
+                        local groupKey = tostring(production.id) .. "#" .. tostring(mix);
+                        local mixGroup = mixGroupsByKey[groupKey];
+                        if mixGroup == nil then
+                            mixGroup = {production = production, members = {}, memberSet = {}, amount = 0, hasWinnerAmount = false, isVarying = false, hasTimeModes = hasTimeModes};
+                            if production.mixGroupTitles ~= nil then
+                                mixGroup.title = production.mixGroupTitles[mix];
+                            end
+                            mixGroupsByKey[groupKey] = mixGroup;
+                            table.insert(mixGroupList, mixGroup);
+                        end
+
+                        if not mixGroup.memberSet[inputItem.type] then
+                            mixGroup.memberSet[inputItem.type] = true;
+                            table.insert(mixGroup.members, inputItem.type);
+                        end
+                        mixMemberFillTypes[inputItem.type] = true;
+
+                        -- Verbraucht wird die Menge der Sorte, welche die Gruppe gerade gewinnt.
+                        -- Steht noch kein Gewinner fest, bleibt die Menge der ersten Alternative als Anhaltspunkt stehen.
+                        local isWinner = production.mixGroupWinnerType ~= nil and production.mixGroupWinnerType[mix] == inputItem.type;
+                        if isWinner or not mixGroup.hasWinnerAmount then
+                            mixGroup.amount = amount;
+                            mixGroup.hasWinnerAmount = isWinner;
+                        end
+                        if isAmountVarying then
+                            mixGroup.isVarying = true;
+                        end
+                    else
+                        isInputByFillType[inputItem.type] = true;
+                        plainFillTypes[inputItem.type] = true;
+                        ProductionInfoHud.AddContribution(contributionsByFillType, inputItem.type, production, -amount);
+                        if isAmountVarying then
+                            isVaryingByFillType[inputItem.type] = true;
+                        end
+                        if hasTimeModes then
+                            hasTimeModesByFillType[inputItem.type] = true;
+                        end
+                    end
+                end
+            end
+
+            -- Erzeugnisse zählen nur, solange die Linie nicht auf Zutaten wartet
+            if production.status ~= ProductionPoint.PROD_STATUS.MISSING_INPUTS then
+                for _, outputItem in ipairs(production.outputs) do
+                    if productionPoint.outputFillTypeIdsDirectSell[outputItem.type] == nil and not outputItem.sellDirectly then
+                        local amount = outputItem.amount * throughput;
+                        local isAmountVarying = isLineVarying;
+
+                        -- Booster wirken auf die Erzeugnisse: true vervielfacht die Menge, "reverse" verringert sie um denselben Faktor
+                        if production.boosterFactor ~= nil and production.boosterFactor ~= 0 then
+                            if outputItem.boost == true then
+                                amount = amount * production.boosterFactor;
+                            elseif outputItem.boost == "reverse" then
+                                amount = amount / production.boosterFactor;
+                            end
+                        end
+
+                        if outputItem.rngAffected then
+                            amount = amount * 0.5;
+                            isAmountVarying = true;
+                        end
+
+                        isOutputByFillType[outputItem.type] = true;
+                        plainFillTypes[outputItem.type] = true;
+                        ProductionInfoHud.AddContribution(contributionsByFillType, outputItem.type, production, amount);
+                        if isAmountVarying then
+                            isVaryingByFillType[outputItem.type] = true;
+                        end
+                        if hasTimeModes then
+                            hasTimeModesByFillType[outputItem.type] = true;
+                        end
+                    end
                 end
             end
         end
     end
 
+    -- Zutaten-Gruppen und Zeitvorgaben machen aus der Restzeit eine Vorausrechnung, und die muss für alle Sorten der Stätte
+    -- gemeinsam laufen: Gruppen und einzelne Zutaten teilen sich dieselben Sorten.
+    local needsSimulation = #mixGroupList > 0 or hasAnyTimeModes;
+    local pendingItems = {};
+
     for fillTypeId, _ in pairs(productionPoint.storage.fillLevels) do
+        -- Eine Sorte, die nur als Alternative in einer Zutaten-Gruppe vorkommt, steht in der Zeile ihrer Gruppe statt in einer eigenen
+        if plainFillTypes[fillTypeId] or not mixMemberFillTypes[fillTypeId] then
 
-        -- item für produktionsliste erstellen. Ein Item pro fillType
-        local productionItem = {}
-        productionItem.name = productionName;
-        productionItem.fillTypeId = fillTypeId;
-        productionItem.productionPerHour = 0; -- negative when more used than produced. calculated on one day per month as giants always does
-        productionItem.hoursLeft = nil; -- time until full or empty, nil when not changing
-        productionItem.fillLevel = productionPoint:getFillLevel(fillTypeId);
-        productionItem.capacity = productionPoint:getCapacity(fillTypeId);
-        productionItem.isInput = false;
-        productionItem.isOutput = false;
-        productionItem.IsProduction = true;
-        productionItem.target = productionPoint;
-        productionItem.isAutoDeliver = productionPoint.outputFillTypeIdsAutoDeliver[fillTypeId];
+            -- item für produktionsliste erstellen. Ein Item pro fillType
+            local productionItem = {}
+            productionItem.name = productionName;
+            productionItem.fillTypeId = fillTypeId;
+            productionItem.productionPerHour = 0; -- negative when more used than produced. calculated on one day per month as giants always does
+            productionItem.hoursLeft = nil; -- time until full or empty, nil when not changing
+            productionItem.fillLevel = productionPoint:getFillLevel(fillTypeId);
+            productionItem.capacity = productionPoint:getCapacity(fillTypeId);
+            productionItem.isInput = productionPoint.inputFillTypeIds[fillTypeId] == true or isInputByFillType[fillTypeId] == true;
+            productionItem.isOutput = productionPoint.outputFillTypeIds[fillTypeId] == true or isOutputByFillType[fillTypeId] == true;
+            productionItem.IsProduction = true;
+            productionItem.target = productionPoint;
+            productionItem.isAutoDeliver = productionPoint.outputFillTypeIdsAutoDeliver[fillTypeId];
+            productionItem.isVarying = isVaryingByFillType[fillTypeId];
+            productionItem.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillTypeId);
 
-        -- prüfen ob input type
-        if productionPoint.inputFillTypeIds[fillTypeId] ~= nil then
-            productionItem.isInput = productionPoint.inputFillTypeIds[fillTypeId];
+            if productionItem.capacity == nil or productionItem.capacity == 0 then
+                productionItem.capacityLevel = 0
+            else
+                productionItem.capacityLevel = productionItem.fillLevel / productionItem.capacity;
+            end
+
+            local contributions = contributionsByFillType[fillTypeId];
+            if contributions ~= nil then
+                if hasTimeModesByFillType[fillTypeId] then
+                    -- Mit Zeitvorgaben schwankt der Stundenwert über den Tag, angezeigt wird deshalb das Tagesmittel
+                    productionItem.productionPerHour = ProductionInfoHud.GetDailyAverageDelta(contributions);
+                else
+                    for _, contribution in ipairs(contributions) do
+                        productionItem.productionPerHour = productionItem.productionPerHour + contribution.delta;
+                    end
+                end
+            end
+
+            if productionItem.isInput then
+                productionItem.matchFillTypeIds = ProductionInfoHud.GetMatchFillTypeIds(productionPoint, fillTypeId);
+            end
+
+            if needsSimulation and productionItem.productionPerHour ~= 0 then
+                productionItem.simFillTypeIds = {fillTypeId};
+                if productionItem.productionPerHour < 0 then
+                    productionItem.simLimit = 0;
+                else
+                    productionItem.simLimit = productionItem.capacity;
+                end
+            end
+
+            table.insert(pendingItems, productionItem);
         end
-        -- prüfen ob output type
-        if productionPoint.outputFillTypeIds[fillTypeId] ~= nil then
-            productionItem.isOutput = productionPoint.outputFillTypeIds[fillTypeId];
-        end
+    end
 
-        if productionItem.capacity == 0 then
-            productionItem.capacityLevel = 0
-        elseif productionItem.capacity == nil then
-            productionItem.capacityLevel = 0
-        else
-            productionItem.capacityLevel = productionItem.fillLevel / productionItem.capacity;
+    for _, mixGroup in ipairs(mixGroupList) do
+        local productionItem = ProductionInfoHud.CreateMixGroupItem(productionPoint, productionName, mixGroup);
+        if productionItem ~= nil then
+            table.insert(pendingItems, productionItem);
         end
+    end
 
-        productionItem.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillTypeId);
+    if needsSimulation then
+        local lines = ProductionInfoHud.BuildSimulationLines(productionPoint, numSharedThroughputLines);
+        ProductionInfoHud.SimulateStorageTimeline(productionPoint, lines, pendingItems, 1 / g_currentMission.environment.daysPerPeriod);
+    end
 
-        -- oben einmal pro Produktionspunkt vorberechnet, siehe productionPerHourDeltaByFillType/isInputByFillType/isOutputByFillType
-        if isInputByFillType[fillTypeId] then
-            productionItem.isInput = true;
-        end
-        if isOutputByFillType[fillTypeId] then
-            productionItem.isOutput = true;
-        end
-        productionItem.productionPerHour = productionItem.productionPerHour + (productionPerHourDeltaByFillType[fillTypeId] or 0);
-
-        if productionItem.isInput then
-            productionItem.matchFillTypeIds = ProductionInfoHud.GetMatchFillTypeIds(productionPoint, fillTypeId);
-        end
-
+    for _, productionItem in ipairs(pendingItems) do
         self:AddProductionItemToList(myProductionItems, productionItem);
     end
 end
@@ -825,11 +1579,15 @@ end
 
 --- Zum Sortieren bei aktivem LoadedCargoFilter: FillTypes gruppieren, innerhalb der Gruppe nach freier Kapazität (wieviel passt noch rein, absteigend)
 function ProductionInfoHud.compProductionTableByFillTypeAndFreeCapacity(a, b)
-    if a.fillTypeId ~= b.fillTypeId then
-        -- Futter-Einträge (Kuhstall etc.) haben keine einzelne fillTypeId, da mehrere Sorten zulässig sind - ans Ende sortieren statt Vergleichsfehler
-        if a.fillTypeId == nil then return false; end
-        if b.fillTypeId == nil then return true; end
-        return a.fillTypeId < b.fillTypeId;
+    -- Eine Zeile für mehrere Sorten (Futter, Zutaten-Gruppe) hat keine einzelne fillTypeId. Passt eine davon zur geladenen Ware,
+    -- sortiert sie über diese Sorte mit ein und steht damit bei den übrigen Zeilen derselben Ware.
+    local fillTypeIdA = a.fillTypeId or a.cargoMatchFillTypeId;
+    local fillTypeIdB = b.fillTypeId or b.cargoMatchFillTypeId;
+    if fillTypeIdA ~= fillTypeIdB then
+        -- ohne jede Sorte ans Ende sortieren statt Vergleichsfehler
+        if fillTypeIdA == nil then return false; end
+        if fillTypeIdB == nil then return true; end
+        return fillTypeIdA < fillTypeIdB;
     end
     local freeCapacityA = (a.capacity or 0) - (a.fillLevel or 0);
     local freeCapacityB = (b.capacity or 0) - (b.fillLevel or 0);
