@@ -363,7 +363,7 @@ function PihProductionOverviewFrame:populateCellForItemInSection(list, section, 
         end
         cell:getAttribute("title"):setText(title)
         cell:getAttribute("value"):setText(g_i18n:formatNumber(detail.activeAmount * self:getDisplayFactor(), self:getDisplayDecimals()))
-        if detail.alternativeForFillTypeTitle ~= nil then
+        if detail.alternativeForFillTypeTitle ~= nil or detail.isOptional then
             cell:getAttribute("title"):setTextColor(1, 0.6, 0, 1)
             cell:getAttribute("value"):setTextColor(1, 0.6, 0, 1)
         else

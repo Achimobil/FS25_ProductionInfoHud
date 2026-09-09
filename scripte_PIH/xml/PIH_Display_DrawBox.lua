@@ -23,7 +23,21 @@ function PIH_Display_DrawBox.setBox(args)
         isLoadedCargoFilterBySupportedTypes = box.filterCacheIsLoadedCargoFilterBySupportedTypes;
     else
         currentProductionItems = {};
-        if box.ownTable.fillTypeFilter ~= nil then
+        if box.ownTable.fillTypeFilterIds ~= nil then
+            -- Angeklickt wurde eine Zeile für mehrere Sorten, gesucht sind alle Einträge zu diesen Sorten.
+            -- Eine Summenzeile gibt es hier nicht: verschiedene Waren zusammenzuzählen ergibt keine Aussage.
+            -- Andere Filter werden wie beim Titel-Filter bewusst nicht berücksichtigt.
+            for _, productionItem in pairs(ProductionInfoHud.CurrentProductionItems) do
+                if ProductionInfoHud.MatchesFillTypeFilter(productionItem, box.ownTable.fillTypeFilterIds) then
+                    table.insert(currentProductionItems, productionItem);
+                end
+            end
+
+            -- fallback
+            if #currentProductionItems == 0 then
+                currentProductionItems = ProductionInfoHud.CurrentProductionItems;
+            end
+        elseif box.ownTable.fillTypeFilter ~= nil then
             -- summary item erstellen
             local sumItem = {};
             sumItem.name = "-";
@@ -157,8 +171,11 @@ function PIH_Display_DrawBox.setBox(args)
         if box.needsUpdate or box.ownTable.lineHeight == nil then
             box.ownTable.lineHeight = getTextHeight(size, utf8Substr("Äg", 0))+distance.textLine;
             box.ownTable.iconWidth, box.ownTable.iconHeight = box:getOptiWidthHeight( {typ="icon", height=box.ownTable.lineHeight-distance.textLine-(difH), width=w-(difW*2)} );
+            box.ownTable.iconSpace = (box.ownTable.iconWidth/1.3) + (2*difW);
             box.ownTable.timeWidth = getTextWidth(size, utf8Substr(" 99 Tage 23:23", 0));
-            box.ownTable.fillTypeWidth = getTextWidth(size, utf8Substr(ProductionInfoHud.longestFillTypeTitle, 0));
+            -- Der Platz fürs Icon gehört mit in die Spaltenbreite: gezeichnet wird der Text mit fillTypeWidth abzüglich dieses Platzes,
+            -- ohne ihn passt gerade der längste Titel nicht hinein, obwohl er die Spalte bemisst.
+            box.ownTable.fillTypeWidth = getTextWidth(size, utf8Substr(ProductionInfoHud.longestFillTypeTitle, 0)) + box.ownTable.iconSpace;
             box.ownTable.textWidth = (w - box.ownTable.timeWidth - box.ownTable.fillTypeWidth - (difW*6));
             -- Wenn jetzt aber die Textbreite kleiner ist als die breite des Filltypes, dann beides gleich breit machen
             if box.ownTable.textWidth < box.ownTable.fillTypeWidth then
@@ -178,7 +195,7 @@ function PIH_Display_DrawBox.setBox(args)
     local iconWidth = box.ownTable.iconWidth;
     local iconHeight = box.ownTable.iconHeight;
     local iconWidthS = iconWidth/1.3;
-    local iconSpace = iconWidthS + (2*difW);
+    local iconSpace = box.ownTable.iconSpace;
     local iconHeightS = iconHeight/1.3;
     local nextPosX = x+(difW*3);
     local nextPosY = y;
@@ -430,7 +447,7 @@ function PIH_Display_DrawBox.setBox(args)
 
                     nextRightPosX = nextRightPosX + iconSpace;
 
-                    if box.ownTable.fillTypeFilter ~= nil then
+                    if box.ownTable.fillTypeFilter ~= nil or box.ownTable.fillTypeFilterIds ~= nil then
                         setTextColor(unpack(colorOn));
                     else
                         setTextColor(unpack(color));
@@ -441,7 +458,7 @@ function PIH_Display_DrawBox.setBox(args)
                     setTextBold(false);
                     setTextColor(1, 1, 1, 1);
                     setTextAlignment(0);
-                    if not g_currentMission.hlUtils:disableInArea() and inArea then box:setClickArea( {nextRightPosX, nextRightPosX+box.ownTable.timeWidth, nextPosY, nextPosY+box.ownTable.lineHeight, onClick=PIH_Display_MouseKeyEventsBox.onClickArea, whatClick="PIH_Display_Box", typPos=boxNumber, whereClick="fillTypeColumn_", ownTable={ fillType = productionItem.fillTypeTitle }} );end;
+                    if not g_currentMission.hlUtils:disableInArea() and inArea then box:setClickArea( {nextRightPosX, nextRightPosX+box.ownTable.timeWidth, nextPosY, nextPosY+box.ownTable.lineHeight, onClick=PIH_Display_MouseKeyEventsBox.onClickArea, whatClick="PIH_Display_Box", typPos=boxNumber, whereClick="fillTypeColumn_", ownTable={ fillType = productionItem.fillTypeTitle, fillTypeIds = productionItem.mixFillTypeIds }} );end;
                     lineWidth = lineWidth+box.ownTable.fillTypeWidth;
                     nextRightPosX = nextRightPosX + box.ownTable.fillTypeWidth - iconSpace;
                     canNextView = lineWidth > iconWidth;

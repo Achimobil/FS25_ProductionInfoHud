@@ -2,7 +2,7 @@
 <modDesc descVersion="113">
     <author>Achimobil</author>
     <contributor>HappyLooser</contributor>
-    <version>1.2.0.10</version>
+    <version>1.2.0.11</version>
 
     <title>
         <de>Produktionen Info Hud</de>
@@ -42,6 +42,9 @@ Das Verändern oder erneutes Hochladen, ob ganz oder in Teilen, ist nicht gestat
 Fehler und Anregungen gerne auf <a href="https://github.com/Achimobil/FS25_ProductionInfoHud">GitHub</a>
 
 Changelog
+1.2.0.11
+- Bedarfsübersicht berücksichtigt Öffnungszeiten und behandelt wahlweise Zutaten nicht mehr als Pflichtbedarf
+- Anzeigekorrekturen: Spaltenbreite, Restzeiten über 100 Tage und Filter über zusammengefasste Zeilen
 1.2.0.10 - Restzeiten passen jetzt auch zu Produktionen aus Production Revamp, etwa bei Öffnungszeiten oder wahlweisen Zutaten
 1.2.0.9 - Absturz beim Umschalten der Datenspalte bei aktivem Fracht-Filter behoben
 1.2.0.8 - Fracht-Filter findet jetzt auch Abladeorte, die die Ware nur über einen Konverter annehmen, sowie alle passenden Futtersorten für Ställe (z.B. Totalmischration statt nur Heu/Silage/Gras); die 3. Spalte zeigt bei aktivem Fracht-Filter außerdem Restzeit und freie Kapazität jetzt gemeinsam an

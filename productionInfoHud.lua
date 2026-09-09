@@ -281,6 +281,29 @@ function ProductionInfoHud.GetLineRunsAtHour(production, hour, period, season)
     return true;
 end
 
+---Anteil eines Tages, an dem eine Rezeptlinie im laufenden Monat arbeiten darf.
+---Ohne Zeitvorgaben ist das ein ganzer Tag, bei Öffnungszeiten der Anteil der offenen Stunden,
+---und in einem Monat oder einer Jahreszeit, die das Rezept ausschließt, gar nichts.
+---@param production table
+---@return number share Anteil von 0 bis 1
+function ProductionInfoHud.GetLineRunningShareOfDay(production)
+    if not ProductionInfoHud.GetLineHasTimeModes(production) then
+        return 1;
+    end
+
+    local period = g_currentMission.environment.currentPeriod;
+    local season = ProductionInfoHud.GetSeasonForPeriod(period);
+    local runningHours = 0;
+
+    for hour = 0, 23 do
+        if ProductionInfoHud.GetLineRunsAtHour(production, hour, period, season) then
+            runningHours = runningHours + 1;
+        end
+    end
+
+    return runningHours / 24;
+end
+
 ---Jahreszeit des angegebenen Monats. Je drei Monate bilden eine Jahreszeit, Monat 1 ist der März.
 ---@param period integer Monat 1 bis 12
 ---@return integer season Jahreszeit 1 bis 4
@@ -645,10 +668,12 @@ function ProductionInfoHud.SimulateStorageTimeline(productionPoint, lines, items
         openItems = openItems - ProductionInfoHud.CheckSimulationTargets(items, levels, hoursPast);
     end
 
-    -- Was in der Vorausrechnung nicht eintritt, reicht mindestens bis an deren Grenze
+    -- Was in der Vorausrechnung nicht eintritt, reicht mindestens bis an deren Grenze.
+    -- Das Kennzeichen unterscheidet diese Untergrenze von einer echten Restzeit, die zufällig genauso lang ist.
     for _, item in ipairs(items) do
         if item.simFillTypeIds ~= nil and item.hoursLeft == nil then
             item.hoursLeft = maxHours;
+            item.hoursLeftIsCapped = true;
         end
     end
 end
@@ -739,9 +764,13 @@ function ProductionInfoHud:AddProductionItemToList(myProductionItems, production
             productionItem.TimeShortString = hours .. " " .. ProductionInfoHud.i18n:getText(hours == 1 and "pih_hourSingular" or "pih_hourPlural");
         end
 
-        -- Beruht der Wert auf dem aktuellen Wetter oder auf Zufallsmengen, kann er sich jederzeit ändern:
-        -- die Tilde kennzeichnet ihn als schwankend. Bei Voll, Leer und den Hinweistexten bleibt sie weg, dort gibt es nichts zu schätzen.
-        if productionItem.isVarying and not (days == 0 and hours == 0 and minutes <= 2) then
+        -- Hat die Vorausrechnung ihre Grenze erreicht, ist der Wert keine Prognose sondern eine Untergrenze: mehr als diese Zeit.
+        -- Die Tilde für schwankende Werte entfällt dann, neben dem Größerzeichen sagt sie nichts mehr aus.
+        -- Bei Voll, Leer und den Hinweistexten bleibt beides weg, dort gibt es nichts zu schätzen.
+        if productionItem.hoursLeftIsCapped then
+            productionItem.TimeLeftString = "> " .. productionItem.TimeLeftString;
+            productionItem.TimeShortString = "> " .. productionItem.TimeShortString;
+        elseif productionItem.isVarying and not (days == 0 and hours == 0 and minutes <= 2) then
             productionItem.TimeLeftString = "~" .. productionItem.TimeLeftString;
             productionItem.TimeShortString = "~" .. productionItem.TimeShortString;
         end
@@ -918,6 +947,27 @@ function ProductionInfoHud.GetMatchingFillType(matchFillTypeIds, fillTypeIds)
     end
 
     return nil;
+end
+
+---Prüft, ob ein Eintrag zu einem Filter über einzelne Sorten passt. Eine Zeile, die mehrere Sorten zusammenfasst,
+---passt, sobald eine ihrer Sorten gesucht wird.
+---@param productionItem table
+---@param fillTypeFilterIds table set of fillTypeId -> true
+---@return boolean matches
+function ProductionInfoHud.MatchesFillTypeFilter(productionItem, fillTypeFilterIds)
+    if productionItem.fillTypeId ~= nil and fillTypeFilterIds[productionItem.fillTypeId] then
+        return true;
+    end
+
+    if productionItem.mixFillTypeIds ~= nil then
+        for _, fillTypeId in ipairs(productionItem.mixFillTypeIds) do
+            if fillTypeFilterIds[fillTypeId] then
+                return true;
+            end
+        end
+    end
+
+    return false;
 end
 
 ---Beschriftung der FillType-Spalte eines Eintrags. Bei einer Zeile für mehrere Sorten rückt die Sorte nach vorne,
@@ -1631,14 +1681,26 @@ function ProductionInfoHud.UpdateProductionNeedings()
         --normale Produktionen einfügen, deaktivierte Produktionslinien werden komplett übersprungen
         for _, production in pairs(productionPoint.productions) do
             if production.status ~= ProductionPoint.PROD_STATUS.INACTIVE then
+                -- Öffnungszeiten und Monatsvorgaben gehen anteilig in den Monatsbedarf ein:
+                -- eine Linie, die nur acht der 24 Stunden arbeitet, braucht auch nur ein Drittel der Zutaten.
+                local runningShare = ProductionInfoHud.GetLineRunningShareOfDay(production);
+
                 for _, inputItem in pairs(production.inputs) do
-                    local changedAmountPerMonth = production.cyclesPerHour * inputItem.amount * 24 * -1;
+                    local changedAmountPerMonth = production.cyclesPerHour * inputItem.amount * 24 * runningShare * -1;
 
                     local maxTotalAmount = changedAmountPerMonth * productionPointMultiplicatorAll;
                     local minTotalAmount = maxTotalAmount;
 
                     local maxActiveAmount = changedAmountPerMonth * productionPointMultiplicatorActive;
                     local minActiveAmount = maxActiveAmount;
+
+                    -- Eine Zutat aus einer Gruppe von Alternativen und ein Booster sind nicht zwingend nötig,
+                    -- sie zählen deshalb nur in den Höchst-, nicht in den Mindestbedarf.
+                    local isOptionalInput = (inputItem.mix or 0) ~= 0;
+                    if isOptionalInput then
+                        minTotalAmount = 0;
+                        minActiveAmount = 0;
+                    end
 
                     -- Wenn es einen Konverter gibt, dann wird minAmount nicht hochgesetzt, aber maxAmount für alle eingetragenen converts
                     -- converter können eingetragen sein in BaleUnloadTrigger, PalletUnloadTrigger, UnloadTrigger, WoodUnloadTrigger
@@ -1681,11 +1743,11 @@ function ProductionInfoHud.UpdateProductionNeedings()
                         end
                     end
 
-                    ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, inputItem.type, minActiveAmount, maxActiveAmount, minTotalAmount, maxTotalAmount, productionName, production.name, alternativeFillTypes, nil, nil, productionImageFilename);
+                    ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, inputItem.type, minActiveAmount, maxActiveAmount, minTotalAmount, maxTotalAmount, productionName, production.name, alternativeFillTypes, nil, nil, productionImageFilename, isOptionalInput);
                 end
 
                 for _, outputItem in pairs(production.outputs) do
-                    local changedAmountPerMonth = production.cyclesPerHour * outputItem.amount * 24;
+                    local changedAmountPerMonth = production.cyclesPerHour * outputItem.amount * 24 * runningShare;
 
                     local maxTotalAmount = changedAmountPerMonth * productionPointMultiplicatorAll;
                     local maxActiveAmount = changedAmountPerMonth * productionPointMultiplicatorActive;
@@ -1705,7 +1767,7 @@ function ProductionInfoHud.UpdateProductionNeedings()
 end
 
 
-function ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, fillTypeId, minActiveAmount, maxActiveAmount, minTotalAmount, maxTotalAmount, productionName, productionLineName, alternativeFillTypes, alternativeForFillTypeId, outputMode, productionImageFilename)
+function ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, fillTypeId, minActiveAmount, maxActiveAmount, minTotalAmount, maxTotalAmount, productionName, productionLineName, alternativeFillTypes, alternativeForFillTypeId, outputMode, productionImageFilename, isOptional)
     -- neues Element erstellen, wenn noch keins vorhanden ist
     local newProductionNeeding = newProductionNeedings[fillTypeId];
     if newProductionNeedings[fillTypeId] == nil then
@@ -1736,6 +1798,7 @@ function ProductionInfoHud.AddAmountToProductionNeedings(newProductionNeedings, 
     usageDetailInfoItem.outputMode = outputMode; -- Verteilmodus (Behalten/Verteilen/Verkaufen) nur bei Outputs gesetzt
     usageDetailInfoItem.productionImageFilename = productionImageFilename; -- Icon des Gebäudes für die Anzeige
     usageDetailInfoItem.alternativeFillTypes = alternativeFillTypes; -- alternativen über converter
+    usageDetailInfoItem.isOptional = isOptional; -- Zutat aus einer Gruppe von Alternativen oder ein Booster, also nicht zwingend
     if alternativeForFillTypeId ~= nil then
         usageDetailInfoItem.alternativeForFillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(alternativeForFillTypeId); -- alternative für welchen Filltype in dieser Produktionslinie
     end

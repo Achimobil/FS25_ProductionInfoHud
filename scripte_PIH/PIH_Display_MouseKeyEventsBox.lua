@@ -73,11 +73,21 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                     return;
                 end;
                 if args.clickAreaTable.whereClick == "fillTypeColumn_" then
-                    if box.ownTable.fillTypeFilter == nil then
-                        box.ownTable.fillTypeFilter = string.gsub(args.clickAreaTable.ownTable.fillType, "*", "");
+                    if box.ownTable.fillTypeFilter == nil and box.ownTable.fillTypeFilterIds == nil then
+                        if args.clickAreaTable.ownTable.fillTypeIds ~= nil then
+                            -- Eine Zeile für mehrere Sorten filtert über ihre Sorten, damit auch die einzelnen Zeilen dazu erscheinen
+                            local fillTypeFilterIds = {};
+                            for _, fillTypeId in ipairs(args.clickAreaTable.ownTable.fillTypeIds) do
+                                fillTypeFilterIds[fillTypeId] = true;
+                            end
+                            box.ownTable.fillTypeFilterIds = fillTypeFilterIds;
+                        else
+                            box.ownTable.fillTypeFilter = string.gsub(args.clickAreaTable.ownTable.fillType, "*", "");
+                        end
                         box.ownTable.nameFilter = nil;
                     else
                         box.ownTable.fillTypeFilter = nil;
+                        box.ownTable.fillTypeFilterIds = nil;
                     end;
                     box.filterCacheDirty = true;
                     return;
@@ -86,6 +96,7 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                     if box.ownTable.nameFilter == nil and args.clickAreaTable.ownTable.name ~= "-" then
                         box.ownTable.nameFilter = args.clickAreaTable.ownTable.name;
                         box.ownTable.fillTypeFilter = nil;
+                        box.ownTable.fillTypeFilterIds = nil;
                     else
                         box.ownTable.nameFilter = nil;
                     end;
