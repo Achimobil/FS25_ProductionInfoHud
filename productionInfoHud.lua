@@ -183,11 +183,13 @@ end
 
 ---Prüft, ob die Zeit- und Wettervorgaben der Rezeptlinien im Spielstand überhaupt wirken.
 ---Die Vorgaben bleiben an den Linien gespeichert, auch wenn ein Admin sie für den Spielstand abgeschaltet hat -
----dann läuft jede Linie rund um die Uhr. Solange dieser Zustand nicht ohne Umweg über die Mod-Umgebung lesbar ist,
----wird von wirksamen Vorgaben ausgegangen.
+---dann läuft jede Linie rund um die Uhr, und die gespeicherten Öffnungszeiten halten keine Linie mehr an.
+---Ohne Production Revamp gibt es die Einstellungen nicht, dann greifen die Vorgaben ohnehin nicht.
 ---@return boolean isActive
 function ProductionInfoHud.GetAreProductionTimeModesActive()
-    return true;
+    local revampSettings = ProductionPoint.REVAMP_SETTINGS;
+
+    return revampSettings == nil or revampSettings.weatherModesActive ~= false;
 end
 
 ---Zählt die Rezeptlinien, die sich die Durchsatzkapazität ihres Produktionspunktes gerade tatsächlich teilen.
@@ -1314,6 +1316,16 @@ function ProductionInfoHud.AddContribution(contributionsByFillType, fillTypeId, 
     table.insert(contributions, {production = production, delta = delta});
 end
 
+---Prüft, ob sich ein Lager für diese Sorte wetterabhängig von selbst füllt oder leert, etwa ein Regenfass.
+---Wie viel gerade dazukommt, hängt am Wetter der nächsten Stunden und ist von außen nicht lesbar,
+---deshalb wird ein solcher Bestand nur als schwankend gekennzeichnet und nicht in die Restzeit gerechnet.
+---@param productionPoint table
+---@param fillTypeId integer
+---@return boolean hasWeatherFilling
+function ProductionInfoHud.GetHasWeatherFilling(productionPoint, fillTypeId)
+    return productionPoint.weatherModes ~= nil and productionPoint.weatherModes[fillTypeId] ~= nil;
+end
+
 ---Baut die Zeile für eine Gruppe alternativer Zutaten. Bestand und Kapazität sind die Summe ihrer Sorten,
 ---verbraucht wird pro Takt aber nur eine davon - die Gruppe reicht deshalb so lange, bis die letzte Alternative leer ist.
 ---@param productionPoint table
@@ -1329,6 +1341,7 @@ function ProductionInfoHud.CreateMixGroupItem(productionPoint, productionName, m
     local fillLevel = 0;
     local capacity = 0;
     local hasSharedCapacity = false;
+    local hasWeatherFilling = false;
     local titles = {};
     local matchFillTypeIds = {};
 
@@ -1344,6 +1357,10 @@ function ProductionInfoHud.CreateMixGroupItem(productionPoint, productionName, m
         -- Eine Sorte ohne eigene Kapazitätszeile lebt vom gemeinsamen Topf des Lagers
         if storage ~= nil and storage.supportsMultipleFillTypes and storage.capacities ~= nil and storage.capacities[fillTypeId] == nil then
             hasSharedCapacity = true;
+        end
+
+        if ProductionInfoHud.GetHasWeatherFilling(productionPoint, fillTypeId) then
+            hasWeatherFilling = true;
         end
     end
 
@@ -1369,7 +1386,7 @@ function ProductionInfoHud.CreateMixGroupItem(productionPoint, productionName, m
     productionItem.IsProduction = true;
     productionItem.target = productionPoint;
     productionItem.matchFillTypeIds = matchFillTypeIds;
-    productionItem.isVarying = mixGroup.isVarying;
+    productionItem.isVarying = mixGroup.isVarying or hasWeatherFilling;
 
     if capacity == 0 then
         productionItem.capacityLevel = 0;
@@ -1554,7 +1571,9 @@ function ProductionInfoHud:AddProductionPoint(myProductionItems, productionPoint
             productionItem.IsProduction = true;
             productionItem.target = productionPoint;
             productionItem.isAutoDeliver = productionPoint.outputFillTypeIdsAutoDeliver[fillTypeId];
-            productionItem.isVarying = isVaryingByFillType[fillTypeId];
+            -- Ein Lager, das sich wetterabhängig selbst füllt oder leert, macht jede Restzeit ungenau.
+            -- Wie viel gerade dazukommt, ist von außen nicht lesbar, deshalb wird nur gekennzeichnet und nichts gerechnet.
+            productionItem.isVarying = isVaryingByFillType[fillTypeId] or ProductionInfoHud.GetHasWeatherFilling(productionPoint, fillTypeId);
             productionItem.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillTypeId);
 
             if productionItem.capacity == nil or productionItem.capacity == 0 then
