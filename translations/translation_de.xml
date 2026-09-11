@@ -14,6 +14,7 @@
         <text name="pih_infoDisplay_textSize"          text="*TEXT GRÖSSE* %s (Mausklick Links/Rechts)"/>
         <text name="pih_animalFilter"                  text="Tiere anzeigen/ausblenden (Linksklick zum Umschalten)"/>
         <text name="pih_productionFilter"              text="Produktionen anzeigen/ausblenden (Linksklick zum Umschalten)"/>
+        <text name="pih_storageFilter"                 text="Lager anzeigen/ausblenden (Linksklick zum Umschalten)"/>
         <text name="pih_timeFilterOne"                 text="Zeitfilter keiner / Monat (Linksklick zum Umschalten)"/>
         <text name="pih_timeFilterTwo"                 text="Zeitfilter keiner / 24h / Monat (Linksklick zum Umschalten)"/>
         <text name="pih_autoDeliverFilter"             text="Verteilte Produkte anzeigen/ausblenden (Linksklick zum Umschalten)"/>

@@ -37,6 +37,12 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                         box:setUpdateState(true);
                         return;
                     end;
+                    if args.clickAreaTable.whereClick == "storageFilter_" then
+                        box.ownTable.ShowStorage = not box.ownTable.ShowStorage;
+                        box.filterCacheDirty = true;
+                        box:setUpdateState(true);
+                        return;
+                    end;
                     if args.clickAreaTable.whereClick == "autoDeliverFilter_" then
                         box.ownTable.AutoDeliverFilter = not box.ownTable.AutoDeliverFilter;
                         box.filterCacheDirty = true;

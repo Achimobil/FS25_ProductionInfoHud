@@ -14,6 +14,7 @@
         <text name="pih_infoDisplay_textSize"          text="*TAILLE DU TEXTE* %s (clic gauche/droit de la souris)"/>
         <text name="pih_animalFilter"                  text="Afficher/masquer les animaux (clic gauche pour basculer)"/>
         <text name="pih_productionFilter"              text="Afficher/masquer les productions (clic gauche pour basculer)"/>
+        <text name="pih_storageFilter"                 text="Afficher/masquer les stockages (clic gauche pour basculer)"/>
         <text name="pih_timeFilterOne"                 text="Filtre temporel aucun / mois (clic gauche pour basculer)"/>
         <text name="pih_timeFilterTwo"                 text="Filtre temporel aucun / 24h / mois (clic gauche pour basculer)"/>
         <text name="pih_autoDeliverFilter"             text="Afficher/masquer les produits distribués (clic gauche pour basculer)"/>

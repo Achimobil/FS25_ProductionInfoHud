@@ -14,6 +14,7 @@
         <text name="pih_infoDisplay_textSize"          text="*TEXT SIZE* %s (mouse click left/right)"/>
         <text name="pih_animalFilter"                  text="Show/hide animals (left-click to switch)"/>
         <text name="pih_productionFilter"              text="Show/hide productions (left-click to switch)"/>
+        <text name="pih_storageFilter"                 text="Show/hide storages (left-click to switch)"/>
         <text name="pih_timeFilterOne"                 text="Time filter none / month (left-click to toggle)"/>
         <text name="pih_timeFilterTwo"                 text="Time filter none / 24h / month (left-click to toggle)"/>
         <text name="pih_autoDeliverFilter"             text="Show/hide distributed products (left-click to toggle)"/>

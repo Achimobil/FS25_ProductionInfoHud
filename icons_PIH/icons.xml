@@ -1,10 +1,13 @@
 <pih_display>
-    <otherIcons load="5">
+    <otherIcons load="8">
         <icon name="production_directdeliver" type="2" setStateInArea="true" placeB="93"/>
-        <icon name="clock" type="2" setStateInArea="true" placeB="99"/>
-        <icon name="production" type="2" setStateInArea="true" placeB="100"/>
-        <icon name="animals" type="2" setStateInArea="true" placeB="103"/>
-        <icon name="trailerfull" type="2" setStateInArea="true" placeB="87"/>
+        <icon name="clock"                    type="2" setStateInArea="true" placeB="99"/>
+        <icon name="production"               type="2" setStateInArea="true" placeB="100"/>
+        <icon name="animals"                  type="2" setStateInArea="true" placeB="103"/>
+        <icon name="trailerfull"              type="2" setStateInArea="true" placeB="87"/>
+        <icon name="fillamount"               type="2" setStateInArea="true" placeB="85"/>
+        <icon name="fillempty"                type="2" setStateInArea="true" placeB="77"/>
+        <icon name="pallet_empty"             type="2" setStateInArea="true" placeB="98"/>
     </otherIcons>
     <boxOther1Icons load="3">
         <icon name="productionInfoHud" type="2" color="green" placeB="111" />

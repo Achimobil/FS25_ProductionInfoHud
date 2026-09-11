@@ -14,6 +14,7 @@
         <text name="pih_infoDisplay_textSize"          text="*ROZMIAR TEKSTU* %s (prawy/lewy przycisk myszki)"/>
         <text name="pih_animalFilter"                  text="Pokaż/Ukryj zwierzęta (lewy przycisk myszki)"/>
         <text name="pih_productionFilter"              text="Pokaż/Ukryj produkcje (lewy przycisk myszki)"/>
+        <text name="pih_storageFilter"                 text="Pokaż/Ukryj magazyny (lewy przycisk myszki)"/>
         <text name="pih_timeFilterOne"                 text="Filtr czasu brak / miesiąc (lewy przycisk myszki)"/>
         <text name="pih_timeFilterTwo"                 text="Filtr czasu brak / 24h / miesiąc (lewy przycisk myszki)"/>
         <text name="pih_autoDeliverFilter"             text="Pokaż/Ukryj rozdystrybuowane produkty (lewy przycisk myszki)"/>

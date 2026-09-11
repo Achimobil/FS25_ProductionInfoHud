@@ -28,7 +28,8 @@ function PIH_Display_DrawBox.setBox(args)
             -- Eine Summenzeile gibt es hier nicht: verschiedene Waren zusammenzuzählen ergibt keine Aussage.
             -- Andere Filter werden wie beim Titel-Filter bewusst nicht berücksichtigt.
             for _, productionItem in pairs(ProductionInfoHud.CurrentProductionItems) do
-                if ProductionInfoHud.MatchesFillTypeFilter(productionItem, box.ownTable.fillTypeFilterIds) then
+                if ProductionInfoHud.MatchesFillTypeFilter(productionItem, box.ownTable.fillTypeFilterIds)
+                    and ProductionInfoHud.GetIsStorageItemVisible(productionItem, box.ownTable.ShowStorage, true, false) then
                     table.insert(currentProductionItems, productionItem);
                 end
             end
@@ -47,7 +48,8 @@ function PIH_Display_DrawBox.setBox(args)
 
             -- hier werden keine anderen Filter berücksichtigt und das soll so
             for _, productionItem in pairs(ProductionInfoHud.CurrentProductionItems) do
-                if string.gsub(productionItem.fillTypeTitle, "*", "") == box.ownTable.fillTypeFilter then
+                if string.gsub(productionItem.fillTypeTitle, "*", "") == box.ownTable.fillTypeFilter
+                    and ProductionInfoHud.GetIsStorageItemVisible(productionItem, box.ownTable.ShowStorage, true, false) then
                     table.insert(currentProductionItems, productionItem);
                     sumItem.productionPerHour = sumItem.productionPerHour + productionItem.productionPerHour;
                 end
@@ -65,7 +67,8 @@ function PIH_Display_DrawBox.setBox(args)
         elseif box.ownTable.nameFilter ~= nil then
             -- hier werden keine anderen Filter berücksichtigt und das soll so
             for _, productionItem in pairs(ProductionInfoHud.CurrentProductionItems) do
-                if productionItem.name == box.ownTable.nameFilter then
+                if productionItem.name == box.ownTable.nameFilter
+                    and ProductionInfoHud.GetIsStorageItemVisible(productionItem, box.ownTable.ShowStorage, true, false) then
                     table.insert(currentProductionItems, productionItem);
                 end
             end
@@ -92,6 +95,11 @@ function PIH_Display_DrawBox.setBox(args)
             isLoadedCargoFilterActive = loadedFillTypes ~= nil;
             local isFilteringByLoadedCargo = loadedFillTypes ~= nil and not isLoadedCargoFilterBySupportedTypes;
 
+            -- Ohne angeklickten Filter sagt eine Lagerzeile nur in der Mengenansicht etwas, und dort wo ein Abladeort für
+            -- geladene Ware gesucht wird. Filtert der Fracht-Filter nur danach, was das Fahrzeug transportieren könnte,
+            -- ist noch nichts abzuladen und ein Lager hilft nicht weiter.
+            local isStorageDataVisible = box.ownTable.dataViewMode == 2 or isFilteringByLoadedCargo;
+
             for _, productionItem in pairs(ProductionInfoHud.CurrentProductionItems) do
                 local skipItem = false;
                 if not skipItem and box.ownTable.ShowAnimal ~= nil and box.ownTable.ShowAnimal == false and productionItem.IsAnimal then
@@ -103,8 +111,12 @@ function PIH_Display_DrawBox.setBox(args)
                 if not skipItem and box.ownTable.AutoDeliverFilter ~= nil and box.ownTable.AutoDeliverFilter == false and productionItem.isAutoDeliver == true then
                     skipItem = true;
                 end
-                -- bei geladener Ware (Punkt 3, "wo bring ich das hin") sollen ALLE möglichen Abladeorte gezeigt werden, unabhängig vom Zeitfilter
-                if not skipItem and not isFilteringByLoadedCargo and box.ownTable.TimeFilter ~= nil and box.ownTable.TimeFilter ~= 1 then
+                if not skipItem and not ProductionInfoHud.GetIsStorageItemVisible(productionItem, box.ownTable.ShowStorage, isStorageDataVisible, isFilteringByLoadedCargo) then
+                    skipItem = true;
+                end
+                -- bei geladener Ware (Punkt 3, "wo bring ich das hin") sollen ALLE möglichen Abladeorte gezeigt werden, unabhängig vom Zeitfilter.
+                -- Ein Lager hat keine Restzeit und fällt damit auch nicht unter den Zeitfilter.
+                if not skipItem and not isFilteringByLoadedCargo and productionItem.hoursLeft ~= nil and box.ownTable.TimeFilter ~= nil and box.ownTable.TimeFilter ~= 1 then
                     if box.ownTable.TimeFilter == 2 and productionItem.hoursLeft > 24 then
                         skipItem = true;
                     elseif box.ownTable.TimeFilter == 3 and productionItem.hoursLeft > (24 * g_currentMission.environment.daysPerPeriod) then
@@ -328,6 +340,19 @@ function PIH_Display_DrawBox.setBox(args)
             end;
             --animal filter--
 
+            --storage filter--
+            if nextIconPosX+iconWidth < x+w then
+                overlay = overlayDefaultGroup[overlayDefaultByName["fillamount"]];
+                if overlay ~= nil then
+                    if box.ownTable.ShowStorage then iconColor = box.overlays.color.on;end;
+                    setOverlay("storageFilter_", iconColor);
+                    if inIconArea and box.isHelp then setInfoHelpText(ProductionInfoHud.i18n:getText("pih_storageFilter"), 0);end;
+                end;
+            else
+                setWarningLine = true;
+            end;
+            --storage filter--
+
             --time filter--
             --etwas rüber rutschen damit von den anderen filtern getrennt
             nextIconPosX = nextIconPosX+iconWidth+difW;
@@ -435,7 +460,23 @@ function PIH_Display_DrawBox.setBox(args)
 
                 ---Filltype---
                 if canNextView then
-                    if productionItem.productionPerHour < 0 then
+                    if productionItem.IsStorage then
+                        -- Ein Lager kauft und verkauft nicht, es liegt nur da: eigenes Symbol statt eines Pfeils,
+                        -- passend zu der Zahl daneben - Bestand oder freier Platz.
+                        -- Ein Palettenlager zählt Stellplätze statt Liter und ist deshalb an seinem eigenen Symbol zu erkennen.
+                        if productionItem.IsObjectStorage then
+                            overlay = overlayDefaultGroup[overlayDefaultByName["pallet_empty"]];
+                        elseif isLoadedCargoFilterActive then
+                            overlay = overlayDefaultGroup[overlayDefaultByName["fillempty"]];
+                        else
+                            overlay = overlayDefaultGroup[overlayDefaultByName["fillamount"]];
+                        end
+                        -- Der Filter-Knopf der Filterzeile benutzt dasselbe Overlay und färbt es pro Bild um,
+                        -- die Zeile stellt ihre eigene Farbe deshalb jedes Mal wieder her.
+                        if overlay ~= nil then
+                            g_currentMission.hlUtils.setBackgroundColor(overlay, overlay.colorState);
+                        end
+                    elseif productionItem.productionPerHour < 0 then
                         overlay = overlayDefaultGroup[overlayDefaultByName["selling"]];
                     else
                         overlay = overlayDefaultGroup[overlayDefaultByName["bying"]];
@@ -475,8 +516,12 @@ function PIH_Display_DrawBox.setBox(args)
                         -- mode 1 = Time left
                         dataString = tostring(productionItem.TimeLeftString);
                     elseif box.ownTable.dataViewMode == 2 then
-                        -- mode 2 = Capacity left
-                        dataString = string.format("%d", productionItem.capacityData);
+                        -- mode 2 = Capacity left, bei einem Lager stattdessen der Bestand: gefragt ist, wieviel dort noch liegt
+                        if productionItem.IsStorage then
+                            dataString = string.format("%d", productionItem.fillLevel);
+                        else
+                            dataString = string.format("%d", productionItem.capacityData);
+                        end
                     elseif box.ownTable.dataViewMode == 3 then
                         -- mode 3 = production amount
                         dataString = string.format("%1.1f", productionItem.productionPerHour);

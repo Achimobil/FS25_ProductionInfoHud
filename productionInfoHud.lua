@@ -776,19 +776,25 @@ function ProductionInfoHud:AddProductionItemToList(myProductionItems, production
             productionItem.TimeLeftString = "~" .. productionItem.TimeLeftString;
             productionItem.TimeShortString = "~" .. productionItem.TimeShortString;
         end
+    elseif productionItem.IsStorage then
+        -- Ein ruhender Bestand hat keine Restzeit. Der Strich hält die Spalte frei, statt eine Zahl zu erfinden.
+        productionItem.TimeLeftString = "—";
+        productionItem.TimeShortString = "—";
     else
         productionItem.TimeLeftString = "";
         productionItem.TimeShortString = "";
     end
 
     -- ProductionInfoHud.DebugTable("productionItem", productionItem);
-    if productionItem.productionPerHour ~= 0 then
-        -- nur items mit einem Stundenwert einfügen, da für die Verteilliste eine eigene Liste gemacht wird
+    if productionItem.productionPerHour ~= 0 or productionItem.IsStorage then
+        -- nur items mit einem Stundenwert einfügen, da für die Verteilliste eine eigene Liste gemacht wird.
+        -- Lager kommen ohne Stundenwert dazu, sie ändern sich nicht von selbst und haben trotzdem eine Aussage.
         table.insert(myProductionItems, productionItem)
 
         -- längsten filltypetitel für box behalten.
         -- Die Aufzählung einer Zutaten-Gruppe bleibt dabei außen vor, sie würde die Namensspalte zusammenquetschen - angezeigt wird sie gekürzt.
-        if productionItem.mixFillTypeIds == nil then
+        -- Eine Lagerzeile ohne Bestand bleibt ebenfalls außen vor, sie soll die Spalte nicht für eine Ware breit machen, die dort gar nicht liegt.
+        if productionItem.mixFillTypeIds == nil and not productionItem.hasNoFillLevel then
             local textWidth = getTextWidth(10, utf8Substr(productionItem.fillTypeTitle, 0));
             if ProductionInfoHud.longestFillTypeTitleWidth == nil or ProductionInfoHud.longestFillTypeTitleWidth < textWidth then
                 ProductionInfoHud.longestFillTypeTitleWidth = textWidth;
@@ -830,6 +836,10 @@ function ProductionInfoHud:refreshProductionsTable()
     end
     local husbandriesTime = (getTimeSec() - husbandriesStartTime) * 1000;
 
+    local storagesStartTime = getTimeSec();
+    self:AddStorages(myProductionItems);
+    local storagesTime = (getTimeSec() - storagesStartTime) * 1000;
+
     local sortStartTime = getTimeSec();
     table.sort(myProductionItems, ProductionInfoHud.compPrductionTable)
     local sortTime = (getTimeSec() - sortStartTime) * 1000;
@@ -839,11 +849,12 @@ function ProductionInfoHud:refreshProductionsTable()
 --     ProductionInfoHud.DebugTable("CurrentProductionItems", ProductionInfoHud.CurrentProductionItems, 1);
 --     ProductionInfoHud.DebugTable("myProductionPoints", myProductionPoints);
 
-    ProductionInfoHud.DebugText("refreshProductionsTable: %.2f ms total (%d Items) | ProductionPoints: %.2f ms (%d) | Factories: %.2f ms (%d) | Husbandries: %.2f ms (%d) | Sort: %.2f ms",
+    ProductionInfoHud.DebugText("refreshProductionsTable: %.2f ms total (%d Items) | ProductionPoints: %.2f ms (%d) | Factories: %.2f ms (%d) | Husbandries: %.2f ms (%d) | Storages: %.2f ms | Sort: %.2f ms",
         (getTimeSec() - startTime) * 1000, #myProductionItems,
         productionPointsTime, table.size(myProductionPoints),
         factoriesTime, table.size(myFactories),
         husbandriesTime, table.size(myHusbandries),
+        storagesTime,
         sortTime);
 end
 
@@ -1298,6 +1309,186 @@ function ProductionInfoHud:AddFactory(myProductionItems, factory)
 
         self:AddProductionItemToList(myProductionItems, productionItem);
     end
+end
+
+---Add all own storage buildings to the list: bulk and liquid silos, their extensions and pallet storages.
+---A storage has no hourly value, so its rows reach the list without a remaining time.
+-- @param table myProductionItems The list where it will be added to
+function ProductionInfoHud:AddStorages(myProductionItems)
+    local farmId = g_currentMission:getFarmId();
+
+    for _, placeable in pairs(g_currentMission.placeableSystem.placeables) do
+        -- Schüttgut- und Flüssiglager sind in der Engine dasselbe, beide hängen an spec_silo
+        local siloSpec = placeable.spec_silo;
+        if siloSpec ~= nil and siloSpec.storages ~= nil then
+            for _, storage in ipairs(siloSpec.storages) do
+                self:AddStorage(myProductionItems, placeable, storage, farmId);
+            end
+        end
+
+        -- Eine Erweiterung ist ein eigenes Placeable mit eigenem Inhalt und bekommt deshalb eigene Zeilen unter ihrem Gebäudenamen
+        local extensionSpec = placeable.spec_siloExtension;
+        if extensionSpec ~= nil and extensionSpec.storage ~= nil then
+            self:AddStorage(myProductionItems, placeable, extensionSpec.storage, farmId);
+        end
+
+        local objectStorageSpec = placeable.spec_objectStorage;
+        if objectStorageSpec ~= nil then
+            self:AddObjectStorage(myProductionItems, placeable, objectStorageSpec, farmId);
+        end
+    end
+end
+
+---Add one storage of a silo or a silo extension to the list, one row per fill type.
+---Ein Lager führt jede unterstützte Sorte, die meisten davon mit Bestand 0. Diese Zeilen entstehen trotzdem,
+---weil sie als Abladeort gebraucht werden, und werden erst beim Zeichnen auf den Fracht-Filter beschränkt.
+-- @param table myProductionItems The list where it will be added to
+-- @param table placeable The building the storage belongs to, used for the name
+-- @param table storage The storage object
+-- @param integer farmId The own farm, storages of other farms are skipped
+function ProductionInfoHud:AddStorage(myProductionItems, placeable, storage, farmId)
+    -- Ein öffentliches Silo führt in Mehrspieler einen Bestand pro Farm, deshalb entscheidet das Lager selbst über die Zugehörigkeit
+    if storage.getOwnerFarmId ~= nil and storage:getOwnerFarmId() ~= farmId then
+        return;
+    end
+
+    local name = placeable:getName();
+
+    for fillTypeId, fillLevel in pairs(storage:getFillLevels()) do
+        local productionItem = {}
+        productionItem.name = name;
+        productionItem.fillTypeId = fillTypeId;
+        productionItem.productionPerHour = 0; -- ein ruhender Bestand ändert sich nicht von selbst
+        productionItem.hoursLeft = nil; -- und hat damit auch keine Restzeit
+        productionItem.fillLevel = fillLevel;
+        productionItem.capacity = storage:getCapacity(fillTypeId);
+        -- Ein Lager nimmt an und gibt ab, es ist Ziel und Quelle zugleich
+        productionItem.isInput = true;
+        productionItem.isOutput = true;
+        productionItem.IsStorage = true;
+        productionItem.hasNoFillLevel = fillLevel <= 0;
+        productionItem.target = placeable;
+        productionItem.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillTypeId);
+        productionItem.matchFillTypeIds = ProductionInfoHud.GetStorageMatchFillTypeIds(storage, fillTypeId);
+
+        if productionItem.capacity == nil or productionItem.capacity == 0 then
+            productionItem.capacityLevel = 0
+            productionItem.capacityData = 0;
+        else
+            productionItem.capacityLevel = fillLevel / productionItem.capacity;
+            productionItem.capacityData = productionItem.capacity - fillLevel;
+        end
+
+        self:AddProductionItemToList(myProductionItems, productionItem);
+    end
+end
+
+---Add a pallet storage to the list, one row per fill type found in its stored objects. Ballen laufen über denselben Weg mit.
+---Der Bestand ist die Summe der Inhalte in Litern, die Kapazität des Gebäudes dagegen eine Stückzahl:
+---der freie Platz steht deshalb in Stück. Sorten, von denen gerade nichts eingelagert ist, ergeben keine Zeile,
+---da ein Palettenlager meist überhaupt keine Sortenliste führt und jede Palette annimmt.
+---Gelesen wird die zusammengefasste Übersicht des Lagers und nicht seine Liste einzelner Objekte:
+---im Mehrspieler kennt ein Mitspieler nur die Übersicht, die Einzelobjekte liegen allein auf dem Server.
+-- @param table myProductionItems The list where it will be added to
+-- @param table placeable The building the storage belongs to, used for the name
+-- @param table spec The spec_objectStorage of that building
+-- @param integer farmId The own farm, storages of other farms are skipped
+function ProductionInfoHud:AddObjectStorage(myProductionItems, placeable, spec, farmId)
+    if placeable:getOwnerFarmId() ~= farmId or placeable.getObjectStorageObjectInfos == nil then
+        return;
+    end
+
+    local objectInfos = placeable:getObjectStorageObjectInfos();
+    if objectInfos == nil then
+        return;
+    end
+
+    local fillLevels = {};
+    for _, objectInfo in ipairs(objectInfos) do
+        local storedObject = objectInfo.objects ~= nil and objectInfo.objects[1] or nil;
+        local attributes = storedObject ~= nil and (storedObject.palletAttributes or storedObject.baleAttributes) or nil;
+        if attributes ~= nil and attributes.fillType ~= nil then
+            -- Gleiche Paletten sind zu einem Eintrag zusammengefasst, der Inhalt einer steht stellvertretend für alle
+            local amount = (attributes.fillLevel or 0) * (objectInfo.numObjects or 0);
+            fillLevels[attributes.fillType] = (fillLevels[attributes.fillType] or 0) + amount;
+        end
+    end
+
+    local name = placeable:getName();
+    local freePlaces = (spec.capacity or 0) - (spec.numStoredObjects or 0);
+
+    for fillTypeId, fillLevel in pairs(fillLevels) do
+        local productionItem = {}
+        productionItem.name = name;
+        productionItem.fillTypeId = fillTypeId;
+        productionItem.productionPerHour = 0;
+        productionItem.hoursLeft = nil;
+        productionItem.fillLevel = fillLevel;
+        -- Eine Kapazität in Litern gibt es hier nicht, der freie Platz zählt Stellplätze
+        productionItem.capacity = 0;
+        productionItem.capacityLevel = 0
+        productionItem.capacityData = freePlaces;
+        productionItem.isInput = true;
+        productionItem.isOutput = true;
+        productionItem.IsStorage = true;
+        productionItem.IsObjectStorage = true;
+        productionItem.hasNoFillLevel = false;
+        productionItem.target = placeable;
+        productionItem.fillTypeTitle = ProductionInfoHud.fillTypeManager:getFillTypeTitleByIndex(fillTypeId);
+        productionItem.matchFillTypeIds = ProductionInfoHud.GetStorageMatchFillTypeIds(spec, fillTypeId);
+
+        self:AddProductionItemToList(myProductionItems, productionItem);
+    end
+end
+
+---Get the set of fillTypeIds that should count as a match for a storage when filtering by cargo: der type selbst,
+---plus alle types die ein Konverter an einer der Abladestellen dieses Lagers in ihn umwandelt. Gleiches Muster wie
+---GetMatchFillTypeIds, ein Lager kann aber an mehreren Abladestellen gleichzeitig hängen.
+-- @param table storage Lager, dessen unloadingStations nach Konvertern durchsucht werden
+-- @param integer fillTypeId der eigentliche Lager-FillType
+-- @return table set of fillTypeId -> true
+function ProductionInfoHud.GetStorageMatchFillTypeIds(storage, fillTypeId)
+    local matchFillTypeIds = {};
+    matchFillTypeIds[fillTypeId] = true;
+
+    if storage.unloadingStations ~= nil then
+        for _, unloadingStation in pairs(storage.unloadingStations) do
+            if unloadingStation.unloadTriggers ~= nil then
+                for _, unloadTrigger in pairs(unloadingStation.unloadTriggers) do
+                    for incommingFillTypeId, fillTypeConversion in pairs(unloadTrigger.fillTypeConversions) do
+                        if fillTypeConversion.outgoingFillType == fillTypeId then
+                            matchFillTypeIds[incommingFillTypeId] = true;
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    return matchFillTypeIds;
+end
+
+---Prüft, ob eine Lagerzeile gerade angezeigt werden soll.
+---Ein Bestand von 0 sagt nur dort etwas, wo nach einem Abladeort für geladene Ware gesucht wird.
+---@param productionItem table
+---@param showStorage boolean Zustand des Lager-Filters
+---@param isStorageDataVisible boolean ob die aktuelle Ansicht zu einem Lager überhaupt etwas zu sagen hat
+---@param isFilteringByLoadedCargo boolean ob gerade nach einem Abladeort für geladene Ware gesucht wird
+---@return boolean isVisible
+function ProductionInfoHud.GetIsStorageItemVisible(productionItem, showStorage, isStorageDataVisible, isFilteringByLoadedCargo)
+    if not productionItem.IsStorage then
+        return true;
+    end
+
+    if showStorage == false then
+        return false;
+    end
+
+    if productionItem.hasNoFillLevel and not isFilteringByLoadedCargo then
+        return false;
+    end
+
+    return isStorageDataVisible;
 end
 
 ---Hängt den Beitrag einer Rezeptlinie an die Liste ihres FillTypes. Der Beitrag hält seine Linie fest,
