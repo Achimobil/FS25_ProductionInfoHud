@@ -122,17 +122,24 @@ function PIH_Display_DrawBox.setBox(args)
                 productionItem.cargoDirection = nil;
                 if not skipItem and deliverFillTypes ~= nil and refillFillTypes ~= nil then
                     local matchingFillTypeId = nil;
-                    if productionItem.isInput then
-                        matchingFillTypeId = ProductionInfoHud.GetMatchingFillType(productionItem.matchFillTypeIds, deliverFillTypes);
-                    end
-
-                    if matchingFillTypeId ~= nil then
-                        productionItem.cargoDirection = ProductionInfoHud.CARGO_DIRECTION_DELIVER;
-                    elseif productionItem.isOutput and (productionItem.fillLevel or 0) > 0 then
-                        -- Als Nachfüllstelle taugt nur, wo die Ware auch tatsächlich liegt
+                    -- Ein Lager nimmt an und gibt ab, passt also zu beiden Richtungen. Gefragt ist dann der Bestand:
+                    -- wer eine Ware verbraucht, sucht Nachschub, und abladen kann er sie zur Not auch woanders.
+                    -- Als Nachfüllstelle taugt ohnehin nur, wo die Ware tatsächlich liegt.
+                    if productionItem.isOutput and (productionItem.fillLevel or 0) > 0 then
                         matchingFillTypeId = ProductionInfoHud.GetMatchingOwnFillType(productionItem, refillFillTypes);
                         if matchingFillTypeId ~= nil then
                             productionItem.cargoDirection = ProductionInfoHud.CARGO_DIRECTION_REFILL;
+                        end
+                    end
+
+                    -- Ein Lager taugt nur als Abladeort, wenn wirklich etwas geladen ist. Steht dahinter nur die
+                    -- Transportfähigkeit, wäre jedes Lager mit freiem Platz dabei, und ohne Restzeit auch noch
+                    -- an jedem Zeitfilter vorbei.
+                    if matchingFillTypeId == nil and productionItem.isInput
+                        and (not productionItem.IsStorage or isFilteringByLoadedCargo) then
+                        matchingFillTypeId = ProductionInfoHud.GetMatchingFillType(productionItem.matchFillTypeIds, deliverFillTypes);
+                        if matchingFillTypeId ~= nil then
+                            productionItem.cargoDirection = ProductionInfoHud.CARGO_DIRECTION_DELIVER;
                         end
                     end
 

@@ -2,7 +2,7 @@
 <modDesc descVersion="113">
     <author>Achimobil</author>
     <contributor>HappyLooser</contributor>
-    <version>1.2.0.14</version>
+    <version>1.2.0.15</version>
 
     <title>
         <de>Produktionen Info Hud</de>
@@ -56,6 +56,10 @@ Das Verändern oder erneutes Hochladen, ob ganz oder in Teilen, ist nicht gestat
 
 Fehler und Anregungen gerne auf GitHub: https://github.com/Achimobil/FS25_ProductionInfoHud
 Changelog
+1.2.0.15
+- Fracht-Filter blendet Lager aus, solange nichts geladen ist, und zeigt bei Spritzen und Streuern nur noch die Nachfüllstellen
+- Beim Abtanken eines fahrenden Dreschers wechselt die Liste nicht mehr ständig hin und her
+- Ein leerer Drescher filtert die Liste gar nicht mehr, erst mit Korn im Tank zeigt er die passenden Abladeorte
 1.2.0.14 - Fracht-Filter zeigt bei Geräten, die ihre Ladung selbst verbrauchen, jetzt die Stellen zum Nachfüllen statt der Abladeorte
 1.2.0.13 - Eigene Lager, Silo-Erweiterungen und Palettenlager erscheinen jetzt in der Mengenansicht und beim Fracht-Filter
 1.2.0.12

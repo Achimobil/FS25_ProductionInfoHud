@@ -862,6 +862,43 @@ end
 ProductionInfoHud.CARGO_DIRECTION_DELIVER = 1;
 ProductionInfoHud.CARGO_DIRECTION_REFILL = 2;
 
+---Sekunden, die eine Ladung nach dem Leerwerden noch als vorhanden gilt, und die dafür gemerkten Tanks samt Gespann.
+ProductionInfoHud.CARGO_CONTENT_HOLD_TIME = 10;
+ProductionInfoHud.cargoHoldVehicle = nil;
+ProductionInfoHud.cargoHoldByFillUnit = {};
+
+---Hält eine Ladung nach dem Leerwerden noch einen Moment fest. Beim Abtanken eines fahrenden Dreschers pendelt der
+---Füllstand ständig um die Null, weil gleichzeitig gedroschen und abgepumpt wird. Ohne diesen Nachlauf würde die Liste
+---im Sekundentakt zwischen den Abladeorten der Sorte und der bloßen Transportfähigkeit hin und her springen.
+---@param fillUnit table dient als Schlüssel, die Tabelle bleibt über die Laufzeit des Fahrzeugs dieselbe
+---@param fillTypeId integer|nil die Sorte im Tank
+---@param hasContent boolean ob gerade wirklich etwas drin ist
+---@return integer|nil fillTypeId die Sorte, die als geladen gilt, nil wenn der Tank als leer zählt
+function ProductionInfoHud.GetHeldCargoFillType(fillUnit, fillTypeId, hasContent)
+    local held = ProductionInfoHud.cargoHoldByFillUnit[fillUnit];
+
+    if hasContent then
+        if held == nil then
+            held = {};
+            ProductionInfoHud.cargoHoldByFillUnit[fillUnit] = held;
+        end
+
+        held.fillTypeId = fillTypeId;
+        held.time = getTimeSec();
+        return fillTypeId;
+    end
+
+    if held ~= nil then
+        if getTimeSec() - held.time <= ProductionInfoHud.CARGO_CONTENT_HOLD_TIME then
+            return held.fillTypeId;
+        end
+
+        ProductionInfoHud.cargoHoldByFillUnit[fillUnit] = nil;
+    end
+
+    return nil;
+end
+
 ---FillUnits, aus denen ein Gerät im Betrieb sein Material verbraucht. Gefragt ist bei ihnen nicht, wohin man die Ware
 ---bringt, sondern wo man sie herbekommt. Der Pfad zeigt auf das Feld der Spezialisierung, in dem der Index der FillUnit steht.
 ProductionInfoHud.ConsumerFillUnitPaths = {
@@ -880,6 +917,14 @@ ProductionInfoHud.ConsumerFillUnitPaths = {
 ProductionInfoHud.ProducedFillUnitPaths = {
     {spec = "spec_baler", path = {"fillUnitIndex"}},
     {spec = "spec_baler", path = {"buffer", "fillUnitIndex"}},
+};
+
+---FillUnits, die sich im Betrieb selbst füllen: der Korntank eines Dreschers samt Puffer. Ihr Inhalt ist echte Fracht
+---und wird abgeladen, aber solange sie leer sind, ergibt die Frage nach der Transportfähigkeit keinen Sinn.
+---Eine Erntemaschine holt sich ihre Ladung selbst, statt sie irgendwo aufzunehmen.
+ProductionInfoHud.SelfLoadingFillUnitPaths = {
+    {spec = "spec_combine", path = {"fillUnitIndex"}},
+    {spec = "spec_combine", path = {"bufferFillUnitIndex"}},
 };
 
 ---Liest den FillUnit-Index, auf den ein Eintrag aus ConsumerFillUnitPaths oder ProducedFillUnitPaths zeigt.
@@ -903,10 +948,12 @@ end
 ---@param vehicle table einzelnes Fahrzeug, kein Gespann
 ---@return table isConsumer set of fillUnitIndex -> true, Tanks aus denen das Gerät im Betrieb verbraucht
 ---@return table isProduced set of fillUnitIndex -> true, Tanks die das Gerät im Betrieb selbst füllt
+---@return table isSelfLoading set of fillUnitIndex -> true, Tanks die sich im Betrieb selbst mit Fracht füllen
 ---@return table dischargeCounts fillUnitIndex -> Anzahl der Abladestellen, die diese FillUnit leeren können
 function ProductionInfoHud.GetFillUnitPurposes(vehicle)
     local isConsumer = {};
     local isProduced = {};
+    local isSelfLoading = {};
     local dischargeCounts = {};
 
     for _, entry in ipairs(ProductionInfoHud.ConsumerFillUnitPaths) do
@@ -920,6 +967,13 @@ function ProductionInfoHud.GetFillUnitPurposes(vehicle)
         local fillUnitIndex = ProductionInfoHud.GetFillUnitIndexByPath(vehicle, entry);
         if fillUnitIndex ~= nil then
             isProduced[fillUnitIndex] = true;
+        end
+    end
+
+    for _, entry in ipairs(ProductionInfoHud.SelfLoadingFillUnitPaths) do
+        local fillUnitIndex = ProductionInfoHud.GetFillUnitIndexByPath(vehicle, entry);
+        if fillUnitIndex ~= nil then
+            isSelfLoading[fillUnitIndex] = true;
         end
     end
 
@@ -958,15 +1012,15 @@ function ProductionInfoHud.GetFillUnitPurposes(vehicle)
         isConsumer[fillUnitIndex] = nil;
     end
 
-    return isConsumer, isProduced, dischargeCounts;
+    return isConsumer, isProduced, isSelfLoading, dischargeCounts;
 end
 
 ---Ermittelt, welche Waren der Fracht-Filter sucht, getrennt nach den beiden Richtungen.
 ---Abladeorte werden für die Ware gesucht, die das Gespann transportiert; hat es nichts geladen, bleibt es bei den Sorten,
 ---die es überhaupt transportieren könnte. Nachfüllstellen werden für die Verbrauchstanks gesucht: für die Sorte im Tank,
 ---und bei leerem Tank für alles was hineinpasst - gerade dann ist die Frage ja am dringendsten.
----Ein Verbrauchstank zählt zusätzlich als Fracht, wenn er Inhalt hat und sich abladen lässt, etwa ein Güllefass
----zwischen Grube und Biogasanlage. Betriebsstoffe wie Diesel oder AdBlue stehen nicht auf dem Hud und fallen darüber heraus.
+---Ein Verbrauchstank zählt zusätzlich als Fracht, wenn er Inhalt hat und an einem Güllefass hängt, das damit
+---zwischen Grube und Biogasanlage pendeln kann. Betriebsstoffe wie Diesel oder AdBlue stehen nicht auf dem Hud und fallen darüber heraus.
 ---@return table deliverFillTypes set of fillTypeId -> true, wohin die Ware gebracht werden kann
 ---@return table refillFillTypes set of fillTypeId -> true, wo nachgefüllt werden kann
 ---@return boolean isDeliverBySupportedTypes true wenn die Abladeorte nur aus der Transportfähigkeit stammen statt aus geladener Ware
@@ -986,33 +1040,48 @@ function ProductionInfoHud.GetCargoFilterFillTypes()
     end
 
     local rootVehicle = vehicle:getRootVehicle();
+
+    -- Die gemerkten Ladungen gehören zu dem Gespann, in dem man gerade sitzt
+    if ProductionInfoHud.cargoHoldVehicle ~= rootVehicle then
+        ProductionInfoHud.cargoHoldVehicle = rootVehicle;
+        ProductionInfoHud.cargoHoldByFillUnit = {};
+    end
+
     for _, childVehicle in ipairs(rootVehicle:getChildVehicles()) do
         if childVehicle.spec_fillUnit ~= nil then
-            local isConsumer, isProduced, dischargeCounts = ProductionInfoHud.GetFillUnitPurposes(childVehicle);
+            local isConsumer, isProduced, isSelfLoading, dischargeCounts = ProductionInfoHud.GetFillUnitPurposes(childVehicle);
+            -- Ein Verbrauchstank ist nur beim Güllefass zugleich Fracht. Eine Abladestelle allein trennt das nicht:
+            -- die bringen fast alle Feldspritzen mit, und deren Inhalt will niemand bei einer Produktion abgeben.
+            local canDeliverFromConsumerTank = childVehicle.spec_manureBarrel ~= nil;
 
             for fillUnitIndex, fillUnit in ipairs(childVehicle:getFillUnits()) do
                 -- Ein Verteiler ohne eigenen Tank, etwa ein Schleppschuhverband, bringt seine Spezialisierung ohne Kapazität mit
                 if fillUnit.showOnHud and childVehicle:getFillUnitCapacity(fillUnitIndex) > 0 then
                     local fillTypeId = childVehicle:getFillUnitFillType(fillUnitIndex);
                     local hasContent = fillTypeId ~= nil and fillTypeId ~= FillType.UNKNOWN and childVehicle:getFillUnitFillLevel(fillUnitIndex) > 0;
-                    if hasContent and (isConsumer[fillUnitIndex] or isProduced[fillUnitIndex]) then
-                        fillTypesInOwnUnits[fillTypeId] = true;
+                    local loadedFillTypeId = ProductionInfoHud.GetHeldCargoFillType(fillUnit, fillTypeId, hasContent);
+                    if loadedFillTypeId ~= nil and (isConsumer[fillUnitIndex] or isProduced[fillUnitIndex]) then
+                        fillTypesInOwnUnits[loadedFillTypeId] = true;
                     end
 
                     if isConsumer[fillUnitIndex] then
-                        if hasContent then
-                            refillFillTypes[fillTypeId] = true;
-                            if (dischargeCounts[fillUnitIndex] or 0) > 0 then
-                                deliverFillTypes[fillTypeId] = true;
+                        if loadedFillTypeId ~= nil then
+                            refillFillTypes[loadedFillTypeId] = true;
+                            if canDeliverFromConsumerTank and (dischargeCounts[fillUnitIndex] or 0) > 0 then
+                                deliverFillTypes[loadedFillTypeId] = true;
                             end
                         elseif fillUnit.supportedFillTypes ~= nil then
                             for supportedFillTypeId, _ in pairs(fillUnit.supportedFillTypes) do
                                 refillFillTypes[supportedFillTypeId] = true;
                             end
                         end
-                    elseif not isProduced[fillUnitIndex] and not hasContent and fillUnit.supportedFillTypes ~= nil then
-                        for supportedFillTypeId, _ in pairs(fillUnit.supportedFillTypes) do
-                            carryableFillTypes[supportedFillTypeId] = true;
+                    elseif not isProduced[fillUnitIndex] then
+                        if loadedFillTypeId ~= nil then
+                            deliverFillTypes[loadedFillTypeId] = true;
+                        elseif not isSelfLoading[fillUnitIndex] and fillUnit.supportedFillTypes ~= nil then
+                            for supportedFillTypeId, _ in pairs(fillUnit.supportedFillTypes) do
+                                carryableFillTypes[supportedFillTypeId] = true;
+                            end
                         end
                     end
                 end
@@ -1020,8 +1089,8 @@ function ProductionInfoHud.GetCargoFilterFillTypes()
         end
     end
 
-    -- Mit Spanngurten befestigte Paletten hängen an keiner FillUnit und tauchen nur in der Füllstandsübersicht des Gespanns auf.
-    -- Von dort zählt deshalb alles als Fracht, was nicht schon in einem Verbrauchs- oder Presstank steckt.
+    -- Mit Spanngurten befestigte Paletten hängen an keiner FillUnit und tauchen nur in der Füllstandsübersicht des Gespanns
+    -- auf. Von dort zählt deshalb alles zusätzlich als Fracht, was nicht schon in einem Verbrauchs- oder Presstank steckt.
     local collector = {};
     function collector.addFillLevel(_, fillType, fillLevel)
         if fillLevel ~= nil and fillLevel > 0 and fillType ~= nil and fillType ~= FillType.UNKNOWN and not fillTypesInOwnUnits[fillType] then
