@@ -2,7 +2,7 @@
 <modDesc descVersion="113">
     <author>Achimobil</author>
     <contributor>HappyLooser</contributor>
-    <version>1.2.0.13</version>
+    <version>1.2.0.14</version>
 
     <title>
         <de>Produktionen Info Hud</de>
@@ -32,7 +32,7 @@ Filter in der Filterzeile
 - Produktionen und Tiere einzeln ein- und ausblenden
 - Zeitfilter: nur zeigen, was innerhalb von 24 Stunden oder innerhalb eines Monats leer oder voll wird
 - Verteilte Produkte ausblenden, die ohnehin automatisch abgeholt werden
-- Fracht-Filter: nur Abladeorte für die gerade geladene Ware. Ist das Fahrzeug leer, zeigt er, wohin es überhaupt liefern könnte
+- Fracht-Filter: passende Orte für das aktuelle Gespann - Abladeorte für die geladene Ware, und bei Sämaschine, Streuer oder Spritze die Stellen zum Nachfüllen, auch wenn der Tank leer ist
 
 Bedienung mit der Maus
 - Fenster verschieben über das Pfeilicon oben links
@@ -56,6 +56,7 @@ Das Verändern oder erneutes Hochladen, ob ganz oder in Teilen, ist nicht gestat
 
 Fehler und Anregungen gerne auf GitHub: https://github.com/Achimobil/FS25_ProductionInfoHud
 Changelog
+1.2.0.14 - Fracht-Filter zeigt bei Geräten, die ihre Ladung selbst verbrauchen, jetzt die Stellen zum Nachfüllen statt der Abladeorte
 1.2.0.13 - Eigene Lager, Silo-Erweiterungen und Palettenlager erscheinen jetzt in der Mengenansicht und beim Fracht-Filter
 1.2.0.12
 - Lager, die sich wetterabhängig selbst füllen, sind in der Liste als schwankender Wert gekennzeichnet
@@ -108,7 +109,7 @@ Filters in the filter line
 - Show or hide productions and animals separately
 - Time filter: only show what runs empty or full within 24 hours or within a month
 - Hide distributed products that are collected automatically anyway
-- Cargo filter: only delivery points for the currently loaded cargo. If the vehicle is empty, it shows where it could deliver at all
+- Cargo filter: matching places for the current vehicle - delivery points for the loaded cargo, and for seeders, spreaders or sprayers the places to refill, even when the tank is empty
 
 Mouse controls
 - Move the window with the arrow icon in the top left corner

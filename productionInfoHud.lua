@@ -858,58 +858,186 @@ function ProductionInfoHud:refreshProductionsTable()
         sortTime);
 end
 
---- Get the fillTypeIds currently loaded (fillLevel > 0) in the vehicle the player is sitting in and all its attached implements/trailers, inklusive mit Spanngurten befestigter Paletten. Betriebsstoffe wie Diesel/AdBlue/Luft werden nicht mitgezählt.
--- @return table set of fillTypeId -> true
-function ProductionInfoHud.getCurrentlyLoadedFillTypes()
-    local loadedFillTypes = {};
-    if g_localPlayer == nil then
-        return loadedFillTypes;
+---Richtung, in der eine Zeile zur Ladung des Gespanns passt: Ziel für die geladene Ware oder Quelle zum Nachfüllen.
+ProductionInfoHud.CARGO_DIRECTION_DELIVER = 1;
+ProductionInfoHud.CARGO_DIRECTION_REFILL = 2;
+
+---FillUnits, aus denen ein Gerät im Betrieb sein Material verbraucht. Gefragt ist bei ihnen nicht, wohin man die Ware
+---bringt, sondern wo man sie herbekommt. Der Pfad zeigt auf das Feld der Spezialisierung, in dem der Index der FillUnit steht.
+ProductionInfoHud.ConsumerFillUnitPaths = {
+    {spec = "spec_sowingMachine", path = {"fillUnitIndex"}},
+    {spec = "spec_sprayer",       path = {"fillUnitIndex"}},
+    {spec = "spec_baler",         path = {"additives", "fillUnitIndex"}},
+    {spec = "spec_forageWagon",   path = {"additives", "fillUnitIndex"}},
+    {spec = "spec_combine",       path = {"additives", "fillUnitIndex"}},
+    {spec = "spec_saltSpreader",  path = {"fillUnitIndex"}},
+    {spec = "spec_strawBlower",   path = {"fillUnitIndex"}},
+    {spec = "spec_treePlanter",   path = {"fillUnitIndex"}},
+};
+
+---FillUnits, die ein Gerät im Betrieb selbst füllt: die Presskammer einer Presse samt ihrem Puffer.
+---Deren Inhalt ist keine Fracht, er wird gerade zu Ballen.
+ProductionInfoHud.ProducedFillUnitPaths = {
+    {spec = "spec_baler", path = {"fillUnitIndex"}},
+    {spec = "spec_baler", path = {"buffer", "fillUnitIndex"}},
+};
+
+---Liest den FillUnit-Index, auf den ein Eintrag aus ConsumerFillUnitPaths oder ProducedFillUnitPaths zeigt.
+---@param vehicle table einzelnes Fahrzeug, kein Gespann
+---@param entry table Eintrag mit spec und path
+---@return integer|nil fillUnitIndex nil wenn das Fahrzeug diese Spezialisierung nicht hat
+function ProductionInfoHud.GetFillUnitIndexByPath(vehicle, entry)
+    local value = vehicle[entry.spec];
+    for _, field in ipairs(entry.path) do
+        if value == nil then
+            return nil;
+        end
+        value = value[field];
     end
 
-    local vehicle = g_localPlayer:getCurrentVehicle();
-    if vehicle == nil then
-        return loadedFillTypes;
-    end
+    return value;
+end
 
-    local collector = {};
-    function collector.addFillLevel(_, fillType, fillLevel)
-        if fillLevel ~= nil and fillLevel > 0 and fillType ~= nil and fillType ~= FillType.UNKNOWN then
-            loadedFillTypes[fillType] = true;
+---Ordnet den FillUnits eines Fahrzeugs ihren Einsatzzweck zu. Die Entscheidung fällt pro FillUnit und nicht pro Fahrzeug,
+---sonst wäre eine Sämaschine mit Düngertank nur als Ganzes einzuordnen und ein Gespann aus Fass und Streuer erst recht nicht.
+---@param vehicle table einzelnes Fahrzeug, kein Gespann
+---@return table isConsumer set of fillUnitIndex -> true, Tanks aus denen das Gerät im Betrieb verbraucht
+---@return table isProduced set of fillUnitIndex -> true, Tanks die das Gerät im Betrieb selbst füllt
+---@return table dischargeCounts fillUnitIndex -> Anzahl der Abladestellen, die diese FillUnit leeren können
+function ProductionInfoHud.GetFillUnitPurposes(vehicle)
+    local isConsumer = {};
+    local isProduced = {};
+    local dischargeCounts = {};
+
+    for _, entry in ipairs(ProductionInfoHud.ConsumerFillUnitPaths) do
+        local fillUnitIndex = ProductionInfoHud.GetFillUnitIndexByPath(vehicle, entry);
+        if fillUnitIndex ~= nil then
+            isConsumer[fillUnitIndex] = true;
         end
     end
 
-    vehicle:getRootVehicle():getFillLevelInformation(collector);
+    for _, entry in ipairs(ProductionInfoHud.ProducedFillUnitPaths) do
+        local fillUnitIndex = ProductionInfoHud.GetFillUnitIndexByPath(vehicle, entry);
+        if fillUnitIndex ~= nil then
+            isProduced[fillUnitIndex] = true;
+        end
+    end
 
-    return loadedFillTypes;
+    -- Ein Gerät für mehrere Spritzmittel führt je Mittel einen eigenen Tank, die Spezialisierung selbst nennt nur den ersten
+    local sprayerSpec = vehicle.spec_sprayer;
+    if sprayerSpec ~= nil and sprayerSpec.sprayTypes ~= nil then
+        for _, sprayType in ipairs(sprayerSpec.sprayTypes) do
+            if sprayType.fillUnitIndex ~= nil then
+                isConsumer[sprayType.fillUnitIndex] = true;
+            end
+        end
+    end
+
+    -- Netz und Folie einer Presse hängen nicht an der Presse selbst, sondern am Verbrauchsmaterial
+    local consumableSpec = vehicle.spec_consumable;
+    if consumableSpec ~= nil and consumableSpec.types ~= nil then
+        for _, consumableType in ipairs(consumableSpec.types) do
+            if consumableType.fillUnitIndex ~= nil then
+                isConsumer[consumableType.fillUnitIndex] = true;
+            end
+        end
+    end
+
+    local dischargeableSpec = vehicle.spec_dischargeable;
+    if dischargeableSpec ~= nil and dischargeableSpec.dischargeNodes ~= nil then
+        for _, dischargeNode in ipairs(dischargeableSpec.dischargeNodes) do
+            local fillUnitIndex = dischargeNode.fillUnitIndex;
+            if fillUnitIndex ~= nil then
+                dischargeCounts[fillUnitIndex] = (dischargeCounts[fillUnitIndex] or 0) + 1;
+            end
+        end
+    end
+
+    -- Eine Presskammer bleibt Presskammer, auch wenn eine zweite Spezialisierung denselben Tank als Verbrauch führt
+    for fillUnitIndex, _ in pairs(isProduced) do
+        isConsumer[fillUnitIndex] = nil;
+    end
+
+    return isConsumer, isProduced, dischargeCounts;
 end
 
---- Get the fillTypeIds the vehicle the player is sitting in and all its attached implements/trailers could carry (unabhängig vom aktuellen Füllstand). Betriebsstoffe wie Diesel/AdBlue/Luft werden nicht mitgezählt. Bei Paletten-/Ballenanhängern (feste Fracht wird nur über Spanngurte gehalten, nicht über eine feste Filltype-Liste) bleibt das Ergebnis leer.
--- @return table set of fillTypeId -> true
-function ProductionInfoHud.getVehicleSupportedFillTypes()
-    local supportedFillTypes = {};
+---Ermittelt, welche Waren der Fracht-Filter sucht, getrennt nach den beiden Richtungen.
+---Abladeorte werden für die Ware gesucht, die das Gespann transportiert; hat es nichts geladen, bleibt es bei den Sorten,
+---die es überhaupt transportieren könnte. Nachfüllstellen werden für die Verbrauchstanks gesucht: für die Sorte im Tank,
+---und bei leerem Tank für alles was hineinpasst - gerade dann ist die Frage ja am dringendsten.
+---Ein Verbrauchstank zählt zusätzlich als Fracht, wenn er Inhalt hat und sich abladen lässt, etwa ein Güllefass
+---zwischen Grube und Biogasanlage. Betriebsstoffe wie Diesel oder AdBlue stehen nicht auf dem Hud und fallen darüber heraus.
+---@return table deliverFillTypes set of fillTypeId -> true, wohin die Ware gebracht werden kann
+---@return table refillFillTypes set of fillTypeId -> true, wo nachgefüllt werden kann
+---@return boolean isDeliverBySupportedTypes true wenn die Abladeorte nur aus der Transportfähigkeit stammen statt aus geladener Ware
+function ProductionInfoHud.GetCargoFilterFillTypes()
+    local deliverFillTypes = {};
+    local refillFillTypes = {};
+    local carryableFillTypes = {};
+    local fillTypesInOwnUnits = {};
+
     if g_localPlayer == nil then
-        return supportedFillTypes;
+        return deliverFillTypes, refillFillTypes, false;
     end
 
     local vehicle = g_localPlayer:getCurrentVehicle();
     if vehicle == nil then
-        return supportedFillTypes;
+        return deliverFillTypes, refillFillTypes, false;
     end
 
     local rootVehicle = vehicle:getRootVehicle();
     for _, childVehicle in ipairs(rootVehicle:getChildVehicles()) do
         if childVehicle.spec_fillUnit ~= nil then
-            for _, fillUnit in pairs(childVehicle:getFillUnits()) do
-                if fillUnit.showOnHud and fillUnit.supportedFillTypes ~= nil then
-                    for fillTypeId, _ in pairs(fillUnit.supportedFillTypes) do
-                        supportedFillTypes[fillTypeId] = true;
+            local isConsumer, isProduced, dischargeCounts = ProductionInfoHud.GetFillUnitPurposes(childVehicle);
+
+            for fillUnitIndex, fillUnit in ipairs(childVehicle:getFillUnits()) do
+                -- Ein Verteiler ohne eigenen Tank, etwa ein Schleppschuhverband, bringt seine Spezialisierung ohne Kapazität mit
+                if fillUnit.showOnHud and childVehicle:getFillUnitCapacity(fillUnitIndex) > 0 then
+                    local fillTypeId = childVehicle:getFillUnitFillType(fillUnitIndex);
+                    local hasContent = fillTypeId ~= nil and fillTypeId ~= FillType.UNKNOWN and childVehicle:getFillUnitFillLevel(fillUnitIndex) > 0;
+                    if hasContent and (isConsumer[fillUnitIndex] or isProduced[fillUnitIndex]) then
+                        fillTypesInOwnUnits[fillTypeId] = true;
+                    end
+
+                    if isConsumer[fillUnitIndex] then
+                        if hasContent then
+                            refillFillTypes[fillTypeId] = true;
+                            if (dischargeCounts[fillUnitIndex] or 0) > 0 then
+                                deliverFillTypes[fillTypeId] = true;
+                            end
+                        elseif fillUnit.supportedFillTypes ~= nil then
+                            for supportedFillTypeId, _ in pairs(fillUnit.supportedFillTypes) do
+                                refillFillTypes[supportedFillTypeId] = true;
+                            end
+                        end
+                    elseif not isProduced[fillUnitIndex] and not hasContent and fillUnit.supportedFillTypes ~= nil then
+                        for supportedFillTypeId, _ in pairs(fillUnit.supportedFillTypes) do
+                            carryableFillTypes[supportedFillTypeId] = true;
+                        end
                     end
                 end
             end
         end
     end
 
-    return supportedFillTypes;
+    -- Mit Spanngurten befestigte Paletten hängen an keiner FillUnit und tauchen nur in der Füllstandsübersicht des Gespanns auf.
+    -- Von dort zählt deshalb alles als Fracht, was nicht schon in einem Verbrauchs- oder Presstank steckt.
+    local collector = {};
+    function collector.addFillLevel(_, fillType, fillLevel)
+        if fillLevel ~= nil and fillLevel > 0 and fillType ~= nil and fillType ~= FillType.UNKNOWN and not fillTypesInOwnUnits[fillType] then
+            deliverFillTypes[fillType] = true;
+        end
+    end
+
+    rootVehicle:getFillLevelInformation(collector);
+
+    -- Ohne geladene Ware bleibt als Frage, was dieses Gespann überhaupt transportieren könnte
+    local isDeliverBySupportedTypes = next(deliverFillTypes) == nil and next(carryableFillTypes) ~= nil;
+    if isDeliverBySupportedTypes then
+        deliverFillTypes = carryableFillTypes;
+    end
+
+    return deliverFillTypes, refillFillTypes, isDeliverBySupportedTypes;
 end
 
 --- Get the set of fillTypeIds that should count as a match for the given fillTypeId when filtering by loaded/supported cargo:
@@ -956,6 +1084,31 @@ function ProductionInfoHud.GetMatchingFillType(matchFillTypeIds, fillTypeIds)
     for fillTypeId, _ in pairs(matchFillTypeIds) do
         if fillTypeIds[fillTypeId] then
             return fillTypeId;
+        end
+    end
+
+    return nil;
+end
+
+---Liefert die Sorte, über die ein Eintrag selbst zu einer der gesuchten Sorten passt. Konverter-Alternativen zählen hier
+---bewusst nicht: ein Konverter wandelt die Ware beim Abladen um, beim Abholen kommt nur die eigene Sorte heraus.
+---@param productionItem table
+---@param fillTypeIds table set of fillTypeId -> true, gegen das geprüft wird
+---@return integer|nil fillTypeId nil wenn keine Sorte passt
+function ProductionInfoHud.GetMatchingOwnFillType(productionItem, fillTypeIds)
+    if productionItem.fillTypeId ~= nil then
+        if fillTypeIds[productionItem.fillTypeId] then
+            return productionItem.fillTypeId;
+        end
+
+        return nil;
+    end
+
+    if productionItem.mixFillTypeIds ~= nil then
+        for _, fillTypeId in ipairs(productionItem.mixFillTypeIds) do
+            if fillTypeIds[fillTypeId] then
+                return fillTypeId;
+            end
         end
     end
 
@@ -1849,6 +2002,16 @@ function ProductionInfoHud.compProductionTableByFillTypeAndFreeCapacity(a, b)
         if fillTypeIdB == nil then return true; end
         return fillTypeIdA < fillTypeIdB;
     end
+    -- Innerhalb einer Sorte stehen erst die Abladeorte, danach die Nachfüllstellen
+    if a.cargoDirection ~= b.cargoDirection then
+        return a.cargoDirection == ProductionInfoHud.CARGO_DIRECTION_DELIVER;
+    end
+
+    -- Bei einer Nachfüllstelle zählt, wieviel dort liegt, bei einem Abladeort wieviel noch hineinpasst
+    if a.cargoDirection == ProductionInfoHud.CARGO_DIRECTION_REFILL then
+        return (a.fillLevel or 0) > (b.fillLevel or 0);
+    end
+
     local freeCapacityA = (a.capacity or 0) - (a.fillLevel or 0);
     local freeCapacityB = (b.capacity or 0) - (b.fillLevel or 0);
     return freeCapacityA > freeCapacityB;

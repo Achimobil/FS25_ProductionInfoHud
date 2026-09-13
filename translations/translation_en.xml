@@ -18,9 +18,11 @@
         <text name="pih_timeFilterOne"                 text="Time filter none / month (left-click to toggle)"/>
         <text name="pih_timeFilterTwo"                 text="Time filter none / 24h / month (left-click to toggle)"/>
         <text name="pih_autoDeliverFilter"             text="Show/hide distributed products (left-click to toggle)"/>
-        <text name="pih_loadedCargoFilter"             text="Show only delivery points for currently loaded cargo (left-click to toggle)"/>
+        <text name="pih_loadedCargoFilter"             text="Show matching delivery points and refill stations for the current vehicle (left-click to toggle)"/>
         <text name="pih_loadedCargoFilterActive"       text="Filtered: only delivery points for loaded cargo"/>
         <text name="pih_vehicleCapabilityFilterActive" text="Filtered: only cargo this vehicle can carry"/>
+        <text name="pih_refillFilterActive"            text="Filtered: only refill stations for this vehicle"/>
+        <text name="pih_cargoFilterBothActive"         text="Filtered: delivery points and refill stations for this vehicle"/>
 
         <text name="pih_dialogTitle"                 text="Production consumption (%s)"/>
         <text name="pih_mode_hour"                   text="per hour"/>

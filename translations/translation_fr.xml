@@ -18,9 +18,11 @@
         <text name="pih_timeFilterOne"                 text="Filtre temporel aucun / mois (clic gauche pour basculer)"/>
         <text name="pih_timeFilterTwo"                 text="Filtre temporel aucun / 24h / mois (clic gauche pour basculer)"/>
         <text name="pih_autoDeliverFilter"             text="Afficher/masquer les produits distribués (clic gauche pour basculer)"/>
-        <text name="pih_loadedCargoFilter"             text="Afficher uniquement les points de livraison pour la marchandise actuellement chargée (clic gauche pour basculer)"/>
+        <text name="pih_loadedCargoFilter"             text="Afficher les points de livraison et de remplissage adaptés au véhicule actuel (clic gauche pour basculer)"/>
         <text name="pih_loadedCargoFilterActive"       text="Filtré : uniquement les points de livraison pour la marchandise chargée"/>
         <text name="pih_vehicleCapabilityFilterActive" text="Filtré : uniquement les marchandises que ce véhicule peut transporter"/>
+        <text name="pih_refillFilterActive"            text="Filtré : uniquement les points de remplissage pour ce véhicule"/>
+        <text name="pih_cargoFilterBothActive"         text="Filtré : points de livraison et de remplissage pour ce véhicule"/>
 
         <text name="pih_dialogTitle"                 text="Consommation de production (%s)"/>
         <text name="pih_mode_hour"                   text="par heure"/>

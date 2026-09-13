@@ -10,6 +10,8 @@ function PIH_Display_DrawBox.setBox(args)
     local currentProductionItems;
     local isLoadedCargoFilterActive = false;
     local isLoadedCargoFilterBySupportedTypes = false;
+    local isLoadedCargoFilterHasDeliver = false;
+    local isLoadedCargoFilterHasRefill = false;
 
     -- Gefilterte Liste cachen: nur neu bauen wenn sich die Rohdaten geändert haben (alle 5s), ein Filter angeklickt wurde,
     -- oder bei aktivem LoadedCargoFilter mindestens 1s seit der letzten Prüfung vergangen ist (Ladung ändert sich ohne Klick).
@@ -21,6 +23,8 @@ function PIH_Display_DrawBox.setBox(args)
         currentProductionItems = box.filterCacheItems;
         isLoadedCargoFilterActive = box.filterCacheIsLoadedCargoFilterActive;
         isLoadedCargoFilterBySupportedTypes = box.filterCacheIsLoadedCargoFilterBySupportedTypes;
+        isLoadedCargoFilterHasDeliver = box.filterCacheIsLoadedCargoFilterHasDeliver;
+        isLoadedCargoFilterHasRefill = box.filterCacheIsLoadedCargoFilterHasRefill;
     else
         currentProductionItems = {};
         if box.ownTable.fillTypeFilterIds ~= nil then
@@ -78,27 +82,26 @@ function PIH_Display_DrawBox.setBox(args)
             end
         else
             -- hier alle klickbaren Filter kombinieren
-            local loadedFillTypes = nil;
+            local deliverFillTypes = nil;
+            local refillFillTypes = nil;
             if box.ownTable.LoadedCargoFilter then
-                loadedFillTypes = ProductionInfoHud.getCurrentlyLoadedFillTypes();
-
-                if next(loadedFillTypes) == nil then
-                    -- nichts geladen -> stattdessen nach dem filtern, was das Fahrzeug überhaupt transportieren kann
-                    loadedFillTypes = ProductionInfoHud.getVehicleSupportedFillTypes();
-                    if next(loadedFillTypes) == nil then
-                        loadedFillTypes = nil; -- auch das leer (z.B. Paletten-/Ballenanhänger) -> Filter ignorieren statt alles auszublenden
-                    else
-                        isLoadedCargoFilterBySupportedTypes = true;
-                    end
+                local deliver, refill, isBySupportedTypes = ProductionInfoHud.GetCargoFilterFillTypes();
+                -- beide Richtungen leer (z.B. ein Paletten- oder Ballenanhänger) -> Filter ignorieren statt alles auszublenden
+                if next(deliver) ~= nil or next(refill) ~= nil then
+                    deliverFillTypes = deliver;
+                    refillFillTypes = refill;
+                    isLoadedCargoFilterHasDeliver = next(deliver) ~= nil;
+                    isLoadedCargoFilterHasRefill = next(refill) ~= nil;
+                    isLoadedCargoFilterBySupportedTypes = isBySupportedTypes;
                 end
             end
-            isLoadedCargoFilterActive = loadedFillTypes ~= nil;
-            local isFilteringByLoadedCargo = loadedFillTypes ~= nil and not isLoadedCargoFilterBySupportedTypes;
+            isLoadedCargoFilterActive = deliverFillTypes ~= nil;
+            local isFilteringByLoadedCargo = isLoadedCargoFilterActive and not isLoadedCargoFilterBySupportedTypes;
 
-            -- Ohne angeklickten Filter sagt eine Lagerzeile nur in der Mengenansicht etwas, und dort wo ein Abladeort für
-            -- geladene Ware gesucht wird. Filtert der Fracht-Filter nur danach, was das Fahrzeug transportieren könnte,
-            -- ist noch nichts abzuladen und ein Lager hilft nicht weiter.
-            local isStorageDataVisible = box.ownTable.dataViewMode == 2 or isFilteringByLoadedCargo;
+            -- Ohne angeklickten Filter sagt eine Lagerzeile nur in der Mengenansicht etwas. Beim Fracht-Filter ist sie
+            -- dagegen immer interessant: als Abladeort für die Ladung und als Nachfüllstelle für einen leeren Tank.
+            -- Ein Lager ohne Bestand hilft dagegen nur beim Abladen, und auch das nur wenn wirklich etwas geladen ist.
+            local isStorageDataVisible = box.ownTable.dataViewMode == 2 or isLoadedCargoFilterActive;
 
             for _, productionItem in pairs(ProductionInfoHud.CurrentProductionItems) do
                 local skipItem = false;
@@ -114,21 +117,23 @@ function PIH_Display_DrawBox.setBox(args)
                 if not skipItem and not ProductionInfoHud.GetIsStorageItemVisible(productionItem, box.ownTable.ShowStorage, isStorageDataVisible, isFilteringByLoadedCargo) then
                     skipItem = true;
                 end
-                -- bei geladener Ware (Punkt 3, "wo bring ich das hin") sollen ALLE möglichen Abladeorte gezeigt werden, unabhängig vom Zeitfilter.
-                -- Ein Lager hat keine Restzeit und fällt damit auch nicht unter den Zeitfilter.
-                if not skipItem and not isFilteringByLoadedCargo and productionItem.hoursLeft ~= nil and box.ownTable.TimeFilter ~= nil and box.ownTable.TimeFilter ~= 1 then
-                    if box.ownTable.TimeFilter == 2 and productionItem.hoursLeft > 24 then
-                        skipItem = true;
-                    elseif box.ownTable.TimeFilter == 3 and productionItem.hoursLeft > (24 * g_currentMission.environment.daysPerPeriod) then
-                        skipItem = true;
-                    end
-                end
                 -- Die Zuordnung gilt nur für den aktuellen Durchlauf, deshalb vorher zurücksetzen
                 productionItem.cargoMatchFillTypeId = nil;
-                if not skipItem and loadedFillTypes ~= nil then
+                productionItem.cargoDirection = nil;
+                if not skipItem and deliverFillTypes ~= nil and refillFillTypes ~= nil then
                     local matchingFillTypeId = nil;
                     if productionItem.isInput then
-                        matchingFillTypeId = ProductionInfoHud.GetMatchingFillType(productionItem.matchFillTypeIds, loadedFillTypes);
+                        matchingFillTypeId = ProductionInfoHud.GetMatchingFillType(productionItem.matchFillTypeIds, deliverFillTypes);
+                    end
+
+                    if matchingFillTypeId ~= nil then
+                        productionItem.cargoDirection = ProductionInfoHud.CARGO_DIRECTION_DELIVER;
+                    elseif productionItem.isOutput and (productionItem.fillLevel or 0) > 0 then
+                        -- Als Nachfüllstelle taugt nur, wo die Ware auch tatsächlich liegt
+                        matchingFillTypeId = ProductionInfoHud.GetMatchingOwnFillType(productionItem, refillFillTypes);
+                        if matchingFillTypeId ~= nil then
+                            productionItem.cargoDirection = ProductionInfoHud.CARGO_DIRECTION_REFILL;
+                        end
                     end
 
                     if matchingFillTypeId == nil then
@@ -138,14 +143,24 @@ function PIH_Display_DrawBox.setBox(args)
                         productionItem.cargoMatchFillTypeId = matchingFillTypeId;
                     end
                 end
+                -- Bei geladener Ware ("wo bring ich das hin") und bei Nachfüllstellen zählt jeder Treffer, unabhängig vom Zeitfilter.
+                -- Ein Lager hat keine Restzeit und fällt damit ohnehin nicht unter den Zeitfilter.
+                local isTimeFilterSuspended = isFilteringByLoadedCargo or productionItem.cargoDirection == ProductionInfoHud.CARGO_DIRECTION_REFILL;
+                if not skipItem and not isTimeFilterSuspended and productionItem.hoursLeft ~= nil and box.ownTable.TimeFilter ~= nil and box.ownTable.TimeFilter ~= 1 then
+                    if box.ownTable.TimeFilter == 2 and productionItem.hoursLeft > 24 then
+                        skipItem = true;
+                    elseif box.ownTable.TimeFilter == 3 and productionItem.hoursLeft > (24 * g_currentMission.environment.daysPerPeriod) then
+                        skipItem = true;
+                    end
+                end
 
                 if not skipItem then
                     table.insert(currentProductionItems, productionItem);
                 end
             end
 
-            if isFilteringByLoadedCargo then
-                -- nur bei geladener Ware (Punkt 3) FillTypes gruppieren statt nach Restzeit zu sortieren; bei Punkt 2 (Fahrzeug-Fähigkeit) bleibt die normale Sortierung
+            if isFilteringByLoadedCargo or isLoadedCargoFilterHasRefill then
+                -- bei geladener Ware und bei Nachfüllstellen nach Sorte gruppieren statt nach Restzeit; filtert nur die Fahrzeug-Fähigkeit, bleibt die normale Sortierung
                 table.sort(currentProductionItems, ProductionInfoHud.compProductionTableByFillTypeAndFreeCapacity);
             end
         end
@@ -153,6 +168,8 @@ function PIH_Display_DrawBox.setBox(args)
         box.filterCacheItems = currentProductionItems;
         box.filterCacheIsLoadedCargoFilterActive = isLoadedCargoFilterActive;
         box.filterCacheIsLoadedCargoFilterBySupportedTypes = isLoadedCargoFilterBySupportedTypes;
+        box.filterCacheIsLoadedCargoFilterHasDeliver = isLoadedCargoFilterHasDeliver;
+        box.filterCacheIsLoadedCargoFilterHasRefill = isLoadedCargoFilterHasRefill;
         box.filterCacheSourceItems = ProductionInfoHud.CurrentProductionItems;
         box.filterCacheDirty = false;
         if box.ownTable.LoadedCargoFilter then
@@ -408,7 +425,16 @@ function PIH_Display_DrawBox.setBox(args)
 
         --loadedCargoFilterHint--
         if isLoadedCargoFilterActive and nextPosY >= y then
-            local hintKey = isLoadedCargoFilterBySupportedTypes and "pih_vehicleCapabilityFilterActive" or "pih_loadedCargoFilterActive";
+            local hintKey;
+            if isLoadedCargoFilterHasDeliver and isLoadedCargoFilterHasRefill then
+                hintKey = "pih_cargoFilterBothActive";
+            elseif isLoadedCargoFilterHasRefill then
+                hintKey = "pih_refillFilterActive";
+            elseif isLoadedCargoFilterBySupportedTypes then
+                hintKey = "pih_vehicleCapabilityFilterActive";
+            else
+                hintKey = "pih_loadedCargoFilterActive";
+            end
             local hintText = g_currentMission.hlUtils.getTxtToWidth(tostring(ProductionInfoHud.i18n:getText(hintKey)), size, w-(difW*2), false, ".");
             setTextBold(true);
             setTextColor(unpack(g_currentMission.hlUtils.getColor(box.overlays.color.on, true)));
@@ -460,7 +486,15 @@ function PIH_Display_DrawBox.setBox(args)
 
                 ---Filltype---
                 if canNextView then
-                    if productionItem.IsStorage then
+                    if isLoadedCargoFilterActive and productionItem.cargoDirection ~= nil then
+                        -- Zeigt der Fracht-Filter beide Richtungen gleichzeitig, muss die Zeile selbst sagen welche sie meint:
+                        -- zur Nachfüllstelle fährt man um zu holen, zum Abladeort um zu bringen.
+                        if productionItem.cargoDirection == ProductionInfoHud.CARGO_DIRECTION_REFILL then
+                            overlay = overlayDefaultGroup[overlayDefaultByName["bying"]];
+                        else
+                            overlay = overlayDefaultGroup[overlayDefaultByName["selling"]];
+                        end
+                    elseif productionItem.IsStorage then
                         -- Ein Lager kauft und verkauft nicht, es liegt nur da: eigenes Symbol statt eines Pfeils,
                         -- passend zu der Zahl daneben - Bestand oder freier Platz.
                         -- Ein Palettenlager zählt Stellplätze statt Liter und ist deshalb an seinem eigenen Symbol zu erkennen.
@@ -511,7 +545,11 @@ function PIH_Display_DrawBox.setBox(args)
                     local dataString = "";
                     if isLoadedCargoFilterActive then
                         -- bei aktivem Cargo-Filter Zeit UND Kapazität kombiniert+abgekürzt anzeigen, statt ständig zwischen beidem umschalten zu müssen
-                        dataString = tostring(productionItem.TimeShortString) .. " (" .. ProductionInfoHud.FormatShortAmount(productionItem.capacityData) .. ")";
+                        local cargoAmount = productionItem.capacityData;
+                        if productionItem.cargoDirection == ProductionInfoHud.CARGO_DIRECTION_REFILL then
+                            cargoAmount = productionItem.fillLevel;
+                        end
+                        dataString = tostring(productionItem.TimeShortString) .. " (" .. ProductionInfoHud.FormatShortAmount(cargoAmount) .. ")";
                     elseif box.ownTable.dataViewMode == 1 then
                         -- mode 1 = Time left
                         dataString = tostring(productionItem.TimeLeftString);

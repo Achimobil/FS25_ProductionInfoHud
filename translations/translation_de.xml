@@ -18,9 +18,11 @@
         <text name="pih_timeFilterOne"                 text="Zeitfilter keiner / Monat (Linksklick zum Umschalten)"/>
         <text name="pih_timeFilterTwo"                 text="Zeitfilter keiner / 24h / Monat (Linksklick zum Umschalten)"/>
         <text name="pih_autoDeliverFilter"             text="Verteilte Produkte anzeigen/ausblenden (Linksklick zum Umschalten)"/>
-        <text name="pih_loadedCargoFilter"             text="Nur Abladeorte für aktuell geladene Ware anzeigen (Linksklick zum Umschalten)"/>
+        <text name="pih_loadedCargoFilter"             text="Passende Abladeorte und Nachfüllstellen für das aktuelle Fahrzeug anzeigen (Linksklick zum Umschalten)"/>
         <text name="pih_loadedCargoFilterActive"       text="Gefiltert: nur Abladeorte für geladene Ware"/>
         <text name="pih_vehicleCapabilityFilterActive" text="Gefiltert: nur Ware, die dieses Fahrzeug transportieren kann"/>
+        <text name="pih_refillFilterActive"            text="Gefiltert: nur Nachfüllstellen für dieses Fahrzeug"/>
+        <text name="pih_cargoFilterBothActive"         text="Gefiltert: Abladeorte und Nachfüllstellen für dieses Fahrzeug"/>
 
         <text name="pih_dialogTitle"                 text="Produktionsverbrauch (%s)"/>
         <text name="pih_mode_hour"                   text="pro Stunde"/>

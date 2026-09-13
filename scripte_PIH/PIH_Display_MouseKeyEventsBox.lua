@@ -145,16 +145,6 @@ function PIH_Display_MouseKeyEventsBox.onClickArea(args)
                     return;
                 end;
             end;
-        elseif args.button == Input.MOUSE_BUTTON_MIDDLE then
-            local box = args.box;
-            if box ~= nil then
-                if args.clickAreaTable.whereClick == "balesObject_" then --map hotspot
-                    local fillType = FTAP_DisplaySetGet.fillTypes[args.clickAreaTable.ownTable[1]];
-                    if fillType ~= nil and fillType.bales.nodeId ~= nil then
-                        g_currentMission.hlHudSystem.setMapHotspot(fillType.bales.nodeId);
-                    end;
-                end;
-            end;
         end;
     end;
 end;
