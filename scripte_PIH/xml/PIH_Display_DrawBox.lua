@@ -98,10 +98,10 @@ function PIH_Display_DrawBox.setBox(args)
             isLoadedCargoFilterActive = deliverFillTypes ~= nil;
             local isFilteringByLoadedCargo = isLoadedCargoFilterActive and not isLoadedCargoFilterBySupportedTypes;
 
-            -- Ohne angeklickten Filter sagt eine Lagerzeile nur in der Mengenansicht etwas. Beim Fracht-Filter ist sie
-            -- dagegen immer interessant: als Abladeort für die Ladung und als Nachfüllstelle für einen leeren Tank.
-            -- Ein Lager ohne Bestand hilft dagegen nur beim Abladen, und auch das nur wenn wirklich etwas geladen ist.
-            local isStorageDataVisible = box.ownTable.dataViewMode == 2 or isLoadedCargoFilterActive;
+            -- Eine Lagerzeile beantwortet nur die Frage nach einem Abladeort oder einer Nachfüllstelle, sie hat keine
+            -- Restzeit und drängt sich in der normalen Liste nur vor. Sie erscheint deshalb allein beim Fracht-Filter.
+            -- Ein Lager ohne Bestand hilft dabei nur beim Abladen, und auch das nur wenn wirklich etwas geladen ist.
+            local isStorageDataVisible = isLoadedCargoFilterActive;
 
             for _, productionItem in pairs(ProductionInfoHud.CurrentProductionItems) do
                 local skipItem = false;
@@ -137,7 +137,7 @@ function PIH_Display_DrawBox.setBox(args)
                     -- an jedem Zeitfilter vorbei.
                     if matchingFillTypeId == nil and productionItem.isInput
                         and (not productionItem.IsStorage or isFilteringByLoadedCargo) then
-                        matchingFillTypeId = ProductionInfoHud.GetMatchingFillType(productionItem.matchFillTypeIds, deliverFillTypes);
+                        matchingFillTypeId = ProductionInfoHud.GetMatchingTargetFillType(productionItem, deliverFillTypes);
                         if matchingFillTypeId ~= nil then
                             productionItem.cargoDirection = ProductionInfoHud.CARGO_DIRECTION_DELIVER;
                         end

@@ -1184,6 +1184,19 @@ function ProductionInfoHud.GetMatchingOwnFillType(productionItem, fillTypeIds)
     return nil;
 end
 
+---Liefert die Sorte, über die ein Eintrag als Abladeort zur gesuchten Ware passt. Nicht jeder Eintrag bringt eine Liste
+---mit Konverter-Alternativen mit - das Wasser oder Stroh einer Tierhaltung etwa nimmt nur genau seine eigene Sorte an.
+---@param productionItem table
+---@param fillTypeIds table set of fillTypeId -> true, gegen das geprüft wird
+---@return integer|nil fillTypeId nil wenn keine Sorte passt
+function ProductionInfoHud.GetMatchingTargetFillType(productionItem, fillTypeIds)
+    if productionItem.matchFillTypeIds ~= nil then
+        return ProductionInfoHud.GetMatchingFillType(productionItem.matchFillTypeIds, fillTypeIds);
+    end
+
+    return ProductionInfoHud.GetMatchingOwnFillType(productionItem, fillTypeIds);
+end
+
 ---Prüft, ob ein Eintrag zu einem Filter über einzelne Sorten passt. Eine Zeile, die mehrere Sorten zusammenfasst,
 ---passt, sobald eine ihrer Sorten gesucht wird.
 ---@param productionItem table
@@ -2076,9 +2089,24 @@ function ProductionInfoHud.compProductionTableByFillTypeAndFreeCapacity(a, b)
         return a.cargoDirection == ProductionInfoHud.CARGO_DIRECTION_DELIVER;
     end
 
-    -- Bei einer Nachfüllstelle zählt, wieviel dort liegt, bei einem Abladeort wieviel noch hineinpasst
+    -- Bei einer Nachfüllstelle zählt, wieviel dort liegt
     if a.cargoDirection == ProductionInfoHud.CARGO_DIRECTION_REFILL then
         return (a.fillLevel or 0) > (b.fillLevel or 0);
+    end
+
+    -- Unter den Abladeorten steht vorn, wo es zuerst eng wird. Ein Lager läuft nicht leer, hat also keine Restzeit
+    -- und gehört ans Ende: es nimmt die Ware zwar an, aber dort wartet niemand darauf.
+    local isStorageA = a.IsStorage == true;
+    local isStorageB = b.IsStorage == true;
+    if isStorageA ~= isStorageB then
+        return isStorageB;
+    end
+
+    if not isStorageA and a.hoursLeft ~= b.hoursLeft then
+        -- ohne Restzeit ans Ende sortieren statt Vergleichsfehler
+        if a.hoursLeft == nil then return false; end
+        if b.hoursLeft == nil then return true; end
+        return a.hoursLeft < b.hoursLeft;
     end
 
     local freeCapacityA = (a.capacity or 0) - (a.fillLevel or 0);
