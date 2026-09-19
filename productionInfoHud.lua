@@ -1023,6 +1023,7 @@ end
 ---zwischen Grube und Biogasanlage pendeln kann. Betriebsstoffe wie Diesel oder AdBlue stehen nicht auf dem Hud und fallen darüber heraus.
 ---@return table deliverFillTypes set of fillTypeId -> true, wohin die Ware gebracht werden kann
 ---@return table refillFillTypes set of fillTypeId -> true, wo nachgefüllt werden kann
+---@return table pickupFillTypes set of fillTypeId -> true, was ein leeres Fahrzeug abholen könnte
 ---@return boolean isDeliverBySupportedTypes true wenn die Abladeorte nur aus der Transportfähigkeit stammen statt aus geladener Ware
 function ProductionInfoHud.GetCargoFilterFillTypes()
     local deliverFillTypes = {};
@@ -1031,12 +1032,12 @@ function ProductionInfoHud.GetCargoFilterFillTypes()
     local fillTypesInOwnUnits = {};
 
     if g_localPlayer == nil then
-        return deliverFillTypes, refillFillTypes, false;
+        return deliverFillTypes, refillFillTypes, {}, false;
     end
 
     local vehicle = g_localPlayer:getCurrentVehicle();
     if vehicle == nil then
-        return deliverFillTypes, refillFillTypes, false;
+        return deliverFillTypes, refillFillTypes, {}, false;
     end
 
     local rootVehicle = vehicle:getRootVehicle();
@@ -1100,13 +1101,16 @@ function ProductionInfoHud.GetCargoFilterFillTypes()
 
     rootVehicle:getFillLevelInformation(collector);
 
-    -- Ohne geladene Ware bleibt als Frage, was dieses Gespann überhaupt transportieren könnte
+    -- Ohne geladene Ware bleibt als Frage, was dieses Gespann überhaupt transportieren könnte. Gesucht ist dann Arbeit
+    -- in beide Richtungen: hinbringen was knapp wird, und abholen was gerade volläuft.
+    local pickupFillTypes = {};
     local isDeliverBySupportedTypes = next(deliverFillTypes) == nil and next(carryableFillTypes) ~= nil;
     if isDeliverBySupportedTypes then
         deliverFillTypes = carryableFillTypes;
+        pickupFillTypes = carryableFillTypes;
     end
 
-    return deliverFillTypes, refillFillTypes, isDeliverBySupportedTypes;
+    return deliverFillTypes, refillFillTypes, pickupFillTypes, isDeliverBySupportedTypes;
 end
 
 --- Get the set of fillTypeIds that should count as a match for the given fillTypeId when filtering by loaded/supported cargo:

@@ -84,12 +84,14 @@ function PIH_Display_DrawBox.setBox(args)
             -- hier alle klickbaren Filter kombinieren
             local deliverFillTypes = nil;
             local refillFillTypes = nil;
+            local pickupFillTypes = nil;
             if box.ownTable.LoadedCargoFilter then
-                local deliver, refill, isBySupportedTypes = ProductionInfoHud.GetCargoFilterFillTypes();
+                local deliver, refill, pickup, isBySupportedTypes = ProductionInfoHud.GetCargoFilterFillTypes();
                 -- beide Richtungen leer (z.B. ein Paletten- oder Ballenanhänger) -> Filter ignorieren statt alles auszublenden
                 if next(deliver) ~= nil or next(refill) ~= nil then
                     deliverFillTypes = deliver;
                     refillFillTypes = refill;
+                    pickupFillTypes = pickup;
                     isLoadedCargoFilterHasDeliver = next(deliver) ~= nil;
                     isLoadedCargoFilterHasRefill = next(refill) ~= nil;
                     isLoadedCargoFilterBySupportedTypes = isBySupportedTypes;
@@ -127,6 +129,14 @@ function PIH_Display_DrawBox.setBox(args)
                     -- Als Nachfüllstelle taugt ohnehin nur, wo die Ware tatsächlich liegt.
                     if productionItem.isOutput and (productionItem.fillLevel or 0) > 0 then
                         matchingFillTypeId = ProductionInfoHud.GetMatchingOwnFillType(productionItem, refillFillTypes);
+
+                        -- Ein leeres Fahrzeug sucht auch Ladung: was es transportieren kann und gerade irgendwo anfällt.
+                        -- Ein Lager bleibt dabei außen vor, es läuft nicht voll und würde die Liste nur mit jeder
+                        -- eingelagerten Sorte überschwemmen.
+                        if matchingFillTypeId == nil and not productionItem.IsStorage then
+                            matchingFillTypeId = ProductionInfoHud.GetMatchingOwnFillType(productionItem, pickupFillTypes);
+                        end
+
                         if matchingFillTypeId ~= nil then
                             productionItem.cargoDirection = ProductionInfoHud.CARGO_DIRECTION_REFILL;
                         end
