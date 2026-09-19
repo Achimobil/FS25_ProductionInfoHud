@@ -1284,6 +1284,16 @@ function ProductionInfoHud:AddHusbandry(myProductionItems, husbandry)
                     matchFillTypeIds[groupFillTypeId] = true;
                 end
             end
+
+            -- Das fertige Mischfutter einer Tierart steht in keiner Futtergruppe, es wird getrennt als Mischung geführt.
+            -- Beim Schwein sind das nur die Rohstoffe wie Mais oder Weizen, das Schweinefutter selbst fehlte dadurch.
+            local mixtureFillTypeIds = g_currentMission.animalFoodSystem:getMixturesByAnimalTypeIndex(animalTypeIndex);
+            if mixtureFillTypeIds ~= nil then
+                for _, mixtureFillTypeId in ipairs(mixtureFillTypeIds) do
+                    matchFillTypeIds[mixtureFillTypeId] = true;
+                end
+            end
+
             productionItem.matchFillTypeIds = matchFillTypeIds;
         end
 

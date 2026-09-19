@@ -2,7 +2,7 @@
 <modDesc descVersion="113">
     <author>Achimobil</author>
     <contributor>HappyLooser</contributor>
-    <version>1.2.0.16</version>
+    <version>1.2.0.17</version>
 
     <title>
         <de>Produktionen Info Hud</de>
@@ -56,6 +56,7 @@ Das Verändern oder erneutes Hochladen, ob ganz oder in Teilen, ist nicht gestat
 
 Fehler und Anregungen gerne auf GitHub: https://github.com/Achimobil/FS25_ProductionInfoHud
 Changelog
+1.2.0.17 - Fracht-Filter findet mit fertigem Mischfutter wie Schweinefutter jetzt auch den passenden Stall
 1.2.0.16
 - Ställe erscheinen im Fracht-Filter jetzt auch bei Wasser und Stroh und nicht mehr nur beim Futter
 - Bei geladener Ware stehen jetzt die dringendsten Abladeorte oben, eigene Lager am Ende
