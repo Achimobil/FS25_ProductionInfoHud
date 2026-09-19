@@ -122,6 +122,7 @@ function PIH_Display_DrawBox.setBox(args)
                 -- Die Zuordnung gilt nur für den aktuellen Durchlauf, deshalb vorher zurücksetzen
                 productionItem.cargoMatchFillTypeId = nil;
                 productionItem.cargoDirection = nil;
+                local isPickupMatch = false;
                 if not skipItem and deliverFillTypes ~= nil and refillFillTypes ~= nil then
                     local matchingFillTypeId = nil;
                     -- Ein Lager nimmt an und gibt ab, passt also zu beiden Richtungen. Gefragt ist dann der Bestand:
@@ -135,6 +136,7 @@ function PIH_Display_DrawBox.setBox(args)
                         -- eingelagerten Sorte überschwemmen.
                         if matchingFillTypeId == nil and not productionItem.IsStorage then
                             matchingFillTypeId = ProductionInfoHud.GetMatchingOwnFillType(productionItem, pickupFillTypes);
+                            isPickupMatch = matchingFillTypeId ~= nil;
                         end
 
                         if matchingFillTypeId ~= nil then
@@ -160,9 +162,12 @@ function PIH_Display_DrawBox.setBox(args)
                         productionItem.cargoMatchFillTypeId = matchingFillTypeId;
                     end
                 end
-                -- Bei geladener Ware ("wo bring ich das hin") und bei Nachfüllstellen zählt jeder Treffer, unabhängig vom Zeitfilter.
-                -- Ein Lager hat keine Restzeit und fällt damit ohnehin nicht unter den Zeitfilter.
-                local isTimeFilterSuspended = isFilteringByLoadedCargo or productionItem.cargoDirection == ProductionInfoHud.CARGO_DIRECTION_REFILL;
+                -- Bei geladener Ware ("wo bring ich das hin") und bei Nachfüllstellen für einen Verbrauchstank zählt jeder
+                -- Treffer, unabhängig vom Zeitfilter. Ein leeres Fahrzeug sucht dagegen Arbeit in der Liste, die ohnehin
+                -- gerade ansteht: seine Ladestellen bleiben deshalb dem Zeitfilter unterworfen wie jede andere Zeile.
+                -- Ein Lager hat keine Restzeit und fällt ohnehin nicht unter den Zeitfilter.
+                local isTimeFilterSuspended = isFilteringByLoadedCargo
+                    or (productionItem.cargoDirection == ProductionInfoHud.CARGO_DIRECTION_REFILL and not isPickupMatch);
                 if not skipItem and not isTimeFilterSuspended and productionItem.hoursLeft ~= nil and box.ownTable.TimeFilter ~= nil and box.ownTable.TimeFilter ~= 1 then
                     if box.ownTable.TimeFilter == 2 and productionItem.hoursLeft > 24 then
                         skipItem = true;
