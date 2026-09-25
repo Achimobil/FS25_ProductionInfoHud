@@ -18,10 +18,10 @@ hlUtils.metadata = {
 	title = "HL Utils", --löst das alte _hl System ab was ich seit LS15 benutzt habe und in fast allen meinen Mods vorhanden war
 	notes = "Nützliche Utils die man in Mods (meine fast alle) immer wieder mal braucht, incl. Maussteuerung (Default F9)",
 	author = "(by HappyLooser)",
-	version = "v1.02 Beta",
-	systemVersion = 1.02,
+	version = "v1.06 Beta",
+	systemVersion = 1.06,
 	datum = "21.05.2023",
-	update = "04.06.2025",
+	update = "11.09.2026",
 	web = "no",
 	info = "Link Freigabe und Änderungen ist ohne meine Zustimmung nicht erlaubt (Freeware)",
 	info1 = "Benutzung als HL Utils in einem Mod (ohne Code Änderung) ist ohne Zustimmung erlaubt",
@@ -115,8 +115,8 @@ function hlUtils.onStartMission()
 		hlUtils:addOverlays();
 		hlUtils:loadSaveXml();
 		---
-		--hlUtils:playerHandTool();
-		hlUtils:vehicleZoom();
+		--hlUtils:playerHandTool(); --update 1.06 removed
+		hlUtils:vehicleZoom(); --update 1.06 modified
 		hlUtils:loadInputHelpDisplay();
 		---
 	end;	
@@ -189,34 +189,24 @@ function hlUtils:getDetiServer()
 end;
 addModEventListener(hlUtils);
 
-function hlUtils:playerHandTool()	
-	oldPlayerStateCycleHandtool = PlayerStateCycleHandtool.isAvailable;
-	PlayerStateCycleHandtool.isAvailable = function (self)
-		local isOkay, result = pcall(oldPlayerStateCycleHandtool, self);
-		if isOkay and self ~= nil then
-			if g_currentMission.hlUtils.isMouseCursor then return false;end;			
-			if g_currentMission.hlUtils.modLoaded["FS25_AllRoundExtension"] ~= nil and not g_currentMission.hlUtils.globalFunction["FS25_AllRoundExtension"].getHandTool() then return false;end; --update 0.4
-			return result;
-		end;
-	end;	
+function hlUtils:vehicleZoom() --update 1.06 modified
+	local oldVehicleCameraZoomSmoothly = VehicleCamera.zoomSmoothly;
+    
+    VehicleCamera.zoomSmoothly = function(self, offset)
+        if self == nil then 
+            return; 
+        end;
+        local zoomTarget = self.zoomTarget;        
+        oldVehicleCameraZoomSmoothly(self, offset);        
+        if not g_currentMission.hlUtils.isMouseCursor then                
+            return offset;            
+        else                
+            self.zoomTarget = zoomTarget;                
+        end;
+    end;	
 end;
 
-function hlUtils:vehicleZoom() 
-	oldVehicleCamera = VehicleCamera.zoomSmoothly;
-	VehicleCamera.zoomSmoothly = function(self, offset)
-		local zoomTarget = self.zoomTarget;
-		local isOkay, result = pcall(oldVehicleCamera, self, offset)
-		if isOkay and self ~= nil then
-			if not g_currentMission.hlUtils.isMouseCursor then				
-				return offset;			
-			else				
-				self.zoomTarget = zoomTarget;				
-			end;
-		end;
-	end;
-end;
-
-function hlUtils:loadInputHelpDisplay() --update 0.97
+function hlUtils:loadInputHelpDisplay() --update 1.05
 	
 	function hlUtils.preInputHelpDisplayDraw(self, offsetX, offsetY)
 		
@@ -251,11 +241,25 @@ function hlUtils:loadInputHelpDisplay() --update 0.97
 		local comboHeight = 0;
 		local eventHelpElementTotalHeight = 0;
 		local helpExtensionTotalHeight = 0;
+		local helpExtensionBeforeTotalHeight = 0;
 		local infoExtensionTotalHeight = 0;
 		local extraHelpTextTotalHeight = 0;
 		local numElements = 0;
 		local hasEventElement = false;
 		local noVehicleControl = self.vehicle == nil or self.vehicle.schemaOverlay == nil;
+		
+		--update 1.05
+		-- already precalculate how many helpExtensions we are going to add
+		-- so we properly cut out low prio eventHelpElements
+		function setHelpExtensionBefore() --pf25 patch 1.13.x
+			for k, extension in pairs(self.helpExtensions) do
+				if extension.priority <= GS_PRIO_LOW then
+					numElements = numElements + 1;					
+				end;
+			end;
+		end;
+		--update 1.05
+		
 		function setEventsHelpElementsTotalHeight()
 			if eventHelpElements ~= nil then
 				for k, helpElement in ipairs(eventHelpElements) do
@@ -277,7 +281,7 @@ function hlUtils:loadInputHelpDisplay() --update 0.97
 					end;
 				end;
 			end;
-		end;	
+		end;		
 		function setHelpExtensionTotalHeight()		
 			if self.helpExtensions ~= nil and #self.helpExtensions > 0 then 
 				for i=#self.helpExtensions, 1, -1 do
@@ -285,8 +289,8 @@ function hlUtils:loadInputHelpDisplay() --update 0.97
 					local helpExtension = self.helpExtensions[i];				
 					if helpExtension.setEventHelpElements ~= nil then
 						hasEventElement = true;
-					end;
-					local maxNumElements = helpExtension.priority <= GS_PRIO_HIGH and InputHelpDisplay.MAX_NUM_ELEMENTS_HIGH_PRIORITY or InputHelpDisplay.MAX_NUM_ELEMENTS;
+					end;					
+					local maxNumElements = helpExtension.priority <= GS_PRIO_LOW and InputHelpDisplay.MAX_NUM_ELEMENTS_HIGH_PRIORITY or InputHelpDisplay.MAX_NUM_ELEMENTS;
 					if numElements < maxNumElements then				
 						local height = helpExtension:getHeight();
 						if height > 0 then
@@ -321,6 +325,7 @@ function hlUtils:loadInputHelpDisplay() --update 0.97
 		if hasComboCommands then
 			comboHeight = comboHeight + self.comboBg.height + self.lineOffsetY;
 		end;
+		setHelpExtensionBefore();
 		setEventsHelpElementsTotalHeight();
 		setHelpExtensionTotalHeight();
 		setInfoExtensionTotalHeight();
@@ -328,7 +333,7 @@ function hlUtils:loadInputHelpDisplay() --update 0.97
 		if difHeight > 0 then
 			helpExtensionTotalHeight = helpExtensionTotalHeight - difHeight;
 		end;
-		g_currentMission.hlUtils.helpMenuData.eventHelpElementHeight = eventHelpElementTotalHeight;
+		g_currentMission.hlUtils.helpMenuData.eventHelpElementHeight = eventHelpElementTotalHeight;		
 		g_currentMission.hlUtils.helpMenuData.helpExtensionHeight = helpExtensionTotalHeight;
 		g_currentMission.hlUtils.helpMenuData.infoExtensionHeight = infoExtensionTotalHeight;
 		g_currentMission.hlUtils.helpMenuData.extraHelpTextHeight = extraHelpTextTotalHeight;
@@ -337,6 +342,9 @@ function hlUtils:loadInputHelpDisplay() --update 0.97
 		g_currentMission.hlUtils.helpMenuData.hasEventElement = hasEventElement;
 		g_currentMission.hlUtils.helpMenuData.hasVehicle = self.vehicle ~= nil;
 		g_currentMission.hlUtils.helpMenuData.hasVehicleSchema = self.vehicle ~= nil and self.vehicle.schemaOverlay ~= nil;
+		g_currentMission.hlUtils.helpMenuData.hasExtendedSprayer = self.extendedSprayer ~= nil;
+		g_currentMission.hlUtils.helpMenuData.hasExtendedSowingMachine = self.extendedSowingMachine ~= nil;
+		g_currentMission.hlUtils.helpMenuData.hasExtendedCombine = self.extendedCombine ~= nil;
 		
 		local posX, posY = self:getPosition();
 		g_currentMission.hlUtils.helpMenuData.posX = posX;
@@ -799,7 +807,7 @@ function(args)
 	if args == nil or type(args) ~= "table" or args.xmlTagName == nil or args.modName == nil or args.groupName == nil or args.iconFile == nil or args.xmlFile == nil then return nil;end;
 	local icons = nil;	
 	if type(args.loadIcons) == "table" then icons = args.loadIcons;end; 
-	local iconFilePath, xmlFilePath = g_currentMission.hlUtils.checkFilePath(args.iconFile, args.xmlFile, args.modDir);	
+	local iconFilePath, xmlFilePath = g_currentMission.hlUtils.checkFilePath(args.iconFile, args.xmlFile, args.modDir, args.xmlModDir); --update 1.03 xmlModDir	
 	if iconFilePath == nil or xmlFilePath == nil then return nil;end;
 	local iconOverlayTable = nil;
 	local formatO = 0; --default 64X64 area
@@ -1382,24 +1390,28 @@ function(oldTable)
 	return tableCopy(oldTable);
 end;end;
 
-if g_currentMission.hlUtils.getTableCopyFunc==nil then g_currentMission.hlUtils.getTableCopyFunc=
+if g_currentMission.hlUtils.getTableCopyFunc==nil then g_currentMission.hlUtils.getTableCopyFunc= --update 1.06 modified
 function(oldTable)
-    function tableCopy(oldTable)
-		local newTable = {}
-        for key,value in pairs(oldTable) do
+    local function tableCopy(currentTable)
+        if type(currentTable) ~= "table" then
+            return currentTable;
+        end;
+        local newTable = {};
+        for key, value in pairs(currentTable) do
             local value_type = type(value);
-            local new_value;
-            if value_type == "function" then
-                new_value = loadstring(string.dump(value));                
-            elseif value_type == "table" then
-                new_value = tableCopy(value);
+            
+            if value_type == "table" then
+                newTable[key] = tableCopy(value);
             else
-                new_value = value;
-            end
-            newTable[key] = new_value;
-        end
+                newTable[key] = value;
+            end;
+        end;        
+        local meta = getmetatable(currentTable);
+        if meta then
+            setmetatable(newTable, meta);
+        end;        
         return newTable;
-    end;
+    end;    
     return tableCopy(oldTable);
 end;end;
 
@@ -1762,11 +1774,11 @@ function()
 	return g_currentMission.hlUtils.dragDrop.on or not g_currentMission.hlUtils.isMouseCursor;
 end;end;
 
-if g_currentMission.hlUtils.getFunction==nil then g_currentMission.hlUtils.getFunction=
+if g_currentMission.hlUtils.getFunction==nil then g_currentMission.hlUtils.getFunction= --update 1.06 modified
 function(funcName)
 	--local parts = StringUtil.splitString(".", funcName); old LS19
 	local parts = g_currentMission.hlUtils.stringSplit(funcName, ".", true);	
-	local numParts = table.getn(parts);
+	local numParts = #parts;
 	local currentTable = _G[parts[1]];
 	if numParts > 1 then
 		if type(currentTable) ~= "table" then
@@ -1945,9 +1957,10 @@ function(args)
 end;end;
 
 if g_currentMission.hlUtils.checkFilePath==nil then g_currentMission.hlUtils.checkFilePath= --update 1.02/textureFileExists,audioFileExists
-function(file, xmlFile, modDir)	
-	local filePath = Utils.getFilename(tostring(file), modDir);
+function(file, xmlFile, modDir, xmlModDir) --update 1.03 xmlModDir	
+	local filePath = Utils.getFilename(tostring(file), modDir);	
 	local xmlFilePath = Utils.getFilename(tostring(xmlFile), modDir);
+	if xmlFilePath == nil or xmlModDir ~= nil then xmlFilePath = Utils.getFilename(tostring(xmlFile), xmlModDir);end;
 	if string.endsWith(file, ".dds") or string.endsWith(file, ".png") then
 		if not textureFileExists(filePath) or not fileExists(xmlFilePath) then return nil;end;
 	elseif string.endsWith(filePath, ".ogg") or (string.endsWith(filePath, ".wav") or string.endsWith(filePath, ".gls")) then
@@ -2233,4 +2246,22 @@ function(tab)
 	end;
 end;end;
 --update 1.00
+--update 1.04
+if g_currentMission.hlUtils.getTypToString==nil then g_currentMission.hlUtils.getTypToString=
+function(str, numberTyp)
+	if tonumber(str) then 
+		if numberTyp ~= nil and true then return g_currentMission.hlUtils.getTypToNumber(tonumber(str));end;
+		return tonumber(str);
+	elseif string.lower(str) == "true" then return true;elseif string.lower(str) == "false" then return false;end;
+	return str;
+end;end;
+if g_currentMission.hlUtils.getTypToNumber==nil then g_currentMission.hlUtils.getTypToNumber=
+function(number)
+	local numberTyp = "float"
+	if number % 1 == 0 then
+		numberTyp = "integer";	
+	end;
+	return numberTyp, number;
+end;end;
+--update 1.04
 end;
