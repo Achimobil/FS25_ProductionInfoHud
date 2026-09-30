@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<modDesc descVersion="113">
+<modDesc descVersion="114">
     <author>Achimobil</author>
     <contributor>HappyLooser</contributor>
-    <version>1.2.0.20</version>
+    <version>1.3.0.0</version>
 
     <title>
         <de>Produktionen Info Hud</de>
@@ -29,7 +29,7 @@ Zeichen und Worte in der Liste
 - Mehrere Waren in einer Zeile, etwa "Weizen, Gerste": die Produktion kann eine beliebige davon verbrauchen
 
 Filter in der Filterzeile
-- Produktionen und Tiere einzeln ein- und ausblenden
+- Produktionen, Tiere und Lager einzeln ein- und ausblenden, Lager erscheinen dabei nur beim Fracht-Filter
 - Zeitfilter: nur zeigen, was innerhalb von 24 Stunden oder innerhalb eines Monats leer oder voll wird
 - Verteilte Produkte ausblenden, die ohnehin automatisch abgeholt werden
 - Fracht-Filter: passende Orte für das aktuelle Gespann - Abladeorte für die geladene Ware, und bei Sämaschine, Streuer oder Spritze die Stellen zum Nachfüllen, auch wenn der Tank leer ist
@@ -45,6 +45,9 @@ Bedienung mit der Maus
 - Rechtsklick auf eine Produktion öffnet sie im Menü
 - Linksklick auf Spalte 3 schaltet die Anzeige um
 
+Produktionsverbrauch im Menü
+Eine eigene Seite im Menü zeigt je Feldfrucht und Ware, welche Produktionen sie erzeugen und verbrauchen und wie viel davon behalten, verteilt oder verkauft wird. Die Zeiteinheit lässt sich zwischen Stunde, Tag, Monat und Jahr umschalten. Fehlt bei einer Feldfrucht etwas, steht dazu die Fläche, die man pro Jahr zusätzlich dafür braucht.
+
 Einige Icons erscheinen erst, wenn du mit der Maus darüber fährst.
 
 Fütterungsroboter werden nicht unterstützt, die Ställe selbst schon.
@@ -56,36 +59,14 @@ Das Verändern oder erneutes Hochladen, ob ganz oder in Teilen, ist nicht gestat
 
 Fehler und Anregungen gerne auf GitHub: https://github.com/Achimobil/FS25_ProductionInfoHud
 Changelog
-1.2.0.20 - Das mitgelieferte Hilfsskript von HappyLooser wurde auf die aktuelle Version aktualisiert
-1.2.0.19 - Ladestellen für ein leeres Fahrzeug halten sich jetzt an den Zeitfilter und zeigen nur noch, was ohnehin gerade ansteht
-1.2.0.18 - Ein leeres Fahrzeug zeigt im Fracht-Filter jetzt auch, wo etwas zum Abholen bereitliegt, nicht mehr nur die Abladeorte
-1.2.0.17 - Fracht-Filter findet mit fertigem Mischfutter wie Schweinefutter jetzt auch den passenden Stall
-1.2.0.16
-- Ställe erscheinen im Fracht-Filter jetzt auch bei Wasser und Stroh und nicht mehr nur beim Futter
-- Bei geladener Ware stehen jetzt die dringendsten Abladeorte oben, eigene Lager am Ende
-- Lagerbestände erscheinen nur noch bei eingeschaltetem Fracht-Filter
-1.2.0.15
-- Fracht-Filter blendet Lager aus, solange nichts geladen ist, und zeigt bei Spritzen und Streuern nur noch die Nachfüllstellen
-- Beim Abtanken eines fahrenden Dreschers wechselt die Liste nicht mehr ständig hin und her
-- Ein leerer Drescher filtert die Liste gar nicht mehr, erst mit Korn im Tank zeigt er die passenden Abladeorte
-1.2.0.14 - Fracht-Filter zeigt bei Geräten, die ihre Ladung selbst verbrauchen, jetzt die Stellen zum Nachfüllen statt der Abladeorte
-1.2.0.13 - Eigene Lager, Silo-Erweiterungen und Palettenlager erscheinen jetzt in der Mengenansicht und beim Fracht-Filter
-1.2.0.12
-- Lager, die sich wetterabhängig selbst füllen, sind in der Liste als schwankender Wert gekennzeichnet
-- Beschreibung überarbeitet, sie erklärt jetzt auch die Zeichen in der Liste
-1.2.0.11
-- Bedarfsübersicht berücksichtigt Öffnungszeiten und behandelt wahlweise Zutaten nicht mehr als Pflichtbedarf
-- Anzeigekorrekturen: Spaltenbreite, Restzeiten über 100 Tage und Filter über zusammengefasste Zeilen
-1.2.0.10 - Restzeiten passen jetzt auch zu Produktionen aus Production Revamp, etwa bei Öffnungszeiten oder wahlweisen Zutaten
-1.2.0.9 - Absturz beim Umschalten der Datenspalte bei aktivem Fracht-Filter behoben
-1.2.0.8 - Fracht-Filter findet jetzt auch Abladeorte, die die Ware nur über einen Konverter annehmen, sowie alle passenden Futtersorten für Ställe (z.B. Totalmischration statt nur Heu/Silage/Gras); die 3. Spalte zeigt bei aktivem Fracht-Filter außerdem Restzeit und freie Kapazität jetzt gemeinsam an
-1.2.0.7 - Performance verbessert: die HUD-Anzeige braucht jetzt spürbar weniger Rechenzeit, besonders auf großen Maps mit vielen Produktionen
-1.2.0.6 - Fracht-Filter zeigt jetzt auch passende Abladeorte für leere Fahrzeuge an, je nachdem was sie transportieren können
-1.2.0.5 - Fracht-Filter erkennt jetzt auch Paletten korrekt und zeigt einen Hinweis an, wenn gerade gefiltert wird
-1.2.0.4 - Neuer HUD-Filter: zeigt auf Wunsch nur noch Abladeorte für die gerade geladene Ware, sortiert nach Füllstand
-1.2.0.3 - Neue Seite "Produktionsübersicht" im Menü: zeigt je Frucht/Rohstoff auf einen Blick, was behalten, verteilt, verkauft oder verbraucht wird
-1.2.0.2 - Falsche Bedingung aus 1.2.0.1 korrigiert
-1.2.0.1 - Über GTX Produktionsskript versteckte Produktionen auch im PIH nicht anzeigen
+1.3.0.0
+- Neue Seite im Menü: zeigt je Ware, was deine Produktionen erzeugen und verbrauchen und wie viel davon behalten, verteilt oder verkauft wird
+- Neuer Fracht-Filter: zeigt nur die Abladeorte, die zum aktuellen Fahrzeug und seiner Ladung passen
+- Fracht-Filter zeigt bei Sämaschine, Streuer oder Spritze die Stellen zum Nachfüllen und bei leeren Fahrzeugen, wo etwas zum Abholen bereitliegt
+- Fracht-Filter zeigt jetzt auch eigene Lager, Silo-Erweiterungen und Palettenlager
+- Für Revamp vorbereitet
+- Die Anzeige braucht spürbar weniger Rechenzeit, besonders bei vielen Produktionen
+- Mit dem GTX-Produktionsskript versteckte Produktionen werden auch hier nicht mehr angezeigt
 
 1.2.0.0
 - Fehler in der Berechnung der Mist Produktionsmenge behoben
@@ -118,7 +99,7 @@ Symbols and words in the list
 - Several fill types in one line, such as "Wheat, Barley": the production can use any one of them
 
 Filters in the filter line
-- Show or hide productions and animals separately
+- Show or hide productions, animals and storages separately, storages only appear with the cargo filter
 - Time filter: only show what runs empty or full within 24 hours or within a month
 - Hide distributed products that are collected automatically anyway
 - Cargo filter: matching places for the current vehicle - delivery points for the loaded cargo, and for seeders, spreaders or sprayers the places to refill, even when the tank is empty
@@ -134,6 +115,9 @@ Mouse controls
 - Right-click on a production opens it in the menu
 - Left-click on column 3 switches the display
 
+Production consumption in the menu
+A separate page in the menu shows for each crop and fill type which productions produce and consume it, and how much of it is kept, distributed or sold. The time unit can be switched between hour, day, month and year. If a crop falls short, the page also shows the additional area needed per year.
+
 Some icons only appear while you hover over them with the mouse.
 
 Feeding robots are not supported, the husbandries themselves are.
@@ -145,6 +129,15 @@ Modifying or re-uploading, in whole or in part, is not permitted!
 
 Please report bugs and suggestions on GitHub: https://github.com/Achimobil/FS25_ProductionInfoHud
 Changelog
+1.3.0.0
+- New page in the menu: shows for each fill type what your productions produce and consume, and how much of it is kept, distributed or sold
+- New cargo filter: only shows the delivery points that match the current vehicle and its load
+- Cargo filter shows the refill points for seeders, spreaders and sprayers, and for empty vehicles where something is ready for pickup
+- Cargo filter now also shows own storages, silo extensions and pallet storages
+- Prepared for Revamp
+- The display needs noticeably less computing time, especially with many productions
+- Productions hidden by the GTX production script are no longer shown here either
+
 1.2.0.0
 - Fixed error in manure production calculation
 - Added total row for manure type filter and production per hour at the bottom
